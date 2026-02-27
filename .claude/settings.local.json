@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip show:*)",
+      "Bash(python run_analysis.py:*)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(python:*)",
+      "Bash(findstr:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: TikTok 광고 분석 리포트 시스템 v3.2.0 구현\n\nPDCA 기반 개발로 v3.1.0~v3.2.0 전체 구현 완료 \\(Match Rate 100%\\)\n\nv3.1.0 가독성/시인성 개선:\n- 시트명 이모지 \\(7개 시트\\)\n- KPI 카드 형태 요약 대시보드\n- TIER 색상 개선 \\(셀별 강조\\)\n- 행 높이/컬럼 너비 최적화\n- 숫자 우측 정렬 및 포맷팅\n- 변화율 아이콘 \\(▲▼\\) 및 색상\n- 효율 판정 아이콘 \\(✅➡️⬇️🔴\\)\n- 훅 판정 스타일 \\(유효/부분효과/효과없음\\)\n- 지점 순위 표시 \\(🥇🥈🥉\\)\n- analysis_raw.json 생성 \\(QA 데이터\\)\n\nv3.2.0 차트 고도화:\n- 소재유형별 레이더 차트 \\(4지표 비교\\)\n- 피로도 감지 라인 차트 \\(CVR 추이\\)\n- 일별 CPA 추이 + 목표선 차트\n- 지점별 CPA 바 차트 목표선 지원\n\nv3.3.0 자동화 기능:\n- pre-run.sh 훅 \\(입력 파일 검증\\)\n- post-analysis.sh 훅 \\(출력 검증\\)\n- creative_lineage.csv 지원\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(pip install:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: v4.0.0 Excel/HTML 분리 + CTR/CVR 포맷 수정\n\n## 주요 변경사항\n\n### v4.0.0 Excel/HTML 분리\n- Excel은 데이터 전용 \\(16KB\\), 차트는 별도 HTML 파일 \\(99KB\\)\n- build_html_charts.py 추가: Plotly 기반 인터랙티브 차트 10종\n- run_analysis.py에 HTML 생성 Phase 추가\n\n### CTR/CVR 포맷 버그 수정\n- 기존: CTR 0.76 → Excel에서 76.0%로 표시 \\(100배 오류\\)\n- 수정: 0.00\"%\" 포맷으로 0.76%로 정상 표시\n- 적용 시트: 소재 TIER 분석, 훅 개선 효과, OFF 소재\n\n### 생성 차트\n- TIER 도넛, 지점 CPA 바, 소재유형 레이더\n- 크리에이티브 버블, 훅 비교, 나이대 효율\n- 히트맵, 일별 트렌드, 피로도 라인, CPA 목표선\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(move skills \".claude\\\\skills\")",
+      "Bash(git commit:*)",
+      "Bash(more:*)",
+      "Bash(chcp:*)",
+      "Bash(start \"\" \"output/20260227/tiktok_monthly_dayt_202602.html\")",
+      "Bash(iconv:*)"
+    ]
+  }
+}

@@ -1,0 +1,188 @@
+{
+  "2026-02-26": {
+    "daily": {
+      "cost": 971933,
+      "conv": 28,
+      "cpa": 34712.0,
+      "ctr": 0.66
+    },
+    "cumulative": {
+      "cost": 13240788,
+      "conv": 521,
+      "cpa": 25414.0,
+      "ctr": 0.64
+    },
+    "branch": {
+      "서울": {
+        "daily": {
+          "cost": 188832,
+          "conv": 8
+        },
+        "cumulative": {
+          "cost": 2435158,
+          "conv": 152,
+          "cpa": 16021.0
+        }
+      },
+      "일산": {
+        "daily": {
+          "cost": 52893,
+          "conv": 1
+        },
+        "cumulative": {
+          "cost": 842220,
+          "conv": 51,
+          "cpa": 16514.0
+        }
+      },
+      "대구": {
+        "daily": {
+          "cost": 140610,
+          "conv": 2
+        },
+        "cumulative": {
+          "cost": 2010179,
+          "conv": 86,
+          "cpa": 23374.0
+        }
+      },
+      "천안": {
+        "daily": {
+          "cost": 132906,
+          "conv": 4
+        },
+        "cumulative": {
+          "cost": 1606544,
+          "conv": 51,
+          "cpa": 31501.0
+        }
+      },
+      "부평": {
+        "daily": {
+          "cost": 181403,
+          "conv": 3
+        },
+        "cumulative": {
+          "cost": 2733107,
+          "conv": 87,
+          "cpa": 31415.0
+        }
+      },
+      "창원": {
+        "daily": {
+          "cost": 92685,
+          "conv": 4
+        },
+        "cumulative": {
+          "cost": 1304520,
+          "conv": 38,
+          "cpa": 34329.0
+        }
+      },
+      "수원": {
+        "daily": {
+          "cost": 182604,
+          "conv": 6
+        },
+        "cumulative": {
+          "cost": 2309060,
+          "conv": 56,
+          "cpa": 41233.0
+        }
+      }
+    }
+  },
+  "2026-02-25": {
+    "daily": {
+      "cost": 861054,
+      "conv": 26,
+      "cpa": 33117.0,
+      "ctr": 0.66
+    },
+    "cumulative": {
+      "cost": 12268855,
+      "conv": 493,
+      "cpa": 24886.0,
+      "ctr": 0.64
+    },
+    "branch": {
+      "서울": {
+        "daily": {
+          "cost": 160899,
+          "conv": 3
+        },
+        "cumulative": {
+          "cost": 2246326,
+          "conv": 144,
+          "cpa": 15599.0
+        }
+      },
+      "일산": {
+        "daily": {
+          "cost": 47758,
+          "conv": 1
+        },
+        "cumulative": {
+          "cost": 789327,
+          "conv": 50,
+          "cpa": 15787.0
+        }
+      },
+      "대구": {
+        "daily": {
+          "cost": 148003,
+          "conv": 7
+        },
+        "cumulative": {
+          "cost": 1869569,
+          "conv": 84,
+          "cpa": 22257.0
+        }
+      },
+      "천안": {
+        "daily": {
+          "cost": 110617,
+          "conv": 3
+        },
+        "cumulative": {
+          "cost": 1473638,
+          "conv": 47,
+          "cpa": 31354.0
+        }
+      },
+      "부평": {
+        "daily": {
+          "cost": 167597,
+          "conv": 6
+        },
+        "cumulative": {
+          "cost": 2551704,
+          "conv": 84,
+          "cpa": 30377.0
+        }
+      },
+      "창원": {
+        "daily": {
+          "cost": 81497,
+          "conv": 6
+        },
+        "cumulative": {
+          "cost": 1211835,
+          "conv": 34,
+          "cpa": 35642.0
+        }
+      },
+      "수원": {
+        "daily": {
+          "cost": 144683,
+          "conv": 0
+        },
+        "cumulative": {
+          "cost": 2126456,
+          "conv": 50,
+          "cpa": 42529.0
+        }
+      }
+    }
+  }
+}

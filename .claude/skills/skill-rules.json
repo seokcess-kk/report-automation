@@ -1,0 +1,125 @@
+{
+  "version": "1.0",
+  "skills": {
+
+    "tiktok-normalizer": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "critical",
+      "description": "TikTok raw CSV 표준화. 광고ID 지수표기 방지, KPI _calc 재계산",
+      "promptTriggers": {
+        "keywords": ["normalize", "표준화", "raw", "csv", "광고ID", "지수표기"],
+        "intentPatterns": [
+          "(표준화|normalize|변환).*?(csv|raw|틱톡)",
+          "광고.*?ID.*?지수"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [".claude/skills/tiktok-normalizer/scripts/normalize_tiktok_raw.py"],
+        "contentPatterns": ["dtype={'광고 ID': str}", "CTR_calc"]
+      }
+    },
+
+    "creative-analyzer": {
+      "type": "domain",
+      "enforcement": "block",
+      "priority": "critical",
+      "description": "소재 TIER 분류. 소재 단위 집계 후 분류 (행 단위 금지). _calc 컬럼만 사용",
+      "promptTriggers": {
+        "keywords": ["TIER", "소재", "creative", "CPA", "CTR", "CVR", "훅", "hook"],
+        "intentPatterns": [
+          "(분류|classify|평가|score).*?(소재|creative|TIER)",
+          "(훅|hook).*?(비교|compare|효과|effect)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          ".claude/skills/creative-analyzer/scripts/score_creatives.py",
+          ".claude/skills/creative-analyzer/scripts/hook_comparison.py",
+          "domain/creative/*.py"
+        ],
+        "contentPatterns": ["creative_tier", "TIER1", "hook_comparison", "_calc"]
+      }
+    },
+
+    "report-generator": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Excel 7시트+차트, PDF 한글폰트, HTML 인터랙티브 리포트 생성",
+      "promptTriggers": {
+        "keywords": ["Excel", "PDF", "리포트", "차트", "report", "chart", "html"],
+        "intentPatterns": [
+          "(생성|generate|만들|build).*?(Excel|PDF|리포트|차트|html)",
+          "(한글|폰트|font).*?(PDF|깨짐)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          ".claude/skills/report-generator/scripts/build_excel.py",
+          ".claude/skills/report-generator/scripts/build_charts.py",
+          ".claude/skills/report-generator/scripts/build_pdf.py",
+          ".claude/skills/report-generator/scripts/build_html_charts.py"
+        ],
+        "contentPatterns": ["openpyxl", "reportlab", "NanumGothic", "Chart.js"]
+      }
+    },
+
+    "data-integrity-guardrail": {
+      "type": "guardrail",
+      "enforcement": "block",
+      "priority": "critical",
+      "description": "데이터 정합성 수호. raw 컬럼 직접 사용, 수치 하드코딩, 행 단위 CVR 계산 차단",
+      "promptTriggers": {
+        "keywords": ["CTR", "CVR", "CPA", "전환", "계산", "수치"],
+        "intentPatterns": [
+          "CTR.*?계산|CVR.*?계산|CPA.*?계산",
+          "(수치|value|data).*?(입력|하드코딩|직접)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [".claude/skills/**/*.py", "domain/**/*.py"],
+        "contentPatterns": ["df\\['CTR'\\]", "df\\['CVR'\\]", "df\\['CPA'\\]"]
+      }
+    },
+
+    "insight-writer": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "인사이트 문장 생성. 훅 판정 방향 정확성, 한국어 출력, 확정/가설 등급 명시",
+      "promptTriggers": {
+        "keywords": ["인사이트", "insight", "개선", "제안", "액션", "권고"],
+        "intentPatterns": [
+          "(인사이트|insight).*?(생성|작성|write)",
+          "(개선|improvement).*?(제안|suggestion)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          ".claude/agents/insight-agent.md",
+          "output/**/improvement_suggestions.md"
+        ],
+        "contentPatterns": ["Hook.*?Ineffective", "확정", "가설"]
+      }
+    },
+
+    "daily-monitor": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "데일리 모니터링. 전일 스냅샷 비교, 이상 신호 감지, 지점별 변동 md 생성",
+      "promptTriggers": {
+        "keywords": ["데일리", "daily", "모니터링", "전일", "스냅샷", "snapshot"],
+        "intentPatterns": [
+          "(데일리|daily).*?(리포트|report|모니터링)",
+          "(전일|어제|yesterday).*?(비교|compare|변동)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": ["scripts/daily/*.py", "daily/snapshots/*.json"],
+        "contentPatterns": ["save_snapshot", "compare_snapshots", "daily_monitor"]
+      }
+    }
+  }
+}

@@ -1,0 +1,541 @@
+"""
+먼슬리 리포트 생성 (HTML)
+클라이언트 + 의사결정자용 - 익월 1~3일 발행
+"""
+import pandas as pd
+import numpy as np
+import os
+from datetime import datetime
+import json
+
+
+def build_monthly(output_dir: str, creative_df: pd.DataFrame, df_valid: pd.DataFrame,
+                  off_df: pd.DataFrame = None, before_after_df: pd.DataFrame = None,
+                  target_month: str = None):
+    """
+    먼슬리 HTML 리포트 생성
+    """
+    month = target_month or datetime.now().strftime('%Y%m')
+
+    # 전체 KPI
+    total_cost = df_valid['cost'].sum()
+    total_conv = df_valid['conversions'].sum()
+    total_clicks = df_valid['clicks'].sum()
+    total_impr = df_valid['impressions'].sum()
+    avg_cpa = total_cost / total_conv if total_conv > 0 else 0
+    avg_ctr = total_clicks / total_impr * 100 if total_impr > 0 else 0
+    avg_cvr = total_conv / total_clicks * 100 if total_clicks > 0 else 0
+    avg_landing = df_valid['landing_views'].sum() / total_clicks * 100 if total_clicks > 0 else 0
+
+    # 날짜 범위
+    date_min = df_valid['date'].min()
+    date_max = df_valid['date'].max()
+    days = (date_max - date_min).days + 1
+
+    # TIER 분포
+    tier_dist = creative_df['TIER'].value_counts().to_dict()
+    tier1_count = tier_dist.get('TIER1', 0)
+    tier4_count = tier_dist.get('TIER4', 0)
+
+    # 지점별 상세
+    branch_summary = df_valid.groupby('지점').agg(
+        cost=('cost', 'sum'),
+        conv=('conversions', 'sum'),
+        clicks=('clicks', 'sum'),
+        impr=('impressions', 'sum'),
+    ).reset_index()
+    branch_summary['CPA'] = (branch_summary['cost'] / branch_summary['conv'].replace(0, np.nan)).round(0)
+    branch_summary['CTR'] = (branch_summary['clicks'] / branch_summary['impr'].replace(0, np.nan) * 100).round(2)
+    branch_summary['CVR'] = (branch_summary['conv'] / branch_summary['clicks'].replace(0, np.nan) * 100).round(2)
+    branch_summary['비용비중'] = (branch_summary['cost'] / total_cost * 100).round(1)
+    branch_summary = branch_summary.sort_values('CPA')
+
+    branch_labels = json.dumps(branch_summary['지점'].tolist())
+    branch_cpa = json.dumps(branch_summary['CPA'].fillna(0).tolist())
+    branch_cost_share = json.dumps(branch_summary['비용비중'].tolist())
+
+    # 소재유형별 분석
+    if '소재유형' in creative_df.columns:
+        type_summary = creative_df.groupby('소재유형').agg(
+            소재수=('소재명', 'count'),
+            총비용=('총비용', 'sum'),
+            총전환=('총전환', 'sum'),
+        ).reset_index()
+        type_summary['CPA'] = (type_summary['총비용'] / type_summary['총전환'].replace(0, np.nan)).round(0)
+        type_summary = type_summary.sort_values('CPA')
+        type_labels = json.dumps(type_summary['소재유형'].tolist())
+        type_cpa = json.dumps(type_summary['CPA'].fillna(0).tolist())
+    else:
+        type_labels = '[]'
+        type_cpa = '[]'
+        type_summary = pd.DataFrame()
+
+    # 주차별 트렌드
+    df_valid['week'] = df_valid['date'].dt.isocalendar().week
+    weekly = df_valid.groupby('week').agg(
+        cost=('cost', 'sum'),
+        conv=('conversions', 'sum'),
+    ).reset_index()
+    weekly['CPA'] = (weekly['cost'] / weekly['conv'].replace(0, np.nan)).round(0)
+    weekly_labels = json.dumps([f"W{w}" for w in weekly['week']])
+    weekly_cpa = json.dumps(weekly['CPA'].fillna(0).tolist())
+    weekly_conv = json.dumps(weekly['conv'].tolist())
+
+    # Top/Bottom 소재
+    tier1_list = creative_df[creative_df['TIER'] == 'TIER1'].nsmallest(5, 'CPA')
+    tier4_list = creative_df[creative_df['TIER'] == 'TIER4'].nlargest(3, 'CPA')
+
+    # OFF 소재
+    off_count = len(off_df) if off_df is not None else 0
+    off_cost = off_df['총비용'].sum() if off_df is not None and len(off_df) > 0 else 0
+
+    html = f'''<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Monthly Report - {month[:4]}년 {month[4:]}월</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <style>
+        :root {{
+            --bg: #0b0d12;
+            --card: #151921;
+            --border: #2a2f3a;
+            --text: #e4e4e7;
+            --muted: #71717a;
+            --acc: #4ade80;
+            --blue: #60a5fa;
+            --pur: #a78bfa;
+            --warn: #fb923c;
+            --red: #f87171;
+        }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }}
+        .container {{ max-width: 1400px; margin: 0 auto; padding: 40px 20px; }}
+
+        header {{
+            text-align: center;
+            margin-bottom: 48px;
+            padding: 40px;
+            background: linear-gradient(135deg, #1a1f2e 0%, #0b0d12 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }}
+        header h1 {{
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, var(--acc), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }}
+        header .subtitle {{ color: var(--muted); font-size: 16px; }}
+        header .period {{
+            display: inline-block;
+            margin-top: 16px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+        }}
+
+        .summary-grid {{
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }}
+        .summary-card {{
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }}
+        .summary-card .value {{
+            font-family: 'DM Mono', monospace;
+            font-size: 28px;
+            font-weight: 500;
+        }}
+        .summary-card .value.green {{ color: var(--acc); }}
+        .summary-card .value.blue {{ color: var(--blue); }}
+        .summary-card .value.purple {{ color: var(--pur); }}
+        .summary-card .label {{
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+        }}
+
+        .section {{
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }}
+        .section h2 {{
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }}
+        .section h2::before {{
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--acc);
+            border-radius: 2px;
+        }}
+
+        .chart-container {{ position: relative; height: 320px; }}
+
+        .grid-2 {{ display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }}
+        .grid-3 {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }}
+
+        table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
+        th, td {{ padding: 14px 12px; text-align: left; border-bottom: 1px solid var(--border); }}
+        th {{ color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }}
+        td {{ font-family: 'DM Mono', monospace; }}
+        tr:hover {{ background: rgba(255,255,255,0.02); }}
+
+        .tier-badge {{
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }}
+        .tier-1 {{ background: rgba(74,222,128,0.15); color: var(--acc); }}
+        .tier-2 {{ background: rgba(96,165,250,0.15); color: var(--blue); }}
+        .tier-3 {{ background: rgba(251,146,60,0.15); color: var(--warn); }}
+        .tier-4 {{ background: rgba(248,113,113,0.15); color: var(--red); }}
+
+        .insight-box {{
+            background: rgba(74,222,128,0.08);
+            border-left: 3px solid var(--acc);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }}
+        .insight-box.warn {{
+            background: rgba(251,146,60,0.08);
+            border-left-color: var(--warn);
+        }}
+
+        .stat-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }}
+        .stat-row:last-child {{ border-bottom: none; }}
+        .stat-label {{ color: var(--muted); }}
+        .stat-value {{ font-family: 'DM Mono', monospace; font-weight: 500; }}
+
+        footer {{
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--muted);
+            font-size: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }}
+
+        @media (max-width: 1024px) {{
+            .summary-grid {{ grid-template-columns: repeat(3, 1fr); }}
+            .grid-2, .grid-3 {{ grid-template-columns: 1fr; }}
+        }}
+        @media (max-width: 640px) {{
+            .summary-grid {{ grid-template-columns: repeat(2, 1fr); }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TikTok Monthly Report</h1>
+            <p class="subtitle">데이트클리닉 광고 성과 분석</p>
+            <span class="period">{date_min.strftime('%Y.%m.%d')} ~ {date_max.strftime('%Y.%m.%d')} ({days}일간)</span>
+        </header>
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="value green">{total_cost/10000:,.0f}만</div>
+                <div class="label">총 광고비</div>
+            </div>
+            <div class="summary-card">
+                <div class="value blue">{total_conv:,.0f}</div>
+                <div class="label">총 전환(상담신청)</div>
+            </div>
+            <div class="summary-card">
+                <div class="value purple">{avg_cpa:,.0f}</div>
+                <div class="label">평균 CPA</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">{avg_ctr:.2f}%</div>
+                <div class="label">CTR</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">{avg_cvr:.2f}%</div>
+                <div class="label">CVR</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">{avg_landing:.1f}%</div>
+                <div class="label">랜딩률</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Executive Summary</h2>
+            <div class="insight-box">
+                <strong>핵심 성과:</strong> 총 {len(creative_df)}개 소재 중 TIER1 {tier1_count}개({tier1_count/len(creative_df)*100:.0f}%)가 목표 CPA 달성 및 CVR 5% 이상 기록
+            </div>
+            <div class="grid-3" style="margin-top: 20px;">
+                <div class="stat-row" style="display:block; padding:16px; background:rgba(255,255,255,0.02); border-radius:8px;">
+                    <div class="stat-label">TIER1 (최우수)</div>
+                    <div class="stat-value" style="font-size:24px; color:var(--acc);">{tier1_count}개</div>
+                </div>
+                <div class="stat-row" style="display:block; padding:16px; background:rgba(255,255,255,0.02); border-radius:8px;">
+                    <div class="stat-label">TIER4 (개선필요)</div>
+                    <div class="stat-value" style="font-size:24px; color:var(--red);">{tier4_count}개</div>
+                </div>
+                <div class="stat-row" style="display:block; padding:16px; background:rgba(255,255,255,0.02); border-radius:8px;">
+                    <div class="stat-label">OFF 소재</div>
+                    <div class="stat-value" style="font-size:24px; color:var(--muted);">{off_count}개</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="section">
+                <h2>주차별 CPA 추이</h2>
+                <div class="chart-container">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+            <div class="section">
+                <h2>지점별 비용 비중</h2>
+                <div class="chart-container">
+                    <canvas id="branchPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>지점별 상세 성과</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>지점</th>
+                        <th>광고비</th>
+                        <th>전환</th>
+                        <th>CPA</th>
+                        <th>CTR</th>
+                        <th>CVR</th>
+                        <th>비용비중</th>
+                    </tr>
+                </thead>
+                <tbody>
+'''
+
+    for _, row in branch_summary.iterrows():
+        cpa_color = 'var(--acc)' if row['CPA'] and row['CPA'] < avg_cpa else 'var(--red)' if row['CPA'] and row['CPA'] > avg_cpa * 1.2 else 'var(--text)'
+        html += f'''                    <tr>
+                        <td style="font-family:'Noto Sans KR'">{row['지점']}</td>
+                        <td>{row['cost']/10000:,.0f}만</td>
+                        <td>{row['conv']:.0f}</td>
+                        <td style="color:{cpa_color}">{row['CPA']:,.0f}원</td>
+                        <td>{row['CTR']:.2f}%</td>
+                        <td>{row['CVR']:.2f}%</td>
+                        <td>{row['비용비중']:.1f}%</td>
+                    </tr>
+'''
+
+    html += '''                </tbody>
+            </table>
+        </div>
+
+        <div class="grid-2">
+            <div class="section">
+                <h2>Top 소재 (TIER1)</h2>
+                <table>
+                    <thead>
+                        <tr><th>소재명</th><th>CPA</th><th>CVR</th><th>비용</th></tr>
+                    </thead>
+                    <tbody>
+'''
+
+    for _, row in tier1_list.iterrows():
+        name = row['소재명'][:25] + '...' if len(row['소재명']) > 25 else row['소재명']
+        html += f'''                        <tr>
+                            <td style="font-family:'Noto Sans KR'">{name}</td>
+                            <td>{row['CPA']:,.0f}원</td>
+                            <td>{row['CVR']:.1f}%</td>
+                            <td>{row['총비용']/10000:,.0f}만</td>
+                        </tr>
+'''
+
+    html += '''                    </tbody>
+                </table>
+            </div>
+            <div class="section">
+                <h2>개선 필요 소재 (TIER4)</h2>
+'''
+
+    if len(tier4_list) > 0:
+        html += '''                <table>
+                    <thead>
+                        <tr><th>소재명</th><th>CPA</th><th>CVR</th><th>비용</th></tr>
+                    </thead>
+                    <tbody>
+'''
+        for _, row in tier4_list.iterrows():
+            name = row['소재명'][:25] + '...' if len(row['소재명']) > 25 else row['소재명']
+            html += f'''                        <tr>
+                            <td style="font-family:'Noto Sans KR'">{name}</td>
+                            <td style="color:var(--red)">{row['CPA']:,.0f}원</td>
+                            <td>{row['CVR']:.1f}%</td>
+                            <td>{row['총비용']/10000:,.0f}만</td>
+                        </tr>
+'''
+        html += '''                    </tbody>
+                </table>
+'''
+    else:
+        html += '''                <div class="insight-box">TIER4 소재가 없습니다.</div>
+'''
+
+    html += '''            </div>
+        </div>
+'''
+
+    # OFF 소재 섹션
+    if off_df is not None and len(off_df) > 0:
+        html += f'''
+        <div class="section">
+            <h2>OFF 소재 현황</h2>
+            <div class="insight-box warn">
+                총 {len(off_df)}개 소재가 OFF 상태 (누적 비용: {off_cost/10000:,.0f}만원)
+            </div>
+            <table>
+                <thead>
+                    <tr><th>소재명</th><th>마지막 CPA</th><th>CVR</th><th>누적비용</th><th>누적전환</th></tr>
+                </thead>
+                <tbody>
+'''
+        for _, row in off_df.nsmallest(5, 'CPA' if 'CPA' in off_df.columns else '총비용').iterrows():
+            name = row['소재명'][:25] + '...' if len(row['소재명']) > 25 else row['소재명']
+            cpa_str = f"{row['CPA']:,.0f}원" if pd.notna(row.get('CPA')) else 'N/A'
+            cvr_str = f"{row['CVR']:.1f}%" if pd.notna(row.get('CVR')) else 'N/A'
+            html += f'''                    <tr>
+                        <td style="font-family:'Noto Sans KR'">{name}</td>
+                        <td>{cpa_str}</td>
+                        <td>{cvr_str}</td>
+                        <td>{row['총비용']/10000:,.1f}만</td>
+                        <td>{row['총전환']:.0f}</td>
+                    </tr>
+'''
+        html += '''                </tbody>
+            </table>
+        </div>
+'''
+
+    html += f'''
+        <footer>
+            TikTok Ad Analysis System v5.0 | Monthly Report {month}<br>
+            Generated by Claude Code on {datetime.now().strftime('%Y-%m-%d %H:%M')}
+        </footer>
+    </div>
+
+    <script>
+        // 주차별 차트
+        new Chart(document.getElementById('weeklyChart'), {{
+            type: 'line',
+            data: {{
+                labels: {weekly_labels},
+                datasets: [{{
+                    label: 'CPA',
+                    data: {weekly_cpa},
+                    borderColor: '#4ade80',
+                    backgroundColor: 'rgba(74,222,128,0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    yAxisID: 'y'
+                }}, {{
+                    label: '전환',
+                    data: {weekly_conv},
+                    borderColor: '#60a5fa',
+                    borderDash: [5, 5],
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{ legend: {{ labels: {{ color: '#e4e4e7' }} }} }},
+                scales: {{
+                    x: {{ grid: {{ color: '#2a2f3a' }}, ticks: {{ color: '#71717a' }} }},
+                    y: {{ type: 'linear', position: 'left', grid: {{ color: '#2a2f3a' }}, ticks: {{ color: '#4ade80' }} }},
+                    y1: {{ type: 'linear', position: 'right', grid: {{ display: false }}, ticks: {{ color: '#60a5fa' }} }}
+                }}
+            }}
+        }});
+
+        // 지점별 비용 비중
+        new Chart(document.getElementById('branchPieChart'), {{
+            type: 'doughnut',
+            data: {{
+                labels: {branch_labels},
+                datasets: [{{
+                    data: {branch_cost_share},
+                    backgroundColor: ['#4ade80', '#60a5fa', '#a78bfa', '#fb923c', '#f87171', '#fbbf24', '#34d399'],
+                    borderWidth: 0
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{ position: 'right', labels: {{ color: '#e4e4e7', padding: 12 }} }}
+                }}
+            }}
+        }});
+    </script>
+</body>
+</html>'''
+
+    # 저장
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, f"tiktok_monthly_dayt_{month}.html")
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html)
+
+    print(f"[OK] Monthly report -> {output_path}")
+    return output_path
+
+
+if __name__ == "__main__":
+    import sys
+    data_dir = sys.argv[1] if len(sys.argv) > 1 else "output/20260227"
+
+    creative_df = pd.read_parquet(os.path.join(data_dir, "creative_tier.parquet"))
+    df_valid = pd.read_parquet(os.path.join(data_dir, "parsed.parquet"))
+    df_valid = df_valid[df_valid['parse_status'] == 'OK']
+
+    try:
+        off_df = pd.read_parquet(os.path.join(data_dir, "creative_off.parquet"))
+    except:
+        off_df = None
+
+    build_monthly(data_dir, creative_df, df_valid, off_df)

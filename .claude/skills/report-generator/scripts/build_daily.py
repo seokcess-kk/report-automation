@@ -2,9 +2,9 @@
 데일리 리포트 생성 (Markdown)
 내부용 - 매일 아침 발행
 
-입력: input/tiktok_raw.csv 또는 output/YYYYMMDD/parsed.parquet
-출력: output/YYYYMMDD/tiktok_daily_YYYYMMDD.md
-스냅샷: output/daily_snapshot.json
+입력: input/tiktok_raw.csv 또는 output/data/YYYYMMDD/parsed.parquet
+출력: output/daily/YYYYMMDD/tiktok_daily_YYYYMMDD.md
+스냅샷: output/daily/daily_snapshot.json
 """
 import pandas as pd
 import numpy as np
@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 MONTHLY_TARGET_CONV = 600
-VALID_BRANCHES = ['서울', '일산', '대구', '천안', '부평', '창원', '수원']
+VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']
 
 
 def strip_date_code(name: str) -> str:
@@ -306,8 +306,9 @@ def build_daily_md(
         for branch in VALID_BRANCHES:
             target_cpa_dict[branch] = total_target
 
-    # 스냅샷 로드
-    snapshot_path = os.path.join(output_dir, "daily_snapshot.json")
+    # 스냅샷 로드 (output/daily/daily_snapshot.json)
+    daily_dir = os.path.join(output_dir, "daily")
+    snapshot_path = os.path.join(daily_dir, "daily_snapshot.json")
     snapshot = load_snapshot(snapshot_path)
     prev_data = snapshot.get(day_before_str, {})
     prev_cum = prev_data.get('cumulative', {})
@@ -401,9 +402,9 @@ def build_daily_md(
     else:
         md_lines.append("- 특별 액션 없음 (정상 운영)\n")
 
-    # 파일 저장
+    # 파일 저장 (output/daily/YYYYMMDD/)
     date_folder = yesterday.strftime('%Y%m%d')
-    output_folder = os.path.join(output_dir, date_folder)
+    output_folder = os.path.join(output_dir, "daily", date_folder)
     os.makedirs(output_folder, exist_ok=True)
 
     md_filename = f"tiktok_daily_{date_folder}.md"

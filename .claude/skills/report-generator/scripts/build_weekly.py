@@ -2,7 +2,8 @@
 위클리 리포트 생성 (HTML)
 클라이언트용 - 매주 월요일 발행
 
-레퍼런스: output/tiktok_weekly_dayt_20260224.html
+레퍼런스: output/_ref/weekly_ref.html
+출력: output/weekly/YYYYMMDD/tiktok_weekly_dayt_YYYYMMDD.html
 - JS 클라이언트 사이드 렌더링
 - TIER 전주 비교 + 변동 표시
 - 지점별 차트 2개 (CPA, CTR/CVR)
@@ -19,7 +20,7 @@ from datetime import datetime, timedelta
 
 MONTHLY_TARGET_CONV = 600
 
-VALID_BRANCHES = ['부평', '서울', '수원', '대구', '창원', '천안', '일산']
+VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']  # 전체 리포트 통일
 VALID_AD_TYPES = ['인플방문후기', '진료셀프캠', '의료진정보']
 
 
@@ -140,10 +141,11 @@ def classify_tier_weekly(df: pd.DataFrame, target_cpa: float) -> pd.DataFrame:
 
         cpa_ok = pd.notna(row['cpa']) and row['cpa'] <= target_cpa
         cvr_ok = pd.notna(row['cvr']) and row['cvr'] >= 5.0
+        lpv_ok = pd.notna(row['lpv']) and row['lpv'] >= 50.0  # CLAUDE.md 기준
 
         if cpa_ok and cvr_ok:
             return 'TIER1'
-        elif cpa_ok and not cvr_ok:
+        elif cpa_ok and not cvr_ok and lpv_ok:  # LPV >= 50% 조건 추가
             return 'TIER2'
         elif not cpa_ok and cvr_ok:
             return 'TIER3'
@@ -168,7 +170,9 @@ def calc_branch_summary(df: pd.DataFrame) -> pd.DataFrame:
     branch['ctr'] = (branch['clicks'] / branch['impr'].replace(0, np.nan) * 100).round(2)
     branch['cvr'] = (branch['conv'] / branch['clicks'].replace(0, np.nan) * 100).round(2)
 
-    return branch.sort_values('cpa')
+    # VALID_BRANCHES 순서로 정렬
+    branch['_order'] = branch['branch'].apply(lambda x: VALID_BRANCHES.index(x) if x in VALID_BRANCHES else 999)
+    return branch.sort_values('_order').drop(columns=['_order'])
 
 
 def make_unique_names(tier_df: pd.DataFrame) -> dict:
@@ -563,9 +567,12 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None):
 
     html = generate_html(data)
 
-    os.makedirs(output_dir, exist_ok=True)
-    filename = f"tiktok_weekly_dayt_{this_end.strftime('%Y%m%d')}.html"
-    output_path = os.path.join(output_dir, filename)
+    # output/weekly/YYYYMMDD/ 폴더에 저장
+    date_folder = this_end.strftime('%Y%m%d')
+    weekly_dir = os.path.join(output_dir, "weekly", date_folder)
+    os.makedirs(weekly_dir, exist_ok=True)
+    filename = f"tiktok_weekly_dayt_{date_folder}.html"
+    output_path = os.path.join(weekly_dir, filename)
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
@@ -967,7 +974,7 @@ function buildBranchCards(){{
   }});
 
   // 지점 순서 (VALID_BRANCHES 순)
-  const branchOrder = ['서울', '일산', '대구', '천안', '부평', '창원', '수원'];
+  const branchOrder = ['서울', '부평', '수원', '일산', '대구', '창원', '천안'];
   const sortedBranches = branchOrder.filter(b => byBranch[b]);
 
   // 지점별 요약 (D.branch에서)
@@ -1018,7 +1025,8 @@ function buildBranchCards(){{
 // Branch Charts
 function buildBranchCharts(){{
   document.getElementById('target-cpa-label').textContent = fmt(D.target_cpa);
-  const br=[...D.branch].sort((a,b)=>(a.CPA||999999)-(b.CPA||999999));
+  const branchOrder = ['서울', '부평', '수원', '일산', '대구', '창원', '천안'];
+  const br = branchOrder.map(name => D.branch.find(b => b.branch === name)).filter(Boolean);
   const labels=br.map(b=>b.branch);
 
   new Chart(document.getElementById('branchCpaChart'),{{

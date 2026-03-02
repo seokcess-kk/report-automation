@@ -19,9 +19,13 @@ os.chdir(PROJECT_ROOT)
 # 스킬 스크립트 경로
 SKILLS_DIR = os.path.join(PROJECT_ROOT, ".claude", "skills")
 
-# 출력 디렉토리 (날짜별)
+# 출력 디렉토리 (데이터는 output/data/YYYYMMDD/)
 TODAY = datetime.now().strftime("%Y%m%d")
-OUTPUT_DIR = os.path.join(PROJECT_ROOT, "output", TODAY)
+DATA_DIR = os.path.join(PROJECT_ROOT, "output", "data", TODAY)
+MONTHLY_DIR = os.path.join(PROJECT_ROOT, "output", "monthly")
+
+# 하위 호환성을 위해 OUTPUT_DIR도 유지 (DATA_DIR과 동일)
+OUTPUT_DIR = DATA_DIR
 
 
 def print_phase(phase_num: int, phase_name: str, status: str = "START"):
@@ -209,21 +213,9 @@ def run_phase_5():
         module = module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        creative_tier_path = os.path.join(OUTPUT_DIR, "creative_tier.parquet")
-        parsed_path = os.path.join(OUTPUT_DIR, "parsed.parquet")
-        off_path = os.path.join(OUTPUT_DIR, "creative_off.parquet")
-
-        creative_df = pd.read_parquet(creative_tier_path)
-        df_valid = pd.read_parquet(parsed_path)
-        df_valid = df_valid[df_valid['parse_status'] == 'OK']
-
-        try:
-            off_df = pd.read_parquet(off_path)
-        except:
-            off_df = None
-
         month = datetime.now().strftime("%Y%m")
-        module.build_monthly(OUTPUT_DIR, creative_df, df_valid, off_df, month)
+        # build_monthly는 data_dir과 month를 받아서 output/monthly/YYYYMM/에 저장
+        module.build_monthly(DATA_DIR, month)
     else:
         print("  → build_monthly.py 없음")
 
@@ -238,7 +230,7 @@ def main():
     print(">>> TikTok Ad Analysis Pipeline START")
     print("="*60)
     print(f"실행 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"출력 경로: {OUTPUT_DIR}")
+    print(f"데이터 경로: {DATA_DIR}")
 
     # 입력 파일 확인
     input_csv = sys.argv[1] if len(sys.argv) > 1 else os.path.join(PROJECT_ROOT, "input", "tiktok_raw.csv")
@@ -275,10 +267,10 @@ def main():
         print(">>> Pipeline COMPLETE!")
         print("="*60)
         print(f"소요 시간: {elapsed:.1f}초")
-        print(f"출력 경로: {OUTPUT_DIR}")
+        print(f"데이터 경로: {DATA_DIR}")
         print("\n생성된 파일:")
-        for f in os.listdir(OUTPUT_DIR):
-            size = os.path.getsize(os.path.join(OUTPUT_DIR, f))
+        for f in os.listdir(DATA_DIR):
+            size = os.path.getsize(os.path.join(DATA_DIR, f))
             print(f"  - {f} ({size/1024:.1f}KB)")
 
     except Exception as e:

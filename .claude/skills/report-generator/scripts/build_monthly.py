@@ -669,13 +669,16 @@ def build_monthly(data_dir: str, target_month: str = None):
             if len(branch_data) == 0:
                 continue
             branch_data['cpa'] = (branch_data['cost'] / branch_data['conv'].replace(0, np.nan)).round(0)
-            if 'landing' in branch_data.columns:
-                branch_data['cvr'] = (branch_data['conv'] / branch_data['landing'].replace(0, np.nan) * 100).round(2)  # 전환/랜딩
-            else:
-                branch_data['cvr'] = None
+            branch_data['cvr'] = (branch_data['conv'] / branch_data['clicks'].replace(0, np.nan) * 100).round(2)  # 전환/클릭
             # VALID_BRANCHES 순서로 정렬
             branch_data['_order'] = branch_data['branch'].apply(lambda x: VALID_BRANCHES.index(x) if x in VALID_BRANCHES else 999)
             branch_data = branch_data.sort_values('_order').drop(columns=['_order'])
+
+            # CPA 기준 정렬 (오름차순, NaN은 끝으로)
+            branch_data = branch_data.sort_values('cpa', na_position='last')
+
+            # CTR 계산
+            branch_data['ctr'] = (branch_data['clicks'] / branch_data['impr'].replace(0, np.nan) * 100).round(2)
 
             creatives = []
             for i, (_, r) in enumerate(branch_data.iterrows()):
@@ -683,8 +686,11 @@ def build_monthly(data_dir: str, target_month: str = None):
                     'creative_name': clean_cross_gap_name(r['creative_name']),
                     'CPA': int(r['cpa']) if pd.notna(r['cpa']) else None,
                     'CVR': r['cvr'] if pd.notna(r['cvr']) else None,
+                    'CTR': r['ctr'] if pd.notna(r['ctr']) else None,
                     'conv': int(r['conv']),
                     'cost': int(r['cost']),
+                    'clicks': int(r['clicks']),
+                    'impr': int(r['impr']),
                     'tier': tier_map.get(r['creative_name'], 'UNCLASSIFIED'),
                     'is_best': i == 0 and pd.notna(r['cpa']),
                 })
@@ -768,6 +774,7 @@ def build_monthly(data_dir: str, target_month: str = None):
         'creative': creative_classified,   # TIER1~4, LOW_VOLUME만
         'creative_new': creative_new,       # UNCLASSIFIED (신규 소재)
         'branch': branch_list,
+        'by_branch': by_branch,             # 지점별 소재 분석
         'cross_gap': cross_gap,
         'age': age_list,
         'hm_ctr': hm_ctr,
@@ -781,7 +788,6 @@ def build_monthly(data_dir: str, target_month: str = None):
         'expansion': expansion,
         'off_perf': off_perf,
         'before_after': before_after,
-        # 레퍼런스에 없는 키 제외: weekly, by_branch, raw, raw_off
     }
 
     D = clean(D)

@@ -216,6 +216,15 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
     <div class="card tw"><table id="gap-tbl"></table></div></div>
   <div class="sec"><div class="sec-lbl">지점×나이대 CPA 히트맵</div>
     <div class="card"><div id="hm-br-age" style="margin-top:8px"></div></div></div>
+  <div class="sec"><div class="sec-lbl">지점별 소재 분석</div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <label style="font-size:12px;color:var(--tx2)">지점 선택</label>
+        <select id="branch-creative-select" style="padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--tx1);font-size:12px;cursor:pointer"></select>
+        <span id="branch-creative-count" style="font-size:11px;color:var(--tx3)"></span>
+      </div>
+      <div class="tw"><table id="branch-creative-tbl"></table></div>
+    </div></div>
 </div></div>
 
 <div id="pg-age" class="pg"><div class="wrap">
@@ -678,6 +687,34 @@ function buildBranch(){
       const good=v!=null&&v<=D.target_cpa;
       return `<div class="hm-cell" style="background:${good?`rgba(74,222,128,${al})`:`rgba(248,113,113,${al})`};color:${good?"#4ade80":"#f87171"}">${v?fmt(v):"-"}</div>`;
     }).join("")).join("");
+
+  // 지점별 소재 분석
+  const brSelect=document.getElementById("branch-creative-select");
+  const brCreativeCount=document.getElementById("branch-creative-count");
+  const brCreativeTbl=document.getElementById("branch-creative-tbl");
+  const byBr=D.by_branch||{};
+  const brKeys=Object.keys(byBr).sort((a,b)=>{
+    const order=['서울','부평','수원','일산','대구','창원','천안'];
+    return order.indexOf(a)-order.indexOf(b);
+  });
+  brKeys.forEach(b=>brSelect.innerHTML+=`<option value="${b}">${b}</option>`);
+  function renderBrCreative(branch){
+    const data=byBr[branch]||[];
+    brCreativeCount.textContent=`${data.length}개 소재`;
+    brCreativeTbl.innerHTML=`
+      <thead><tr><th>소재명</th><th>TIER</th><th>비용</th><th>전환</th><th>CPA</th><th>CTR</th><th>CVR</th></tr></thead>
+      <tbody>${data.map(c=>`<tr>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px" title="${c.creative_name}">${c.is_best?'★ ':''}${c.creative_name}</td>
+        <td><span class="badge ${c.tier||""}">${c.tier==="UNCLASSIFIED"?"평가중":c.tier==="LOW_VOLUME"?"저볼륨":c.tier||"-"}</span></td>
+        <td class="num">${fmt(c.cost)}원</td>
+        <td class="num">${c.conv}건</td>
+        <td class="num ${c.CPA!=null&&c.CPA<=D.target_cpa?"good":"bad"}">${c.CPA?fmt(c.CPA)+"원":"-"}</td>
+        <td class="num">${c.CTR!=null?c.CTR.toFixed(2)+"%":"-"}</td>
+        <td class="num ${c.CVR!=null&&c.CVR>=5?"good":""}">${c.CVR!=null?c.CVR.toFixed(2)+"%":"-"}</td>
+      </tr>`).join("")}</tbody>`;
+  }
+  brSelect.addEventListener("change",e=>renderBrCreative(e.target.value));
+  if(brKeys.length>0)renderBrCreative(brKeys[0]);
 }
 
 function buildAge(){

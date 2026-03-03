@@ -157,7 +157,7 @@ def classify_tier_weekly(df: pd.DataFrame, target_cpa: float) -> pd.DataFrame:
 
 
 def calc_branch_summary(df: pd.DataFrame) -> pd.DataFrame:
-    """지점별 요약"""
+    """지점별 요약 (효율점수 포함)"""
     df_on = df[~df['is_off']]
     branch = df_on.groupby('branch').agg(
         cost=('cost', 'sum'),
@@ -169,6 +169,13 @@ def calc_branch_summary(df: pd.DataFrame) -> pd.DataFrame:
     branch['cpa'] = (branch['cost'] / branch['conv'].replace(0, np.nan)).round(0)
     branch['ctr'] = (branch['clicks'] / branch['impr'].replace(0, np.nan) * 100).round(2)
     branch['cvr'] = (branch['conv'] / branch['clicks'].replace(0, np.nan) * 100).round(2)
+
+    # 효율점수 계산: 전환비중 / 비용비중
+    total_cost = branch['cost'].sum()
+    total_conv = branch['conv'].sum()
+    branch['cost_share'] = (branch['cost'] / total_cost * 100).round(1) if total_cost > 0 else 0
+    branch['conv_share'] = (branch['conv'] / total_conv * 100).round(1) if total_conv > 0 else 0
+    branch['eff_score'] = (branch['conv_share'] / branch['cost_share'].replace(0, np.nan)).round(2)
 
     # VALID_BRANCHES 순서로 정렬
     branch['_order'] = branch['branch'].apply(lambda x: VALID_BRANCHES.index(x) if x in VALID_BRANCHES else 999)
@@ -231,10 +238,18 @@ def generate_tier_comparison(tier_this: pd.DataFrame, tier_prev: pd.DataFrame) -
         elif tier_now == tier_before:
             change = '—'
         else:
-            tier_order = {'TIER1': 1, 'TIER2': 2, 'TIER3': 3, 'TIER4': 4, 'LOW_VOLUME': 5, 'UNCLASSIFIED': 6}
-            diff = tier_order.get(tier_now, 9) - tier_order.get(tier_before, 9)
-            arrow = '↑' if diff < 0 else '↓'
-            change = f"{tier_before}→{tier_now} {arrow}"
+            # LOW_VOLUME ↔ UNCLASSIFIED 변동은 의미 없음 (둘 다 평가 불가)
+            non_tier = {'LOW_VOLUME', 'UNCLASSIFIED'}
+            if tier_now in non_tier and tier_before in non_tier:
+                change = '—'
+            else:
+                tier_order = {'TIER1': 1, 'TIER2': 2, 'TIER3': 3, 'TIER4': 4, 'LOW_VOLUME': 5, 'UNCLASSIFIED': 6}
+                diff = tier_order.get(tier_now, 9) - tier_order.get(tier_before, 9)
+                arrow = '↑' if diff < 0 else '↓'
+                # UNCLASSIFIED → "평가중", LOW_VOLUME → "저볼륨" 표시
+                tier_before_label = '평가중' if tier_before == 'UNCLASSIFIED' else ('저볼륨' if tier_before == 'LOW_VOLUME' else tier_before)
+                tier_now_label = '평가중' if tier_now == 'UNCLASSIFIED' else ('저볼륨' if tier_now == 'LOW_VOLUME' else tier_now)
+                change = f"{tier_before_label}→{tier_now_label} {arrow}"
 
         result.append({
             'creative_name': display_name,
@@ -274,7 +289,7 @@ def generate_tier_detail(tier_this: pd.DataFrame) -> list:
 
 
 def generate_branch_comparison(branch_this: pd.DataFrame, branch_prev: pd.DataFrame) -> list:
-    """지점별 전주 대비"""
+    """지점별 전주 대비 (효율점수 포함)"""
     prev_dict = {}
     if len(branch_prev) > 0:
         prev_dict = branch_prev.set_index('branch')[['cpa', 'ctr', 'cvr']].to_dict('index')
@@ -292,6 +307,9 @@ def generate_branch_comparison(branch_this: pd.DataFrame, branch_prev: pd.DataFr
         ctr_diff = row['ctr'] - ctr_prev if pd.notna(row['ctr']) and pd.notna(ctr_prev) else None
         cvr_diff = row['cvr'] - cvr_prev if pd.notna(row['cvr']) and pd.notna(cvr_prev) else None
 
+        # 효율점수 추가
+        eff_score = round(row['eff_score'], 2) if pd.notna(row.get('eff_score')) else None
+
         result.append({
             'branch': b,
             '총비용': int(row['cost']),
@@ -307,13 +325,16 @@ def generate_branch_comparison(branch_this: pd.DataFrame, branch_prev: pd.DataFr
             'CPA_diff': int(cpa_diff) if cpa_diff is not None else None,
             'CTR_diff': round(ctr_diff, 2) if ctr_diff is not None else None,
             'CVR_diff': round(cvr_diff, 2) if cvr_diff is not None else None,
+            '효율점수': eff_score,
         })
 
-    return sorted(result, key=lambda x: x['CPA'] or 999999)
+    # VALID_BRANCHES 순서로 정렬
+    branch_order = {b: i for i, b in enumerate(VALID_BRANCHES)}
+    return sorted(result, key=lambda x: branch_order.get(x['branch'], 999))
 
 
-def generate_insights(kpi_this, kpi_prev, tier_list, branch_data) -> list:
-    """인사이트 생성"""
+def generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail) -> list:
+    """인사이트 생성 (TIER1 미집행 지점 확장 기회 포함)"""
     insights = []
 
     # 지점 CPA 악화 체크
@@ -359,7 +380,38 @@ def generate_insights(kpi_this, kpi_prev, tier_list, branch_data) -> list:
             ]
         })
 
-    return insights[:3]
+    # TIER1 미집행 지점 확장 기회 (먼슬리 스타일)
+    if len(insights) < 4:
+        tier1_creatives = [c for c in tier_detail if c.get('TIER') == 'TIER1']
+        all_branches = set(VALID_BRANCHES)
+        expansion_opportunities = []
+
+        for creative in tier1_creatives:
+            current_branches = set(creative.get('지점목록', []))
+            missing = all_branches - current_branches
+            if len(missing) >= 2:
+                expansion_opportunities.append({
+                    'name': creative['creative_name'],
+                    'missing': sorted(list(missing)),
+                    'cpa': creative.get('CPA', 0)
+                })
+
+        if expansion_opportunities:
+            # CPA 낮은 순으로 정렬
+            expansion_opportunities.sort(key=lambda x: x['cpa'] or 999999)
+            top_opp = expansion_opportunities[0]
+            insights.append({
+                'type': '확장 기회',
+                'color': '#60a5fa',
+                'title': f"TIER1 '{top_opp['name']}' 미집행 지점 확장",
+                'points': [
+                    f"미집행 지점: {', '.join(top_opp['missing'][:4])}{'...' if len(top_opp['missing']) > 4 else ''}",
+                    f"현재 CPA: {top_opp['cpa']:,}원" if top_opp['cpa'] else "CPA 집계 중",
+                    f"TIER1 소재 {len(expansion_opportunities)}개 확장 가능"
+                ]
+            })
+
+    return insights[:4]
 
 
 def generate_off_list(tier_this: pd.DataFrame, branch_data: list, target_cpa: float) -> list:
@@ -519,7 +571,7 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None):
     branch_prev = calc_branch_summary(df_prev) if len(df_prev) > 0 else pd.DataFrame()
     branch_data = generate_branch_comparison(branch_this, branch_prev)
 
-    insights = generate_insights(kpi_this, kpi_prev, tier_list, branch_data)
+    insights = generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail)
     off_list = generate_off_list(tier_this, branch_data, target_cpa)
     on_list = generate_on_list(tier_this)
 
@@ -541,6 +593,11 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None):
     # 요일 계산
     weekday_kr = ['월', '화', '수', '목', '금', '토', '일']
 
+    # UNCLASSIFIED 소재 분리 (신규 소재 섹션용)
+    tier_classified = [t for t in tier_list if t['tier_this'] != 'UNCLASSIFIED']
+    tier_detail_classified = [t for t in tier_detail if t['TIER'] != 'UNCLASSIFIED']
+    new_creatives = [t for t in tier_detail if t['TIER'] == 'UNCLASSIFIED']
+
     data = {
         'period_this': f"{this_start.strftime('%m/%d')}~{this_end.strftime('%m/%d')}",
         'period_this_full': f"{this_start.strftime('%Y.%m.%d')}({weekday_kr[this_start.weekday()]}) ~ {this_end.strftime('%m.%d')}({weekday_kr[this_end.weekday()]})",
@@ -549,8 +606,9 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None):
         'kpi_this': kpi_this,
         'kpi_prev': kpi_prev,
         'target_cpa': target_cpa,
-        'tier_list': tier_list,
-        'tier_this': tier_detail,
+        'tier_list': tier_classified,  # UNCLASSIFIED 제외
+        'tier_this': tier_detail_classified,  # UNCLASSIFIED 제외
+        'new_creatives': new_creatives,  # 신규 소재 (UNCLASSIFIED) 별도
         'branch': branch_data,
         'off_list': off_list,
         'on_list': on_list,
@@ -752,6 +810,17 @@ tr:hover td{{background:rgba(255,255,255,.015)}}
     </div>
   </div>
 
+  <div class="section" id="new-creative-sec" style="display:none">
+    <div class="section-label">신규 소재 (평가 중)
+      <span style="font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0;text-transform:none;margin-left:8px">
+        · 집행일수 3일 미만 · TIER 분류 대기
+      </span>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap"><table id="new-tbl"></table></div>
+    </div>
+  </div>
+
   <div class="section">
     <div class="collapsible-header" onclick="toggleCollapse(this)">
       <div class="section-label">소재 × 지점 성과 — 이번 주</div>
@@ -862,11 +931,13 @@ function buildInsights(){{
     </div>`).join('');
 }}
 
-// TIER Table
+// TIER Table (UNCLASSIFIED 제외)
 function buildTierTable(){{
-  const torder={{TIER1:1,TIER2:2,TIER3:3,TIER4:4,LOW_VOLUME:5,UNCLASSIFIED:6}};
+  const torder={{TIER1:1,TIER2:2,TIER3:3,TIER4:4,LOW_VOLUME:5}};
   const sorted=[...D.tier_list].sort((a,b)=>(torder[a.tier_this]||9)-(torder[b.tier_this]||9));
   const tierData = Object.fromEntries(D.tier_this.map(c=>[c.creative_name,c]));
+  // TIER 레이블 한글 변환 (CSS 클래스는 유지)
+  const tierLabel = t => t === 'UNCLASSIFIED' ? '평가중' : t === 'LOW_VOLUME' ? '저볼륨' : t;
   document.getElementById('tier-table').innerHTML=`
     <thead><tr><th>소재명</th><th>이번 주 TIER</th><th>전주</th><th>변동</th>
       <th>CPA</th><th>CTR</th><th>CVR</th><th>전환</th><th>집행지점</th></tr></thead>
@@ -875,8 +946,8 @@ function buildTierTable(){{
       const chgClass = t.change.includes('↑') ? 'change-up' : t.change.includes('↓') ? 'change-down' : t.change==='신규' ? 'change-new' : 'text-muted';
       return `<tr>
         <td class="td-name" title="${{t.creative_name}}">${{t.creative_name}}</td>
-        <td><span class="tier-badge ${{t.tier_this}}">${{t.tier_this}}</span></td>
-        <td>${{t.tier_prev?`<span class="tier-badge ${{t.tier_prev}}" style="opacity:.6">${{t.tier_prev}}</span>`:'<span class="text-muted">—</span>'}}</td>
+        <td><span class="tier-badge ${{t.tier_this}}">${{tierLabel(t.tier_this)}}</span></td>
+        <td>${{t.tier_prev?`<span class="tier-badge ${{t.tier_prev}}" style="opacity:.6">${{tierLabel(t.tier_prev)}}</span>`:'<span class="text-muted">—</span>'}}</td>
         <td class="${{chgClass}}">${{t.change}}</td>
         <td class="num">${{d.CPA?fmt(d.CPA)+'원':'-'}}</td>
         <td class="num">${{d.CTR!=null?d.CTR.toFixed(2)+'%':'-'}}</td>
@@ -885,6 +956,29 @@ function buildTierTable(){{
         <td style="font-size:11px;color:var(--text2)">${{(d.지점목록||[]).join(', ')}}</td>
       </tr>`;
     }}).join('')}}</tbody>`;
+}}
+
+// 신규 소재 테이블 (집행일수 < 3일)
+function buildNewCreativeTable(){{
+  const data = D.new_creatives || [];
+  const sec = document.getElementById('new-creative-sec');
+  if(data.length === 0){{
+    sec.style.display = 'none';
+    return;
+  }}
+  sec.style.display = 'block';
+  document.getElementById('new-tbl').innerHTML=`
+    <thead><tr><th>소재명</th><th>지점</th><th>비용</th><th>전환</th><th>CPA</th><th>CTR</th><th>CVR</th><th>집행일수</th></tr></thead>
+    <tbody>${{data.map(c=>`<tr>
+      <td class="td-name" title="${{c.creative_name}}">${{c.creative_name}}</td>
+      <td style="font-size:11px;color:var(--text2)">${{(c.지점목록||[]).join(', ')||'-'}}</td>
+      <td class="num">${{(c.총비용/10000).toFixed(1)}}만</td>
+      <td class="num">${{c.총전환||0}}건</td>
+      <td class="num">${{c.CPA?fmt(c.CPA)+'원':'-'}}</td>
+      <td class="num">${{c.CTR!=null?c.CTR.toFixed(2)+'%':'-'}}</td>
+      <td class="num">${{c.CVR!=null?c.CVR.toFixed(2)+'%':'-'}}</td>
+      <td class="num" style="color:var(--warn)">${{c.집행일수||0}}일</td>
+    </tr>`).join('')}}</tbody>`;
 }}
 
 // Branch Creative Table (소재×지점)
@@ -1043,7 +1137,7 @@ function buildBranchCharts(){{
     options:{{responsive:true,maintainAspectRatio:false,
       plugins:{{legend:{{labels:{{color:'#7a8499',font:{{size:10}}}}}},
         tooltip:{{...tooltipStyle,callbacks:{{label:ctx=>`${{ctx.dataset.label}}: ${{Math.round(ctx.parsed.y).toLocaleString('ko-KR')}}원`}}}}}},
-      scales:{{x:{{...axisStyle}},y:{{...axisStyle,ticks:{{...axisStyle.ticks,callback:v=>Math.round(v/1000)+'천원'}}}}}}}}
+      scales:{{x:{{...axisStyle}},y:{{...axisStyle,ticks:{{...axisStyle.ticks,callback:v=>fmt(v)+'원'}}}}}}}}
   }});
 
   new Chart(document.getElementById('branchCvrChart'),{{
@@ -1073,14 +1167,19 @@ function buildBranchCharts(){{
       }}}}
   }});
 
+  // 효율점수 색상 함수
+  const effColor = e => e >= 1.2 ? 'var(--accent)' : e >= 0.8 ? 'var(--accent2)' : 'var(--danger)';
+
   document.getElementById('branch-table').innerHTML=`
     <thead><tr><th>지점</th><th>CPA</th><th>전주대비CPA</th><th>CTR</th><th>전주대비CTR</th>
-      <th>CVR</th><th>전주대비CVR</th><th>전환</th></tr></thead>
+      <th>CVR</th><th>전주대비CVR</th><th>전환</th><th>효율점수</th></tr></thead>
     <tbody>${{br.map(b=>{{
       const cd=b.CPA_diff||0, ctd=b.CTR_diff||0, cvd=b.CVR_diff||0;
       const cpaCls=cd<0?'text-good':cd>3000?'text-bad':'';
       const ctrCls=ctd>0?'text-good':ctd<-0.1?'text-bad':'';
       const cvrCls=cvd>0?'text-good':cvd<-0.5?'text-bad':'';
+      const eff = b['효율점수'];
+      const effStyle = eff != null ? `color:${{effColor(eff)}}` : '';
       return `<tr>
         <td style="font-weight:700">${{b.branch}}</td>
         <td class="num">${{fmt(b.CPA)}}원</td>
@@ -1090,6 +1189,7 @@ function buildBranchCharts(){{
         <td class="num">${{(b.CVR||0).toFixed(2)}}%</td>
         <td class="num ${{cvrCls}}">${{cvd>=0?'▲ +':'▼ '}}${{Math.abs(cvd).toFixed(2)}}%p${{Math.abs(cvd)>=0.5?' ⚠️':''}}</td>
         <td class="num">${{b.총전환||0}}건</td>
+        <td class="num" style="${{effStyle}}">${{eff!=null?eff.toFixed(2):'-'}}</td>
       </tr>`;
     }}).join('')}}</tbody>`;
 }}
@@ -1144,17 +1244,22 @@ function buildProjection(){{
     type:'line',
     data:{{labels,datasets:[
       {{label:'일별 전환',data:D.daily.map(d=>d.conv),borderColor:'#4ade80',
-        backgroundColor:'#4ade8011',fill:true,tension:.3,pointRadius:2,borderWidth:2}},
-      {{label:'일별 CPA (÷1000)',data:D.daily.map(d=>Math.round((d.cpa||0)/1000)),
-        borderColor:'#60a5fa',tension:.3,pointRadius:2,borderWidth:1.5,borderDash:[]}}
+        backgroundColor:'#4ade8011',fill:true,tension:.3,pointRadius:2,borderWidth:2,yAxisID:'y'}},
+      {{label:'일별 CPA',data:D.daily.map(d=>Math.round(d.cpa||0)),
+        borderColor:'#60a5fa',tension:.3,pointRadius:2,borderWidth:1.5,yAxisID:'y1'}}
     ]}},
     options:{{responsive:true,maintainAspectRatio:false,
       plugins:{{legend:{{labels:{{color:'#7a8499',font:{{size:10}}}}}},tooltip:tooltipStyle}},
-      scales:{{x:{{...axisStyle}},y:{{...axisStyle}}}}}}
+      scales:{{
+        x:{{...axisStyle}},
+        y:{{...axisStyle,position:'left',title:{{display:true,text:'전환(건)',color:'#4ade80'}}}},
+        y1:{{...axisStyle,position:'right',grid:{{drawOnChartArea:false}},title:{{display:true,text:'CPA(원)',color:'#60a5fa'}}}}
+      }}
+    }}
   }});
 }}
 
-buildKpi(); buildInsights(); buildTierTable(); buildBranchCreativeTable(); buildBranchCards();
+buildKpi(); buildInsights(); buildTierTable(); buildNewCreativeTable(); buildBranchCreativeTable(); buildBranchCards();
 buildBranchCharts(); buildAction(); buildProjection();
 </script>
 </body>

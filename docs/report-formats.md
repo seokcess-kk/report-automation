@@ -53,12 +53,67 @@
 **섹션 구성**:
 1. 헤더 — 분석기간, 비교기간, 발행일
 2. 이번 주 KPI — 전주 대비 (광고비, 전환, CPA, CTR, CVR)
-3. 핵심 인사이트 — 변화 원인 분석
-4. 소재 TIER 현황 — 이번 주 TIER + 전주 대비 변동
-5. 지점별 성과 — CPA/CTR/CVR 전주 대비 차트 + 테이블
-6. 예산 페이스 — 지점별 소진율 vs 기간 경과율
-7. 소재 ON/OFF 액션플랜 — OFF 권고 / ON 권고
-8. 이번 달 전환 목표 달성 예상
+3. 핵심 인사이트 — 변화 원인 분석 + TIER1 미집행 지점 확장 기회
+4. 소재 TIER 현황 — 이번 주 TIER + 전주 대비 변동 (UNCLASSIFIED 제외)
+5. **신규 소재 (평가 중)** — 집행일수 3일 미만 소재 별도 표시 (v3.5 추가)
+6. 지점별 성과 — CPA/CTR/CVR 전주 대비 차트 + 테이블 + **효율점수** (v3.5 추가)
+7. 예산 페이스 — 지점별 소진율 vs 기간 경과율
+8. 소재 ON/OFF 액션플랜 — OFF 권고 / ON 권고
+9. 이번 달 전환 목표 달성 예상
+
+### 위클리 리포트 v3.5 개선사항
+
+**먼슬리 기준 통일**:
+
+| 항목 | v3.4 (이전) | v3.5 (현재) |
+|------|------------|-------------|
+| UNCLASSIFIED | TIER 테이블에 혼재 | "신규 소재" 섹션 분리 |
+| 효율점수 | 없음 | 지점별 테이블에 표시 (숫자만) |
+| 인사이트 | 악화/개선/변동 | + TIER1 미집행 확장 기회 |
+
+**효율점수 색상 (권고 문구 없음)**:
+| 효율점수 | 색상 | 의미 |
+|----------|------|------|
+| ≥ 1.2 | 녹색 (#4ade80) | 비용 대비 전환 효율 우수 |
+| 0.8 ~ 1.2 | 파랑 (#60a5fa) | 균형 상태 |
+| < 0.8 | 빨강 (#f87171) | 비용 대비 전환 효율 저조 |
+
+**신규 소재 섹션 표시 컬럼**:
+| 소재명 | 지점 | 비용 | 전환 | CPA | CTR | CVR | 집행일수 |
+|--------|------|------|------|-----|-----|-----|----------|
+
+### 전환 목표 달성 예상 차트 (v3.5.1)
+
+**이중 Y축 구성**:
+- **왼쪽 Y축**: 일별 전환 (건) — 녹색 (#4ade80), 면적 채움
+- **오른쪽 Y축**: 일별 CPA (원) — 파란색 (#60a5fa), 라인만
+
+**변경 이력**:
+| 버전 | 변경 내용 |
+|------|-----------|
+| v3.5.1 | CPA 원 단위 표시, 이중 Y축 분리 |
+| v3.5 이전 | CPA ÷1000 표시, 단일 Y축 |
+
+**구현 코드** (`build_weekly.py` Line 1243-1259):
+```javascript
+new Chart(document.getElementById('dailyChart'),{
+  type:'line',
+  data:{labels,datasets:[
+    {label:'일별 전환',data:D.daily.map(d=>d.conv),borderColor:'#4ade80',
+      backgroundColor:'#4ade8011',fill:true,tension:.3,pointRadius:2,borderWidth:2,yAxisID:'y'},
+    {label:'일별 CPA',data:D.daily.map(d=>Math.round(d.cpa||0)),
+      borderColor:'#60a5fa',tension:.3,pointRadius:2,borderWidth:1.5,yAxisID:'y1'}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#7a8499',font:{size:10}}},tooltip:tooltipStyle},
+    scales:{
+      x:{...axisStyle},
+      y:{...axisStyle,position:'left',title:{display:true,text:'전환(건)',color:'#4ade80'}},
+      y1:{...axisStyle,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'CPA(원)',color:'#60a5fa'}}
+    }
+  }
+});
+```
 
 ---
 
@@ -67,11 +122,49 @@
 **7탭 구조**:
 1. **월간 요약** — KPI 카드 6개, TIER 분포 도넛, 지점별 CPA 바차트
 2. **소재 TIER** — 버블차트, ON 소재 테이블, **OFF 소재 성과**, **OFF 전후 CPA 참고**
-3. **지점 분석** — CPA/효율 차트, 소재×지점 CPA 편차, 지점×나이대 히트맵
+3. **지점 분석** — CPA/효율 차트, 소재×지점 CPA 편차, 지점×나이대 히트맵, **지점별 소재 분석** (v3.6)
 4. **나이대 분석** — 비용비중 vs 전환비중, 소재유형×나이대 히트맵
 5. **소재 수명** — 신규 vs 재가공 비교, 집행일수별 CTR 추이
 6. **일별 트렌드** — 광고비+전환수 콤보차트, CTR/CPA 추이
 7. **다음 달 전략** — 예산 배분 권고, 신규 소재 기획 방향
+
+### 지점별 소재 분석 (v3.6 추가)
+
+**위치**: 지점 분석 탭 → 히트맵 하단
+
+**기능**:
+- 드롭다운으로 지점 선택 시 해당 지점 소재 목록 표시
+- CPA 오름차순 정렬 (가장 효율적인 소재가 상단)
+- 최우수 소재 ★ 표시 (CPA 최저)
+
+**표시 컬럼**:
+| 소재명 | TIER | 비용 | 전환 | CPA | CTR | CVR |
+|--------|------|------|------|-----|-----|-----|
+
+**색상 코딩**:
+- **CPA**: ≤ target_cpa → 녹색, > target_cpa → 빨강
+- **CVR**: ≥ 5.0% → 녹색
+- **TIER 뱃지**: 기존 색상 유지
+
+**데이터 스키마** (`by_branch`):
+```json
+{
+  "서울": [
+    {
+      "creative_name": "소재명",
+      "tier": "TIER1",
+      "cost": 350000,
+      "conv": 12,
+      "clicks": 230,
+      "impr": 12432,
+      "CPA": 29166,
+      "CTR": 1.85,
+      "CVR": 5.2,
+      "is_best": true
+    }
+  ]
+}
+```
 
 ---
 

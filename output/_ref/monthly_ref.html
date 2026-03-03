@@ -140,6 +140,12 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
     <div style="position:relative;height:360px"><canvas id="bubbleChart"></canvas></div></div>
   <div class="sec"><div class="sec-lbl">ON 소재 성과 상세</div>
     <div class="card tw"><table id="on-tbl"></table></div></div>
+  <div class="sec" id="new-creative-sec" style="display:none">
+    <div class="sec-lbl">신규 소재 (평가 중)
+      <span style="font-size:11px;color:var(--tx2);font-weight:400;text-transform:none;letter-spacing:0">
+        · 집행일수 7일 미만 · TIER 분류 대기</span>
+    </div>
+    <div class="card tw"><table id="new-tbl"></table></div></div>
   <div class="sec"><div class="sec-lbl">TIER1 미집행 지점 — 확장 기회</div>
     <div class="ig" id="expansion-cards"></div></div>
 
@@ -162,6 +168,21 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
         <strong style="color:var(--warn)">예산 점유율</strong>이 높은 소재일수록 해당 소재의 기여가 컸을 가능성이 있지만,
         단정할 수는 없습니다.
       </span>
+    </div>
+    <div id="ba-filters" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:12px;color:var(--tx2)">소재명</label>
+        <select id="ba-filter-creative" style="padding:6px 10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:12px;min-width:180px;max-width:300px">
+          <option value="">전체 소재</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:12px;color:var(--tx2)">지점</label>
+        <select id="ba-filter-branch" style="padding:6px 10px;border-radius:6px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font-size:12px;min-width:100px">
+          <option value="">전체 지점</option>
+        </select>
+      </div>
+      <span id="ba-filter-count" style="font-size:11px;color:var(--tx3)"></span>
     </div>
     <div id="ba-list"></div>
   </div>
@@ -198,8 +219,9 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
 
 <div id="pg-lifetime" class="pg"><div class="wrap">
   <div class="sec card"><div class="ct">신규(신) vs 재가공(재) 그룹 비교</div>
-    <div class="cd">그룹 합산 기준 · CPA / CTR / CVR</div>
-    <div style="position:relative;height:240px"><canvas id="hookChart"></canvas></div></div>
+    <div class="cd">막대: CPA(좌) · 선: CTR/CVR(우)</div>
+    <div style="position:relative;height:240px"><canvas id="hookChart"></canvas></div>
+    <table id="hook-tbl" style="margin-top:16px"></table></div>
   <div class="sec card"><div class="ct">소재별 집행일수 CTR 추이</div>
     <div class="cd">TIER1·2 굵은 선 · TIER3·4 점선 · 7일+ 소재만</div>
     <div style="position:relative;height:360px"><canvas id="ltChart"></canvas></div></div>
@@ -300,11 +322,11 @@ function buildSummary(){
       borderColor:br.map(b=>(b.CPA||0)<=D.target_cpa?"#4ade80":"#f87171"),borderWidth:1.5}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",
       plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:c=>`${Math.round(c.parsed.x).toLocaleString()}원`}}},
-      scales:{x:{...ax,ticks:{...ax.ticks,callback:v=>Math.round(v/1000)+"천"}},y:{...ax}}}});
+      scales:{x:{...ax,ticks:{...ax.ticks,callback:v=>fmt(v)}},y:{...ax}}}});
 }
 
 function buildCreative(){
-  const tord={TIER1:1,TIER2:2,TIER3:3,TIER4:4,LOW_VOLUME:5,UNCLASSIFIED:6};
+  const tord={TIER1:1,TIER2:2,TIER3:3,TIER4:4,LOW_VOLUME:5};
   const sorted=[...D.creative].sort((a,b)=>(tord[a.TIER]||9)-(tord[b.TIER]||9)||(a.CPA||99999)-(b.CPA||99999));
   new Chart(document.getElementById("bubbleChart"),{type:"bubble",
     data:{datasets:["TIER1","TIER2","TIER3","TIER4"].map(tier=>({label:tier,
@@ -335,6 +357,26 @@ function buildCreative(){
       <td class="muted" style="font-size:11px">${(c.지점목록||[]).join(", ")}</td>
     </tr>`).join("")}</tbody>`;
 
+  // 신규 소재 (UNCLASSIFIED) 테이블
+  if(D.creative_new && D.creative_new.length > 0) {
+    document.getElementById("new-creative-sec").style.display = "block";
+    document.getElementById("new-tbl").innerHTML=`
+      <thead><tr><th>광고 이름</th><th>상태</th><th>유형</th><th>CPA</th><th>CTR</th><th>CVR</th>
+        <th>총비용</th><th>전환</th><th>집행일</th><th>지점</th></tr></thead>
+      <tbody>${D.creative_new.map(c=>`<tr>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-family:var(--mono)" title="${c.creative_name}">${c.creative_name}</td>
+        <td><span class="badge UNCLASSIFIED">평가중</span></td>
+        <td class="muted" style="font-size:11px">${c.소재유형||"-"}</td>
+        <td class="num">${c.CPA?fmt(c.CPA)+"원":"-"}</td>
+        <td class="num">${c.CTR!=null?c.CTR.toFixed(2)+"%":"-"}</td>
+        <td class="num">${c.CVR!=null?c.CVR.toFixed(2)+"%":"-"}</td>
+        <td class="num">${fmt(c.총비용)}원</td>
+        <td class="num">${c.총전환}건</td>
+        <td class="num">${c.집행일수}일</td>
+        <td class="muted" style="font-size:11px">${(c.지점목록||[]).join(", ")}</td>
+      </tr>`).join("")}</tbody>`;
+  }
+
   document.getElementById("expansion-cards").innerHTML=D.expansion.length
     ? D.expansion.map(o=>`<div class="ic" style="--ic:#4ade80;background:#4ade8008">
         <div class="ic-tp">🟢 TIER1 확장 가능</div>
@@ -359,78 +401,111 @@ function buildCreative(){
       <td class="num">${o.집행일수}일</td>
     </tr>`).join("")}</tbody>`;
 
-  // BA 카드
+  // BA 카드 필터링 및 렌더링
   const effColor={improved:"#4ade80",worsened:"#f87171",neutral:"#7a8499"};
   const effLabel={improved:"지점 CPA 개선",worsened:"지점 CPA 악화",neutral:"변화 없음"};
   const relLabel={high:"데이터 충분 (7일+)",mid:"참고 수준 (3~5일)",low:"데이터 부족 (1~2일)",no_after:"after 데이터 없음"};
   const relColor={high:"#4ade80",mid:"#fb923c",low:"#6b7280",no_after:"#2e3648"};
   const impColor={high:"#fb923c",mid:"#f59e0b",low:"#6b7280"};
 
-  const sorted_ba=[...D.before_after].sort((a,b)=>{
-    const ro={high:0,mid:1,low:2,no_after:3};
-    return (ro[a.reliability]||9)-(ro[b.reliability]||9);
-  });
+  // 필터 옵션 생성 (중복 제거)
+  const baCreatives=[...new Set(D.before_after.map(x=>x.creative_name))].sort();
+  const baBranches=[...new Set(D.before_after.map(x=>x.branch))];
 
-  document.getElementById("ba-list").innerHTML=sorted_ba.map(x=>{
-    const hasAfter=x.reliability!=="no_after";
-    const eff=x.effect;
-    const rc=eff?effColor[eff]:"#2e3648";
-    const chg=x.cpa_change_pct!=null?`${x.cpa_change_pct>0?"+":""}${x.cpa_change_pct}%`:null;
-    const shareColor=impColor[x.impact_level]||"#6b7280";
-    return `<div class="ba-card">
-      <div class="ba-top">
-        <div>
-          <div class="ba-name" title="${x.creative_name}">${x.creative_name?.length>55?x.creative_name.slice(0,55)+"…":x.creative_name}</div>
-          <div style="font-size:11px;color:var(--tx2);margin-top:3px">
-            지점: <strong style="color:var(--tx)">${x.branch}</strong> &nbsp;·&nbsp;
-            OFF 전환: <strong style="color:var(--warn)">${x.off_date}</strong>
+  // 드롭다운 채우기
+  document.getElementById("ba-filter-creative").innerHTML=
+    '<option value="">전체 소재</option>'+
+    baCreatives.map(c=>`<option value="${c}">${c.length>40?c.slice(0,40)+"…":c}</option>`).join("");
+  document.getElementById("ba-filter-branch").innerHTML=
+    '<option value="">전체 지점</option>'+
+    baBranches.map(b=>`<option value="${b}">${b}</option>`).join("");
+
+  // 필터링 + 렌더링 함수
+  function renderBA(){
+    const filterCreative=document.getElementById("ba-filter-creative").value;
+    const filterBranch=document.getElementById("ba-filter-branch").value;
+
+    let filtered=[...D.before_after];
+    if(filterCreative) filtered=filtered.filter(x=>x.creative_name===filterCreative);
+    if(filterBranch) filtered=filtered.filter(x=>x.branch===filterBranch);
+
+    // 정렬 (reliability 순)
+    const ro={high:0,mid:1,low:2,no_after:3};
+    filtered.sort((a,b)=>(ro[a.reliability]||9)-(ro[b.reliability]||9));
+
+    // 카운트 표시
+    document.getElementById("ba-filter-count").textContent=
+      `${filtered.length} / ${D.before_after.length}건`;
+
+    // 카드 렌더링
+    document.getElementById("ba-list").innerHTML=filtered.map(x=>{
+      const hasAfter=x.reliability!=="no_after";
+      const eff=x.effect;
+      const rc=eff?effColor[eff]:"#2e3648";
+      const chg=x.cpa_change_pct!=null?`${x.cpa_change_pct>0?"+":""}${x.cpa_change_pct}%`:null;
+      const shareColor=impColor[x.impact_level]||"#6b7280";
+      return `<div class="ba-card">
+        <div class="ba-top">
+          <div>
+            <div class="ba-name" title="${x.creative_name}">${x.creative_name?.length>55?x.creative_name.slice(0,55)+"…":x.creative_name}</div>
+            <div style="font-size:11px;color:var(--tx2);margin-top:3px">
+              지점: <strong style="color:var(--tx)">${x.branch}</strong> &nbsp;·&nbsp;
+              OFF 전환: <strong style="color:var(--warn)">${x.off_date}</strong>
+            </div>
+          </div>
+          <div class="ba-tags">
+            <span class="badge OFF">OFF 소재</span>
+            <span style="font-size:11px;font-weight:700;color:${relColor[x.reliability]}">${relLabel[x.reliability]}</span>
+            ${eff&&hasAfter?`<span style="font-size:11px;font-weight:700;color:${rc}">${effLabel[eff]}${chg?` ${chg}`:""}</span>`:""}
           </div>
         </div>
-        <div class="ba-tags">
-          <span class="badge OFF">OFF 소재</span>
-          <span style="font-size:11px;font-weight:700;color:${relColor[x.reliability]}">${relLabel[x.reliability]}</span>
-          ${eff&&hasAfter?`<span style="font-size:11px;font-weight:700;color:${rc}">${effLabel[eff]}${chg?` ${chg}`:""}</span>`:""}
-        </div>
-      </div>
-      <div class="ba-body">
-        <div class="ba-flow">
-          <div class="ba-box">
-            <div class="ba-box-lbl">🚫 OFF 소재 성과</div>
-            <div class="ba-box-val bad">${x.off_cpa?fmt(x.off_cpa)+"원":"-"}</div>
-            <div class="ba-box-sub">CPA · ${x.off_ctr}% CTR · ${x.off_cvr}% CVR</div>
-            <div style="margin-top:8px;font-size:11px;color:var(--tx2)">비용 ${fmt(x.off_cost)}원 · 전환 ${x.off_conv}건</div>
-          </div>
-          <div class="ba-arr">→</div>
-          <div class="ba-box">
-            <div class="ba-box-lbl">📊 OFF 전 지점 CPA</div>
-            <div class="ba-box-val">${x.before_cpa?fmt(x.before_cpa)+"원":"-"}</div>
-            <div class="ba-box-sub">${x.before_days}일 평균 · 지점 전체</div>
-          </div>
-          <div class="ba-arr">${hasAfter?"→":"⏳"}</div>
-          <div class="ba-result" style="--rc:${rc}">
-            ${hasAfter
-              ? `<div class="ba-box-lbl" style="color:${rc}">📈 OFF 후 지점 CPA</div>
-                 <div class="ba-box-val" style="color:${rc}">${x.after_cpa?fmt(x.after_cpa)+"원":"-"}</div>
-                 <div class="ba-box-sub">${x.after_days}일 평균 · 지점 전체
-                 ${chg?` · <strong style="color:${rc}">${chg}</strong>`:""}
-                 </div>`
-              : `<div class="ba-box-lbl" style="color:var(--tx3)">📈 OFF 후 지점 CPA</div>
-                 <div class="muted" style="font-size:12px;margin-top:6px">집계 중<br><span style="font-size:11px">OFF 전환이 최근</span></div>`
-            }
+        <div class="ba-body">
+          <div class="ba-flow">
+            <div class="ba-box">
+              <div class="ba-box-lbl">🚫 OFF 소재 성과</div>
+              <div class="ba-box-val bad">${x.off_cpa?fmt(x.off_cpa)+"원":"-"}</div>
+              <div class="ba-box-sub">CPA · ${x.off_ctr}% CTR · ${x.off_cvr}% CVR</div>
+              <div style="margin-top:8px;font-size:11px;color:var(--tx2)">비용 ${fmt(x.off_cost)}원 · 전환 ${x.off_conv}건</div>
+            </div>
+            <div class="ba-arr">→</div>
+            <div class="ba-box">
+              <div class="ba-box-lbl">📊 OFF 전 지점 CPA</div>
+              <div class="ba-box-val">${x.before_cpa?fmt(x.before_cpa)+"원":"-"}</div>
+              <div class="ba-box-sub">${x.before_days}일 평균 · 지점 전체</div>
+            </div>
+            <div class="ba-arr">${hasAfter?"→":"⏳"}</div>
+            <div class="ba-result" style="--rc:${rc}">
+              ${hasAfter
+                ? `<div class="ba-box-lbl" style="color:${rc}">📈 OFF 후 지점 CPA</div>
+                   <div class="ba-box-val" style="color:${rc}">${x.after_cpa?fmt(x.after_cpa)+"원":"-"}</div>
+                   <div class="ba-box-sub">${x.after_days}일 평균 · 지점 전체
+                   ${chg?` · <strong style="color:${rc}">${chg}</strong>`:""}
+                   </div>`
+                : `<div class="ba-box-lbl" style="color:var(--tx3)">📈 OFF 후 지점 CPA</div>
+                   <div class="muted" style="font-size:12px;margin-top:6px">집계 중<br><span style="font-size:11px">OFF 전환이 최근</span></div>`
+              }
+            </div>
           </div>
         </div>
-      </div>
-      <div class="ba-foot">
-        <span>OFF 소재 예산 점유율 (OFF 전 기간 기준):</span>
-        <div class="share-bar" style="flex:1;min-width:120px">
-          <div class="share-track"><div class="share-fill" style="width:${Math.min(x.share_pct,100)}%;--sf:${shareColor}"></div></div>
-          <strong style="color:${shareColor};font-size:12px;white-space:nowrap">${x.share_pct}%</strong>
-          <span style="color:${shareColor};font-size:11px">${x.impact_label}</span>
+        <div class="ba-foot">
+          <span>OFF 소재 예산 점유율 (OFF 전 기간 기준):</span>
+          <div class="share-bar" style="flex:1;min-width:120px">
+            <div class="share-track"><div class="share-fill" style="width:${Math.min(x.share_pct,100)}%;--sf:${shareColor}"></div></div>
+            <strong style="color:${shareColor};font-size:12px;white-space:nowrap">${x.share_pct}%</strong>
+            <span style="color:${shareColor};font-size:11px">${x.impact_label}</span>
+          </div>
+          ${x.reliability==="low"?`<span style="color:var(--tx3)">⚠️ after ${x.after_days}일 — 다음 달 재확인 권고</span>`:""}
         </div>
-        ${x.reliability==="low"?`<span style="color:var(--tx3)">⚠️ after ${x.after_days}일 — 다음 달 재확인 권고</span>`:""}
-      </div>
-    </div>`;
-  }).join("");
+      </div>`;
+    }).join("");
+  }
+
+  // 이벤트 리스너
+  document.getElementById("ba-filter-creative").onchange=renderBA;
+  document.getElementById("ba-filter-branch").onchange=renderBA;
+
+  // 초기 렌더링
+  renderBA();
 }
 
 function buildBranch(){
@@ -441,7 +516,7 @@ function buildBranch(){
       borderColor:br.map(b=>(b.CPA||0)<=D.target_cpa?"#4ade80":"#f87171"),borderWidth:1.5}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:"y",
       plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:c=>`${Math.round(c.parsed.x).toLocaleString()}원`}}},
-      scales:{x:{...ax,ticks:{...ax.ticks,callback:v=>Math.round(v/1000)+"천"}},y:{...ax}}}});
+      scales:{x:{...ax,ticks:{...ax.ticks,callback:v=>fmt(v)}},y:{...ax}}}});
   new Chart(document.getElementById("brEffChart"),{type:"bar",
     data:{labels:br.map(b=>b.branch),datasets:[
       {label:"비용비중",data:br.map(b=>b.비용비중||0),backgroundColor:"#f8717133",borderColor:"#f87171",borderWidth:1.5,borderRadius:3},
@@ -486,7 +561,7 @@ function buildBranch(){
       const cell=D.hm_br_age.find(d=>d.branch===b&&d.age_group===a);
       const v=cell?.CPA,r=v!=null?(v-mn)/(mx-mn):0,al=v!=null?0.1+r*0.7:0;
       const good=v!=null&&v<=D.target_cpa;
-      return `<div class="hm-cell" style="background:${good?`rgba(74,222,128,${al})`:`rgba(248,113,113,${al})`};color:${good?"#4ade80":"#f87171"}">${v?Math.round(v/1000)+"천":"-"}</div>`;
+      return `<div class="hm-cell" style="background:${good?`rgba(74,222,128,${al})`:`rgba(248,113,113,${al})`};color:${good?"#4ade80":"#f87171"}">${v?fmt(v):"-"}</div>`;
     }).join("")).join("");
 }
 
@@ -534,15 +609,40 @@ function buildHM(id,data,metric,rgb){
 
 function buildLifetime(){
   const hk=D.hook_compare.filter(h=>h.hook_type!=="일반");
+  const hkLabels=hk.map(h=>h.hook_type==="신규"?"신규(신)":"재가공(재)");
   new Chart(document.getElementById("hookChart"),{type:"bar",
-    data:{labels:["CPA (원)","CTR (%)","CVR (%)"],
-      datasets:hk.map((h,i)=>({label:h.hook_type==="신규"?"신규(신)":"재가공(재)",
-        data:[Math.round(h.CPA||0),+(h.CTR||0).toFixed(2),+(h.CVR||0).toFixed(2)],
-        backgroundColor:[["#60a5fa44","#fb923c44"][i]],
-        borderColor:[["#60a5fa","#fb923c"][i]],borderWidth:1.5,borderRadius:4}))},
+    data:{labels:hkLabels,
+      datasets:[
+        {type:"bar",label:"CPA (원)",data:hk.map(h=>Math.round(h.CPA||0)),
+          backgroundColor:["#60a5fa44","#fb923c44"],borderColor:["#60a5fa","#fb923c"],
+          borderWidth:1.5,borderRadius:4,yAxisID:"y"},
+        {type:"line",label:"CTR (%)",data:hk.map(h=>+(h.CTR||0).toFixed(2)),
+          borderColor:"#4ade80",backgroundColor:"#4ade80",borderWidth:2,
+          pointRadius:5,tension:0,yAxisID:"y2"},
+        {type:"line",label:"CVR (%)",data:hk.map(h=>+(h.CVR||0).toFixed(2)),
+          borderColor:"#f59e0b",backgroundColor:"#f59e0b",borderWidth:2,
+          pointRadius:5,tension:0,yAxisID:"y2"}
+      ]},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:"#7a8499",font:{size:11}}},tooltip:tt},
-      scales:{x:{...ax},y:{...ax}}}});
+      plugins:{legend:{labels:{color:"#7a8499",font:{size:11}}},
+        tooltip:{...tt,callbacks:{label:c=>c.dataset.label.includes("CPA")?
+          `${c.dataset.label}: ${fmt(c.parsed.y)}원`:`${c.dataset.label}: ${c.parsed.y}%`}}},
+      scales:{x:{...ax},
+        y:{...ax,position:"left",title:{display:true,text:"CPA (원)",color:"#7a8499",font:{size:10}},
+          ticks:{...ax.ticks,callback:v=>fmt(v)}},
+        y2:{...ax,position:"right",grid:{display:false},
+          title:{display:true,text:"CTR/CVR (%)",color:"#7a8499",font:{size:10}}}}}});
+  document.getElementById("hook-tbl").innerHTML=`
+    <thead><tr><th>구분</th><th>소재수</th><th>비용</th><th>전환</th><th>CPA</th><th>CTR</th><th>CVR</th></tr></thead>
+    <tbody>${hk.map(h=>`<tr>
+      <td style="font-weight:700">${h.hook_type==="신규"?"신규(신)":"재가공(재)"}</td>
+      <td class="num">${h.소재수||0}개</td>
+      <td class="num">${fmt(h.총비용)}원</td>
+      <td class="num">${h.총전환||0}건</td>
+      <td class="num">${fmt(h.CPA)}원</td>
+      <td class="num">${(h.CTR||0).toFixed(2)}%</td>
+      <td class="num">${(h.CVR||0).toFixed(2)}%</td>
+    </tr>`).join("")}</tbody>`;
   const tord={TIER1:1,TIER2:2,TIER3:3,TIER4:4,LOW_VOLUME:5,UNCLASSIFIED:6};
   const slt=[...D.lifetime].sort((a,b)=>(tord[a.tier]||9)-(tord[b.tier]||9));
   const pal=["#4ade80","#60a5fa","#a78bfa","#f87171","#fb923c","#fbbf24","#34d399","#38bdf8","#c084fc","#fb7185","#a3e635","#22d3ee","#f472b6","#818cf8","#fdba74"];
@@ -592,7 +692,7 @@ function buildDaily(){
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{labels:{color:"#7a8499",font:{size:10}}},tooltip:tt},
-      scales:{x:{...ax},y:{...ax,position:"left",ticks:{...ax.ticks,callback:v=>Math.round(v/1000)+"천"}},
+      scales:{x:{...ax},y:{...ax,position:"left",ticks:{...ax.ticks,callback:v=>fmt(v)}},
         y2:{...ax,position:"right",grid:{display:false}}}}});
   new Chart(document.getElementById("dailyCtr"),{type:"line",
     data:{labels,datasets:[
@@ -609,7 +709,7 @@ function buildDaily(){
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{labels:{color:"#7a8499",font:{size:10}}},tooltip:{...tt,callbacks:{label:c=>`${c.dataset.label}: ${Math.round(c.parsed.y).toLocaleString()}원`}}},
-      scales:{x:{...ax},y:{...ax,ticks:{...ax.ticks,callback:v=>Math.round(v/1000)+"천원"}}}}});
+      scales:{x:{...ax},y:{...ax,ticks:{...ax.ticks,callback:v=>fmt(v)+"원"}}}}});
 }
 
 function buildStrategy(){
@@ -626,7 +726,7 @@ function buildStrategy(){
         <div class="br-bar"><div class="br-fill" style="width:${b.cur_budget/maxB*100}%;background:${b.color}88"></div></div>
         <div style="font-size:11px;color:var(--tx2);margin-top:4px">${b.reason}</div>
       </div>
-      <div class="num" style="font-size:11px;color:var(--tx2)">CPA ${Math.round(b.cpa/1000)}천원</div>
+      <div class="num" style="font-size:11px;color:var(--tx2)">CPA ${fmt(b.cpa)}원</div>
       <div><span class="dir" style="background:${b.color}22;color:${b.color}">${b.direction}</span></div>
     </div>`).join("");
   const lAge=[...D.age].sort((a,b)=>a.효율점수-b.효율점수)[0];

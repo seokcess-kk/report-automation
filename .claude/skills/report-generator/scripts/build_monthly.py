@@ -380,9 +380,18 @@ def build_monthly(data_dir: str, target_month: str = None):
     if 'date' in df_off.columns and len(df_off) > 0:
         df_off['date'] = pd.to_datetime(df_off['date'])
 
-        # OFF 소재별 마지막 집행일 (off_date)
-        off_last_dates = df_off.groupby(['creative_name', 'branch'])['date'].max().reset_index()
-        off_last_dates.columns = ['creative_name', 'branch', 'off_date']
+        # OFF 일자 = cost > 0인 마지막 날짜의 다음날
+        # (비용이 0이 되기 시작한 첫 날짜)
+        cost_positive = df_off[df_off['cost'] > 0]
+        if len(cost_positive) > 0:
+            last_cost_dates = cost_positive.groupby(['creative_name', 'branch'])['date'].max().reset_index()
+            last_cost_dates.columns = ['creative_name', 'branch', 'last_cost_date']
+            last_cost_dates['off_date'] = last_cost_dates['last_cost_date'] + pd.Timedelta(days=1)
+            off_last_dates = last_cost_dates[['creative_name', 'branch', 'off_date']]
+        else:
+            # cost > 0 데이터가 없으면 기존 로직 사용 (fallback)
+            off_last_dates = df_off.groupby(['creative_name', 'branch'])['date'].max().reset_index()
+            off_last_dates.columns = ['creative_name', 'branch', 'off_date']
 
         # 지점별 일별 CPA 집계 (전체 데이터 기준)
         all_data = parsed_df.copy()
@@ -745,6 +754,10 @@ def build_monthly(data_dir: str, target_month: str = None):
                 'is_low_conv': conv < 3,
             })
 
+    # ========== creative 리스트 분리 (TIER 보유 / UNCLASSIFIED) ==========
+    creative_classified = [c for c in creative_list if c['TIER'] not in ['UNCLASSIFIED']]
+    creative_new = [c for c in creative_list if c['TIER'] == 'UNCLASSIFIED']
+
     # ========== D 객체 생성 (레퍼런스 키 기준) ==========
     D = {
         'period': f"{date_min.strftime('%Y.%m.%d')} ~ {date_max.strftime('%m.%d')}",
@@ -752,7 +765,8 @@ def build_monthly(data_dir: str, target_month: str = None):
         'target_cpa': target_cpa,
         'monthly_target_conv': MONTHLY_TARGET_CONV,
         'budget': BUDGET,
-        'creative': creative_list,
+        'creative': creative_classified,   # TIER1~4, LOW_VOLUME만
+        'creative_new': creative_new,       # UNCLASSIFIED (신규 소재)
         'branch': branch_list,
         'cross_gap': cross_gap,
         'age': age_list,

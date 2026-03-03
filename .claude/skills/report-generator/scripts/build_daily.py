@@ -1,29 +1,28 @@
 """
-데일리 리포트 생성 (Markdown)
+데일리 리포트 생성 (카카오톡 친화 이모지+리스트 형식)
 내부용 - 매일 아침 발행
 
 입력: input/tiktok_raw.csv 또는 output/data/YYYYMMDD/parsed.parquet
-출력: output/daily/YYYYMMDD/tiktok_daily_YYYYMMDD.md
+출력: output/daily/YYYYMMDD/tiktok_daily_YYYYMMDD.txt
 스냅샷: output/daily/daily_snapshot.json
 """
 import pandas as pd
 import numpy as np
 import os
 import json
-import re
 from datetime import datetime, timedelta
 from pathlib import Path
+import calendar
+import sys
 
-
-MONTHLY_TARGET_CONV = 600
-VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']
-
-
-def strip_date_code(name: str) -> str:
-    """소재명에서 날짜코드 제거 (_YYMM, _YYMMDD 등 4~6자리)"""
-    if not name or pd.isna(name):
-        return name
-    return re.sub(r'_\d{4,6}$', '', str(name))
+# 공용 모듈 경로 추가
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from common import (
+    VALID_BRANCHES, MONTHLY_BUDGET, MONTHLY_TARGET_CONV, TOTAL_MONTHLY_BUDGET,
+    strip_date_code, load_target_cpa, parse_branch,
+    calc_kpi, calc_branch_kpi,
+    fmt, fmt_man, fmt_pct,
+)
 
 
 def load_data(csv_path: str = None, parquet_path: str = None) -> pd.DataFrame:
@@ -60,15 +59,7 @@ def load_data(csv_path: str = None, parquet_path: str = None) -> pd.DataFrame:
         df['date'] = pd.to_datetime(df['date'], errors='coerce')
         df['is_off'] = df['ad_name'].str.lower().str.endswith('_off')
 
-        def parse_branch(name):
-            if pd.isna(name):
-                return None
-            name = str(name)
-            for b in VALID_BRANCHES:
-                if b in name:
-                    return b
-            return None
-
+        # parse_branch 공용 함수 사용
         df['branch'] = df['ad_name'].apply(parse_branch)
 
         def parse_creative(name):
@@ -87,14 +78,6 @@ def load_data(csv_path: str = None, parquet_path: str = None) -> pd.DataFrame:
         return df
 
     raise FileNotFoundError("CSV 또는 parquet 파일을 찾을 수 없습니다")
-
-
-def load_target_cpa(target_cpa_path: str = "input/target_cpa.csv") -> dict:
-    """목표 CPA 로드"""
-    if os.path.exists(target_cpa_path):
-        target_df = pd.read_csv(target_cpa_path, encoding='utf-8-sig')
-        return dict(zip(target_df['지점'], target_df['목표CPA']))
-    return {}
 
 
 def load_snapshot(snapshot_path: str) -> dict:
@@ -117,42 +100,13 @@ def save_snapshot(snapshot_path: str, snapshot: dict, today_str: str, today_data
         json.dump(snapshot, f, ensure_ascii=False, indent=2)
 
 
-def calc_kpi(df: pd.DataFrame) -> dict:
-    """KPI 계산"""
-    df_on = df[~df['is_off']]
-    cost = df_on['cost'].sum()
-    conv = df_on['conversions'].sum()
-    clicks = df_on['clicks'].sum()
-    impr = df_on['impressions'].sum()
-
-    return {
-        'cost': int(cost),
-        'conv': int(conv),
-        'cpa': round(cost / conv, 0) if conv > 0 else None,
-        'ctr': round(clicks / impr * 100, 2) if impr > 0 else 0,
-    }
-
-
-def calc_branch_kpi(df: pd.DataFrame) -> dict:
-    """지점별 KPI 계산 (daily용)"""
-    df_on = df[~df['is_off']]
-    result = {}
-
-    for branch in VALID_BRANCHES:
-        branch_df = df_on[df_on['branch'] == branch]
-        if len(branch_df) == 0:
-            continue
-
-        cost = branch_df['cost'].sum()
-        conv = branch_df['conversions'].sum()
-
-        result[branch] = {
-            'cost': int(cost),
-            'conv': int(conv),
-            'cpa': round(cost / conv, 0) if conv > 0 else None,
-        }
-
-    return result
+def calc_week_ago_kpi(df: pd.DataFrame, target_date) -> dict:
+    """7일 전 KPI 계산"""
+    week_ago = target_date - timedelta(days=7)
+    df_week_ago = df[df['date'] == week_ago]
+    if len(df_week_ago) == 0:
+        return None
+    return calc_kpi(df_week_ago)
 
 
 def detect_anomalies(df_daily: pd.DataFrame, branch_cum: dict, prev_branch_cum: dict, target_cpa: dict) -> list:
@@ -236,39 +190,27 @@ def generate_actions(anomalies: list) -> list:
     return actions
 
 
-def fmt(n, unit=''):
-    """숫자 포맷"""
-    if n is None:
-        return '-'
-    return f"{int(n):,}{unit}"
-
-
-def fmt_pct(n):
-    """퍼센트 포맷"""
-    if n is None:
-        return '-'
-    return f"{n:.2f}%"
-
-
 def fmt_diff(curr, prev, unit='', is_pct=False):
-    """전일 대비 포맷 (항상 화살표 표시)"""
+    """전일 대비 포맷 (괄호 형식)"""
     if curr is None or prev is None:
-        return "이전 데이터 없음"
+        return "(→)"
     diff = curr - prev
-    arrow = '▲' if diff > 0 else '▼' if diff < 0 else '→'
+    if diff == 0:
+        return "(→)"
+    arrow = '▲' if diff > 0 else '▼'
     sign = '+' if diff > 0 else ''
     if is_pct:
-        return f"{arrow} {sign}{diff:.2f}%p"
-    return f"{arrow} {sign}{int(diff):,}{unit}"
+        return f"({arrow}{sign}{diff:.2f}%p)"
+    return f"({arrow}{sign}{int(diff):,}{unit})"
 
 
-def build_daily_md(
+def build_daily_txt(
     csv_path: str = "input/tiktok_raw.csv",
     parquet_path: str = None,
     output_dir: str = "output",
     target_date: str = None,
 ):
-    """데일리 리포트 Markdown 생성"""
+    """데일리 리포트 카카오톡 친화 텍스트 생성"""
 
     df = load_data(csv_path, parquet_path)
 
@@ -301,12 +243,11 @@ def build_daily_md(
     # 목표 CPA 로드 (없으면 전체 누적 CPA 단일값 사용)
     target_cpa_dict = load_target_cpa()
     if not target_cpa_dict:
-        # 전체 누적 CPA를 모든 지점에 동일하게 적용
         total_target = kpi_cum.get('cpa') or 25000
         for branch in VALID_BRANCHES:
             target_cpa_dict[branch] = total_target
 
-    # 스냅샷 로드 (output/daily/daily_snapshot.json)
+    # 스냅샷 로드
     daily_dir = os.path.join(output_dir, "daily")
     snapshot_path = os.path.join(daily_dir, "daily_snapshot.json")
     snapshot = load_snapshot(snapshot_path)
@@ -316,111 +257,151 @@ def build_daily_md(
 
     # 이상 감지
     anomalies = detect_anomalies(df_yesterday, branch_cum, prev_branch_cum, target_cpa_dict)
-    actions = generate_actions(anomalies)
 
-    # Markdown 생성
-    md_lines = []
+    # 텍스트 생성 (새로운 CVR 포함 형식)
+    lines = []
+    separator = "━" * 16
 
     # 헤더
-    md_lines.append(f"# {yesterday.strftime('%m/%d')} 다이트한의원 TikTok 전일 성과\n")
-    md_lines.append(f"> 기준일: {yesterday.strftime('%Y-%m-%d')} | 발행: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n")
+    lines.append(f"📊 [{yesterday.strftime('%m/%d')}] 다이트한의원 TikTok 리포트")
+    lines.append(separator)
+    lines.append("")
 
-    # 섹션 1: 어제 실적 (하루치 + 누적 + 누적 전일비)
-    md_lines.append("\n## 1. 어제 실적\n")
-    md_lines.append("| 지표 | 어제 하루 | 누적 | 누적 전일비 |")
-    md_lines.append("|------|---------|------|-----------|")
+    # 📅 목표 현황 (KPI)
+    conv_pct = round(kpi_cum['conv'] / MONTHLY_TARGET_CONV * 100, 1)
+    last_day = calendar.monthrange(yesterday.year, yesterday.month)[1]
+    remaining_days = last_day - yesterday.day
+    budget_pct = round(kpi_cum['cost'] / TOTAL_MONTHLY_BUDGET * 100, 1)
 
-    # 광고비
-    md_lines.append(f"| 광고비 | {fmt(kpi_daily['cost'], '원')} | {fmt(kpi_cum['cost'], '원')} | - |")
+    lines.append("📅 목표 현황 (KPI)")
+    lines.append(f"• 전환: {kpi_cum['conv']}건 / {MONTHLY_TARGET_CONV}건 ({conv_pct}%)")
+    if remaining_days > 0:
+        lines.append(f"• 잔여: {remaining_days}일")
+    else:
+        lines.append("• 잔여: 0일 (D-Day)")
+    lines.append(f"• 예산 소진율: {budget_pct}%")
+    lines.append("")
 
-    # 전환
-    conv_target_str = f"{kpi_cum['conv']}건 (목표 {round(kpi_cum['conv']/MONTHLY_TARGET_CONV*100, 1)}%)"
-    md_lines.append(f"| 전환 | {fmt(kpi_daily['conv'], '건')} | {conv_target_str} | - |")
+    # 💰 전체 성과 (어제 | 누적)
+    lines.append("💰 전체 성과 (어제 | 누적)")
+    lines.append(f"• 광고비: {fmt_man(kpi_daily['cost'])} | {fmt_man(kpi_cum['cost'])}")
+    lines.append(f"• 전환수: {kpi_daily['conv']}건 | {kpi_cum['conv']}건")
+    lines.append(f"• CPA: {fmt_man(kpi_daily['cpa'])} | {fmt_man(kpi_cum['cpa'])}")
+    lines.append(f"• CTR: {fmt_pct(kpi_daily['ctr'])} | {fmt_pct(kpi_cum['ctr'])}")
+    lines.append(f"• CVR: {fmt_pct(kpi_daily['cvr'])} | {fmt_pct(kpi_cum['cvr'])} (전환 효율)")
+    lines.append("")
 
-    # CPA
-    cpa_diff = fmt_diff(kpi_cum['cpa'], prev_cum.get('cpa'), '원')
-    md_lines.append(f"| CPA | {fmt(kpi_daily['cpa'], '원')} | {fmt(kpi_cum['cpa'], '원')} | {cpa_diff} |")
+    # 📍 지점별 현황 (전환 | CVR | 누적CPA) - Best vs Focus 분류
+    lines.append("📍 지점별 현황 (전환 | CVR | 누적CPA)")
 
-    # CTR
-    ctr_diff = fmt_diff(kpi_cum['ctr'], prev_cum.get('ctr'), '', is_pct=True)
-    md_lines.append(f"| CTR | {fmt_pct(kpi_daily['ctr'])} | {fmt_pct(kpi_cum['ctr'])} | {ctr_diff} |")
-
-    # 섹션 2: 지점별 성과
-    md_lines.append("\n## 2. 지점별 성과\n")
-    md_lines.append("| 지점 | 어제전환 | 어제CPA | 누적CPA | 누적전일비 | 상태 |")
-    md_lines.append("|------|---------|---------|---------|-----------|------|")
+    # 지점 분류: Best (CPA <= 목표) vs Focus (CPA > 목표 * 1.3)
+    best_branches = []
+    focus_branches = []
 
     for branch in VALID_BRANCHES:
-        daily = branch_daily.get(branch, {'cost': 0, 'conv': 0, 'cpa': None})
-        cum = branch_cum.get(branch, {'cost': 0, 'conv': 0, 'cpa': None})
-        prev_c = prev_branch_cum.get(branch, {})
+        daily = branch_daily.get(branch, {'cost': 0, 'conv': 0, 'cpa': None, 'cvr': 0})
+        cum = branch_cum.get(branch, {'cost': 0, 'conv': 0, 'cpa': None, 'cvr': 0})
         target = target_cpa_dict.get(branch, 25000)
 
-        # 어제 CPA (전환 < 5건이면 "(소량)" 표시)
-        if daily['conv'] < 5:
-            daily_cpa_str = "(소량)"
-        else:
-            daily_cpa_str = fmt(daily['cpa'], '원')
-
-        # 누적 전일비
-        cum_diff = fmt_diff(cum.get('cpa'), prev_c.get('cpa'), '원')
-
-        # 상태 판정 (누적CPA 기준, 전환<5면 보류)
         cum_cpa = cum.get('cpa')
-        if daily['conv'] < 5:
-            status = "-"  # 보류 (소량)
-        elif cum_cpa is None:
-            status = "⚠️"
-        elif cum_cpa > target * 1.8:
-            status = "🚨"
+        cum_cvr = cum.get('cvr', 0)
+
+        branch_info = {
+            'name': branch,
+            'conv': daily.get('conv', 0),
+            'cvr': cum_cvr,
+            'cpa': cum_cpa,
+            'target': target,
+        }
+
+        if cum_cpa is None or cum_cpa <= target:
+            best_branches.append(branch_info)
         elif cum_cpa > target * 1.3:
-            status = "⚠️"
+            focus_branches.append(branch_info)
         else:
-            status = "✅"
+            best_branches.append(branch_info)
 
-        md_lines.append(f"| {branch} | {daily['conv']}건 | {daily_cpa_str} | {fmt(cum_cpa, '원')} | {cum_diff} | {status} |")
+    # Best 섹션
+    if best_branches:
+        lines.append("✅ Best (효율 우수)")
+        for b in best_branches:
+            cpa_str = fmt_man(b['cpa']) if b['cpa'] else "-"
+            lines.append(f"• {b['name']}: {b['conv']}건 | {b['cvr']:.1f}% | {cpa_str}")
 
-    # 섹션 3: 이상 감지
-    md_lines.append("\n## 3. 이상 감지\n")
+    # Focus 섹션
+    if focus_branches:
+        lines.append("⚠️ Focus (관측 필요)")
+        for b in focus_branches:
+            cpa_str = fmt_man(b['cpa']) if b['cpa'] else "-"
+            ratio = round(b['cpa'] / b['target'], 1) if b['cpa'] and b['target'] else 0
+            lines.append(f"• {b['name']}: {b['conv']}건 | {b['cvr']:.1f}% | {cpa_str} (목표 {ratio}배)")
 
-    if anomalies:
-        for a in anomalies:
-            icon = "🚨" if a['severity'] == 'alert' else "⚠️"
-            if a['creative']:
-                md_lines.append(f"- {icon} [{a['branch']}] {a['creative']} — {a['message']}")
-            else:
-                md_lines.append(f"- {icon} [{a['branch']}] {a['message']}")
+    lines.append("")
+    lines.append(separator)
+    lines.append("")
+
+    # 🛠 오늘의 체크포인트
+    lines.append("🛠 오늘의 체크포인트")
+
+    # CVR 분석 체크포인트 생성
+    checkpoints = []
+
+    # 1. CTR 높고 CVR 낮은 지점 찾기
+    low_cvr_branches = []
+    high_cvr_branches = []
+    avg_cvr = kpi_cum.get('cvr', 0)
+
+    for branch in VALID_BRANCHES:
+        cum = branch_cum.get(branch, {})
+        cum_cvr = cum.get('cvr', 0)
+        if cum_cvr > 0 and cum_cvr < avg_cvr * 0.7:
+            low_cvr_branches.append(branch)
+        if cum_cvr > avg_cvr * 1.3:
+            high_cvr_branches.append(branch)
+
+    if low_cvr_branches:
+        checkpoints.append(f"[CVR 분석] {', '.join(low_cvr_branches)} 지점 CVR 낮음 - 랜딩 페이지 이탈 확인")
     else:
-        md_lines.append("✅ 특이사항 없음\n")
+        checkpoints.append("[CVR 분석] 전환율 양호, 클릭 후 이탈률 모니터링")
 
-    # 섹션 4: 오늘 체크 액션
-    md_lines.append("\n## 4. 오늘 체크 액션\n")
-
-    if actions:
-        for i, action in enumerate(actions, 1):
-            md_lines.append(f"{i}. {action}")
+    # 2. CVR 높은 지점 확산 검토
+    if high_cvr_branches:
+        checkpoints.append(f"[소재 점검] {', '.join(high_cvr_branches)} 지점 고효율 소재 소구점 분석 및 확산")
     else:
-        md_lines.append("- 특별 액션 없음 (정상 운영)\n")
+        checkpoints.append("[소재 점검] 상위 CVR 소재 소구점(가격, 비포애프터 등) 분석")
 
-    # 파일 저장 (output/daily/YYYYMMDD/)
+    # 3. 예산 조정 권고
+    if best_branches and focus_branches:
+        best_names = ', '.join([b['name'] for b in best_branches[:2]])
+        checkpoints.append(f"[예산 조정] {best_names} 지점으로 예산 비중 증대 검토")
+    elif focus_branches:
+        focus_names = ', '.join([b['name'] for b in focus_branches])
+        checkpoints.append(f"[예산 조정] {focus_names} 지점 예산 축소 또는 소재 교체 검토")
+    else:
+        checkpoints.append("[예산 조정] 현 예산 배분 유지, 효율 모니터링")
+
+    for cp in checkpoints:
+        lines.append(cp)
+
+    # 파일 저장
     date_folder = yesterday.strftime('%Y%m%d')
     output_folder = os.path.join(output_dir, "daily", date_folder)
     os.makedirs(output_folder, exist_ok=True)
 
-    md_filename = f"tiktok_daily_{date_folder}.md"
-    md_path = os.path.join(output_folder, md_filename)
+    txt_filename = f"tiktok_daily_{date_folder}.txt"
+    txt_path = os.path.join(output_folder, txt_filename)
 
-    with open(md_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(md_lines))
+    with open(txt_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines))
 
-    # 스냅샷 저장 (새 구조)
+    # 스냅샷 저장 (CVR 포함)
     branch_snapshot = {}
     for branch in VALID_BRANCHES:
-        daily = branch_daily.get(branch, {'cost': 0, 'conv': 0})
-        cum = branch_cum.get(branch, {'cost': 0, 'conv': 0, 'cpa': None})
+        daily = branch_daily.get(branch, {'cost': 0, 'conv': 0, 'cvr': 0})
+        cum = branch_cum.get(branch, {'cost': 0, 'conv': 0, 'cpa': None, 'cvr': 0})
         branch_snapshot[branch] = {
-            'daily': {'cost': daily['cost'], 'conv': daily['conv']},
-            'cumulative': {'cost': cum['cost'], 'conv': cum['conv'], 'cpa': cum.get('cpa')}
+            'daily': {'cost': daily['cost'], 'conv': daily['conv'], 'cvr': daily.get('cvr', 0)},
+            'cumulative': {'cost': cum['cost'], 'conv': cum['conv'], 'cpa': cum.get('cpa'), 'cvr': cum.get('cvr', 0)}
         }
 
     today_snapshot = {
@@ -429,21 +410,29 @@ def build_daily_md(
             'conv': kpi_daily['conv'],
             'cpa': kpi_daily['cpa'],
             'ctr': kpi_daily['ctr'],
+            'cvr': kpi_daily['cvr'],
         },
         'cumulative': {
             'cost': kpi_cum['cost'],
             'conv': kpi_cum['conv'],
             'cpa': kpi_cum['cpa'],
             'ctr': kpi_cum['ctr'],
+            'cvr': kpi_cum['cvr'],
         },
         'branch': branch_snapshot
     }
     save_snapshot(snapshot_path, snapshot, yesterday_str, today_snapshot)
 
-    print(f"[OK] Daily report -> {md_path}")
+    print(f"[OK] Daily report -> {txt_path}")
     print(f"[OK] Snapshot updated -> {snapshot_path}")
 
-    return md_path
+    return txt_path
+
+
+# 하위 호환성을 위한 별칭
+def build_daily_md(*args, **kwargs):
+    """하위 호환성 유지 (build_daily_txt로 위임)"""
+    return build_daily_txt(*args, **kwargs)
 
 
 if __name__ == "__main__":
@@ -453,4 +442,4 @@ if __name__ == "__main__":
     output_dir = sys.argv[2] if len(sys.argv) > 2 else "output"
     target_date = sys.argv[3] if len(sys.argv) > 3 else None
 
-    build_daily_md(csv_path=csv_path, output_dir=output_dir, target_date=target_date)
+    build_daily_txt(csv_path=csv_path, output_dir=output_dir, target_date=target_date)

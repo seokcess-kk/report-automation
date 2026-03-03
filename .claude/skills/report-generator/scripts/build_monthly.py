@@ -15,45 +15,18 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
+import sys
 
+# 공용 모듈 경로 추가
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from common import (
+    VALID_BRANCHES, MONTHLY_BUDGET, MONTHLY_TARGET_CONV,
+    strip_date_code, load_target_cpa,
+    clean,
+)
 
-VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']
-MONTHLY_TARGET_CONV = 600
-BUDGET = {
-    '서울': 2_800_000,
-    '일산': 1_007_617,
-    '대구': 2_500_000,
-    '천안': 2_000_000,
-    '부평': 4_000_000,
-    '창원': 2_000_000,
-    '수원': 3_000_000,
-}
-
-
-def clean(obj):
-    """JSON 직렬화용 클린 함수"""
-    if isinstance(obj, dict):
-        return {k: clean(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [clean(v) for v in obj]
-    if isinstance(obj, float) and (np.isnan(obj) or np.isinf(obj)):
-        return None
-    if isinstance(obj, np.integer):
-        return int(obj)
-    if isinstance(obj, np.floating):
-        return None if (np.isnan(obj) or np.isinf(obj)) else round(float(obj), 2)
-    if isinstance(obj, pd.Timestamp):
-        return obj.strftime('%Y-%m-%d')
-    if isinstance(obj, np.ndarray):
-        return [clean(v) for v in obj.tolist()]
-    return obj
-
-
-def strip_date_code(name: str) -> str:
-    """소재명에서 날짜코드 제거"""
-    if not name or pd.isna(name):
-        return str(name) if name else ''
-    return re.sub(r'_\d{4,6}$', '', str(name))
+# BUDGET 별칭 (하위 호환)
+BUDGET = MONTHLY_BUDGET
 
 
 def clean_cross_gap_name(name: str) -> str:
@@ -70,25 +43,26 @@ def clean_cross_gap_name(name: str) -> str:
     return name
 
 
-def load_target_cpa(path: str = "input/target_cpa.csv") -> dict:
-    """목표 CPA 로드"""
-    if os.path.exists(path):
-        df = pd.read_csv(path, encoding='utf-8-sig')
-        return dict(zip(df['지점'], df['목표CPA']))
-    return {}
+# ========== 헬퍼 함수들 ==========
 
+def load_monthly_data(data_dir: str) -> tuple:
+    """Parquet 파일 로드 및 ON/OFF 분리
 
-def build_monthly(data_dir: str, target_month: str = None):
-    """먼슬리 HTML 리포트 생성"""
+    Returns:
+        tuple: (creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max)
 
-    # 데이터 로드
+    Raises:
+        FileNotFoundError: 필수 파일이 없는 경우
+    """
     creative_path = os.path.join(data_dir, "creative_tier.parquet")
     parsed_path = os.path.join(data_dir, "parsed.parquet")
     off_path = os.path.join(data_dir, "creative_off.parquet")
 
     if not os.path.exists(creative_path) or not os.path.exists(parsed_path):
-        print(f"[ERROR] 필수 파일 없음: {creative_path} 또는 {parsed_path}")
-        return None
+        raise FileNotFoundError(
+            f"필수 파일 없음: {creative_path} 또는 {parsed_path}\n"
+            f"→ run_analysis.py 먼저 실행 필요"
+        )
 
     creative_df = pd.read_parquet(creative_path)
     parsed_df = pd.read_parquet(parsed_path)
@@ -120,9 +94,15 @@ def build_monthly(data_dir: str, target_month: str = None):
     else:
         date_min = date_max = pd.Timestamp.now()
 
-    month = target_month or date_max.strftime('%Y%m')
+    return creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max
 
-    # ========== KPI 계산 ==========
+
+def calculate_monthly_kpis(df_on: pd.DataFrame) -> tuple:
+    """전체 KPI 집계
+
+    Returns:
+        tuple: (kpi dict, total_cost, total_conv)
+    """
     total_cost = int(df_on['cost'].sum())
     total_conv = int(df_on['conversions'].sum())
     total_clicks = int(df_on['clicks'].sum())
@@ -134,30 +114,27 @@ def build_monthly(data_dir: str, target_month: str = None):
         'conv': total_conv,
         'cpa': round(total_cost / total_conv) if total_conv > 0 else 0,
         'ctr': round(total_clicks / total_impr * 100, 2) if total_impr > 0 else 0,
-        'cvr': round(total_conv / total_clicks * 100, 2) if total_clicks > 0 else 0,  # 전환/클릭
+        'cvr': round(total_conv / total_clicks * 100, 2) if total_clicks > 0 else 0,
         'lpv': round(total_landing / total_clicks * 100, 1) if total_clicks > 0 else 0,
     }
 
-    # 목표 CPA
-    target_cpa_dict = load_target_cpa()
-    target_cpa = int(np.mean(list(target_cpa_dict.values()))) if target_cpa_dict else kpi['cpa']
+    return kpi, total_cost, total_conv
 
-    # ========== 소재명별 집행지점 집계 (parsed_df 기반) ==========
+
+def build_creative_list(creative_df: pd.DataFrame, df_on: pd.DataFrame) -> list:
+    """소재 리스트 생성"""
+    # 소재명별 집행지점 집계
     creative_branches = {}
     if 'creative_name' in df_on.columns and 'branch' in df_on.columns:
         for name, grp in df_on.groupby('creative_name'):
             branches = grp['branch'].unique().tolist()
-            # VALID_BRANCHES 순서로 정렬
             creative_branches[name] = [b for b in VALID_BRANCHES if b in branches]
 
-    # ========== creative 리스트 ==========
     creative_list = []
     for _, r in creative_df.iterrows():
         name = r.get('creative_name', r.get('소재명', ''))
-        # parsed_df에서 집행지점 가져오기
         branches = creative_branches.get(name, [])
         if not branches:
-            # fallback: creative_df의 값 사용
             branches = r.get('branches', r.get('집행지점', []))
             if isinstance(branches, str):
                 branches = [branches] if branches else []
@@ -169,9 +146,9 @@ def build_monthly(data_dir: str, target_month: str = None):
             '총노출': int(r.get('impr', r.get('총노출', 0))),
             '총랜딩': int(r.get('landing', r.get('총랜딩', 0))),
             '집행일수': int(r.get('days', r.get('집행일수', 0))),
-            '지점목록': branches,  # 레퍼런스 키
+            '지점목록': branches,
             '소재유형': r.get('creative_type', r.get('소재유형', '')),
-            '훅유형': r.get('hook_type', r.get('소재구분', '')),  # 레퍼런스 키
+            '훅유형': r.get('hook_type', r.get('소재구분', '')),
             'ad_name_sample': str(name),
             'CPA': round(r['CPA'], 0) if pd.notna(r.get('CPA')) else None,
             'CTR': round(r['CTR'], 2) if pd.notna(r.get('CTR')) else None,
@@ -180,7 +157,11 @@ def build_monthly(data_dir: str, target_month: str = None):
             'TIER': r.get('TIER', 'UNCLASSIFIED'),
         })
 
-    # ========== branch 리스트 ==========
+    return creative_list
+
+
+def build_branch_list(df_on: pd.DataFrame, total_cost: int, total_conv: int) -> list:
+    """지점별 리스트 생성"""
     branch_agg = df_on.groupby('branch').agg(
         cost=('cost', 'sum'), conv=('conversions', 'sum'),
         clicks=('clicks', 'sum'), impr=('impressions', 'sum'),
@@ -196,7 +177,7 @@ def build_monthly(data_dir: str, target_month: str = None):
         landing = int(r['landing']) if 'landing_views' in df_on.columns else 0
         cpa = round(cost / conv) if conv > 0 else None
         ctr = round(clicks / impr * 100, 2) if impr > 0 else None
-        cvr = round(conv / clicks * 100, 2) if clicks > 0 else None  # 전환/클릭
+        cvr = round(conv / clicks * 100, 2) if clicks > 0 else None
         lpv = round(landing / clicks * 100, 1) if clicks > 0 else None
         cost_share = round(cost / total_cost * 100, 1) if total_cost > 0 else 0
         conv_share = round(conv / total_conv * 100, 1) if total_conv > 0 else 0
@@ -208,40 +189,84 @@ def build_monthly(data_dir: str, target_month: str = None):
             'CPA': cpa, 'CTR': ctr, 'CVR': cvr, 'LPV': lpv,
             '비용비중': cost_share, '전환비중': conv_share, '효율점수': eff,
         })
+
     # VALID_BRANCHES 순서로 정렬
     branch_order = {b: i for i, b in enumerate(VALID_BRANCHES)}
     branch_list.sort(key=lambda x: branch_order.get(x['branch'], 999))
 
-    # ========== age 리스트 (Unknown 제외) ==========
+    return branch_list
+
+
+def build_age_list(df_on: pd.DataFrame, total_cost: int, total_conv: int) -> list:
+    """나이대별 리스트 생성 (Unknown 제외)"""
     age_list = []
-    if 'age_group' in df_on.columns:
-        # Unknown 제외
-        df_age_filtered = df_on[~df_on['age_group'].str.lower().str.contains('unknown', na=False)]
-        age_agg = df_age_filtered.groupby('age_group').agg(
-            cost=('cost', 'sum'), conv=('conversions', 'sum'),
-            clicks=('clicks', 'sum'), impr=('impressions', 'sum'),
-            landing=('landing_views', 'sum') if 'landing_views' in df_age_filtered.columns else ('cost', 'count'),
-        ).reset_index()
+    if 'age_group' not in df_on.columns:
+        return age_list
 
-        for _, r in age_agg.iterrows():
-            cost = int(r['cost'])
-            conv = int(r['conv'])
-            clicks = int(r['clicks'])
-            impr = int(r['impr'])
-            landing = int(r['landing']) if 'landing_views' in df_age_filtered.columns else 0
-            cost_share = round(cost / total_cost * 100, 1) if total_cost > 0 else 0
-            conv_share = round(conv / total_conv * 100, 1) if total_conv > 0 else 0
+    df_age_filtered = df_on[~df_on['age_group'].str.lower().str.contains('unknown', na=False)]
+    age_agg = df_age_filtered.groupby('age_group').agg(
+        cost=('cost', 'sum'), conv=('conversions', 'sum'),
+        clicks=('clicks', 'sum'), impr=('impressions', 'sum'),
+        landing=('landing_views', 'sum') if 'landing_views' in df_age_filtered.columns else ('cost', 'count'),
+    ).reset_index()
 
-            age_list.append({
-                'age_group': r['age_group'],
-                '총비용': cost, '총전환': conv, '총클릭': clicks, '총노출': impr, '총랜딩': landing,
-                'CPA': round(cost / conv) if conv > 0 else None,
-                'CTR': round(clicks / impr * 100, 2) if impr > 0 else None,
-                'CVR': round(conv / clicks * 100, 2) if clicks > 0 else None,  # 전환/클릭
-                'LPV': round(landing / clicks * 100, 1) if clicks > 0 else None,
-                '비용비중': cost_share, '전환비중': conv_share,
-                '효율점수': round(conv_share / cost_share, 2) if cost_share > 0 else None,  # 레퍼런스 키
-            })
+    for _, r in age_agg.iterrows():
+        cost = int(r['cost'])
+        conv = int(r['conv'])
+        clicks = int(r['clicks'])
+        impr = int(r['impr'])
+        landing = int(r['landing']) if 'landing_views' in df_age_filtered.columns else 0
+        cost_share = round(cost / total_cost * 100, 1) if total_cost > 0 else 0
+        conv_share = round(conv / total_conv * 100, 1) if total_conv > 0 else 0
+
+        age_list.append({
+            'age_group': r['age_group'],
+            '총비용': cost, '총전환': conv, '총클릭': clicks, '총노출': impr, '총랜딩': landing,
+            'CPA': round(cost / conv) if conv > 0 else None,
+            'CTR': round(clicks / impr * 100, 2) if impr > 0 else None,
+            'CVR': round(conv / clicks * 100, 2) if clicks > 0 else None,
+            'LPV': round(landing / clicks * 100, 1) if clicks > 0 else None,
+            '비용비중': cost_share, '전환비중': conv_share,
+            '효율점수': round(conv_share / cost_share, 2) if cost_share > 0 else None,
+        })
+
+    return age_list
+
+
+def build_monthly(data_dir: str, target_month: str = None):
+    """먼슬리 HTML 리포트 생성
+
+    Args:
+        data_dir: 분석 데이터 디렉토리 경로 (output/data/YYYYMMDD)
+        target_month: 대상 월 (YYYYMM 형식, None이면 데이터에서 추출)
+
+    Returns:
+        str: 생성된 HTML 파일 경로 또는 None (에러 시)
+    """
+    try:
+        # 데이터 로드
+        creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max = load_monthly_data(data_dir)
+    except FileNotFoundError as e:
+        print(f"[ERROR] {e}")
+        return None
+
+    month = target_month or date_max.strftime('%Y%m')
+
+    # KPI 계산
+    kpi, total_cost, total_conv = calculate_monthly_kpis(df_on)
+
+    # 목표 CPA
+    target_cpa_dict = load_target_cpa()
+    target_cpa = int(np.mean(list(target_cpa_dict.values()))) if target_cpa_dict else kpi['cpa']
+
+    # 소재 리스트
+    creative_list = build_creative_list(creative_df, df_on)
+
+    # 지점 리스트
+    branch_list = build_branch_list(df_on, total_cost, total_conv)
+
+    # 나이대 리스트
+    age_list = build_age_list(df_on, total_cost, total_conv)
 
     # ========== hook_compare (신규 vs 재가공) ==========
     hook_list = []
@@ -841,7 +866,7 @@ def generate_html(D: dict, month: str) -> str:
 
     # HTML 조합: 앞부분 + const D=새데이터; + 뒷부분
     year = month[:4]
-    mon = month[4:]
+    mon = str(int(month[4:]))  # 03 → 3 (앞의 0 제거)
 
     header = ''.join(lines[:d_line_idx])
     footer = ''.join(lines[d_line_idx + 1:])
@@ -850,6 +875,7 @@ def generate_html(D: dict, month: str) -> str:
     html = header + data_line + footer
 
     # 동적 부분 교체
+    html = re.sub(r'<title>[^<]+</title>', f'<title>다이트한의원 TikTok 먼슬리 · {year}년 {mon}월</title>', html)
     html = re.sub(r'\d{4}년 \d{1,2}월 먼슬리 리포트', f'{year}년 {mon}월 먼슬리 리포트', html)
     html = re.sub(r'분석 기간 <span>[^<]+</span>', f'분석 기간 <span>{D["period"]}</span>', html)
     html = re.sub(r'\d{1,2}월 월간 KPI', f'{mon}월 월간 KPI', html)

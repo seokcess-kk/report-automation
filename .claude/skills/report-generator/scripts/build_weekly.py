@@ -13,22 +13,17 @@
 import pandas as pd
 import numpy as np
 import os
-import re
 import json
 from datetime import datetime, timedelta
+from pathlib import Path
+import sys
 
-
-MONTHLY_TARGET_CONV = 600
-
-VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']  # 전체 리포트 통일
-VALID_AD_TYPES = ['인플방문후기', '진료셀프캠', '의료진정보']
-
-
-def strip_date_code(name: str) -> str:
-    """소재명에서 날짜코드 제거 (_YYMM, _YYMMDD 등 4~6자리)"""
-    if not name or pd.isna(name):
-        return name
-    return re.sub(r'_\d{4,6}$', '', str(name))
+# 공용 모듈 경로 추가
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from common import (
+    VALID_BRANCHES, VALID_AD_TYPES, MONTHLY_TARGET_CONV,
+    strip_date_code,
+)
 
 
 def load_and_parse_data(csv_path: str) -> pd.DataFrame:
@@ -673,6 +668,7 @@ body{{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-ser
 .header-inner{{max-width:1080px;margin:0 auto}}
 .header-top{{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}}
 .brand{{font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}}
+.logo{{max-height:40px;width:auto;margin-bottom:12px;opacity:0.9}}
 .header-title{{font-size:26px;font-weight:900;letter-spacing:-.02em;color:var(--text)}}
 .header-period{{margin-top:6px;display:flex;gap:16px;flex-wrap:wrap}}
 .period-chip{{background:var(--surface2);border:1px solid var(--border);border-radius:6px;
@@ -778,6 +774,7 @@ tr:hover td{{background:rgba(255,255,255,.015)}}
 <div class="report-header">
   <div class="header-inner">
     <div class="brand">다이트한의원 · TikTok 광고 분석</div>
+    <img src="../../../image/Logo_white 800x310.png" class="logo" alt="다이트한의원 로고">
     <div class="header-top">
       <div>
         <div class="header-title">위클리 리포트</div>

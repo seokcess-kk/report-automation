@@ -18,11 +18,12 @@ TikTok 광고명 파싱 + 메타데이터 추출
 import pandas as pd
 import re
 import os
+import sys
+from pathlib import Path
 
-
-# 유효값 목록
-VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']
-VALID_AD_TYPES = ['인플방문후기', '진료셀프캠', '의료진정보']
+# 공용 모듈 경로 추가
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from common import VALID_BRANCHES, VALID_AD_TYPES
 
 
 def parse_ad_name(name: str) -> dict:

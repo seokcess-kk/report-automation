@@ -206,7 +206,7 @@ def build_monthly(data_dir: str, target_month: str = None):
             'branch': r['branch'],
             '총비용': cost, '총전환': conv, '총클릭': clicks, '총노출': impr, '총랜딩': landing,
             'CPA': cpa, 'CTR': ctr, 'CVR': cvr, 'LPV': lpv,
-            '비용비중': cost_share, '전환비중': conv_share, '효율지수': eff,
+            '비용비중': cost_share, '전환비중': conv_share, '효율점수': eff,
         })
     # VALID_BRANCHES 순서로 정렬
     branch_order = {b: i for i, b in enumerate(VALID_BRANCHES)}
@@ -597,7 +597,7 @@ def build_monthly(data_dir: str, target_month: str = None):
     next_budget = []
     for b in branch_list:
         cur_budget = BUDGET.get(b['branch'], 0)
-        eff = b.get('효율지수', 1.0) or 1.0
+        eff = b.get('효율점수', 1.0) or 1.0
         cur_ratio = round(cur_budget / total_budget * 100, 1) if total_budget > 0 else 0
         cpa = b['CPA'] or 0
         cvr = b['CVR'] or 0

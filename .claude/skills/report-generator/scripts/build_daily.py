@@ -282,13 +282,14 @@ def build_daily_txt(
     lines.append(f"• 예산 소진율: {budget_pct}%")
     lines.append("")
 
-    # 💰 전체 성과 (어제 | 누적)
-    lines.append("💰 전체 성과 (어제 | 누적)")
-    lines.append(f"• 광고비: {fmt_man(kpi_daily['cost'])} | {fmt_man(kpi_cum['cost'])}")
-    lines.append(f"• 전환수: {kpi_daily['conv']}건 | {kpi_cum['conv']}건")
-    lines.append(f"• CPA: {fmt_man(kpi_daily['cpa'])} | {fmt_man(kpi_cum['cpa'])}")
-    lines.append(f"• CTR: {fmt_pct(kpi_daily['ctr'])} | {fmt_pct(kpi_cum['ctr'])}")
-    lines.append(f"• CVR: {fmt_pct(kpi_daily['cvr'])} | {fmt_pct(kpi_cum['cvr'])} (전환 효율)")
+    # 💰 전체 성과 (어제 | 누적 | 전일비)
+    prev_daily = prev_data.get('daily', {})
+    lines.append("💰 전체 성과 (어제 | 누적 | 전일비)")
+    lines.append(f"• 광고비: {fmt_man(kpi_daily['cost'])} | {fmt_man(kpi_cum['cost'])} {fmt_diff(kpi_daily['cost'], prev_daily.get('cost'), '원')}")
+    lines.append(f"• 전환수: {kpi_daily['conv']}건 | {kpi_cum['conv']}건 {fmt_diff(kpi_daily['conv'], prev_daily.get('conv'), '건')}")
+    lines.append(f"• CPA: {fmt_man(kpi_daily['cpa'])} | {fmt_man(kpi_cum['cpa'])} {fmt_diff(kpi_daily['cpa'], prev_daily.get('cpa'), '원')}")
+    lines.append(f"• CTR: {fmt_pct(kpi_daily['ctr'])} | {fmt_pct(kpi_cum['ctr'])} {fmt_diff(kpi_daily['ctr'], prev_daily.get('ctr'), is_pct=True)}")
+    lines.append(f"• CVR: {fmt_pct(kpi_daily['cvr'])} | {fmt_pct(kpi_cum['cvr'])} {fmt_diff(kpi_daily['cvr'], prev_daily.get('cvr'), is_pct=True)}")
     lines.append("")
 
     # 📍 지점별 현황 (전환 | CVR | 누적CPA) - Best vs Focus 분류

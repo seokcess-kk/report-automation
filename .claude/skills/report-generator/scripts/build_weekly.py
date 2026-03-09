@@ -92,12 +92,11 @@ def filter_week_data(df: pd.DataFrame, end_date: datetime = None):
 
 
 def calc_kpi(df: pd.DataFrame) -> dict:
-    """KPI 계산"""
-    df_on = df[~df['is_off']]
-    cost = df_on['cost'].sum()
-    conv = df_on['conversions'].sum()
-    clicks = df_on['clicks'].sum()
-    impr = df_on['impressions'].sum()
+    """KPI 계산 (OFF 소재 포함 - 실제 집행 비용/전환 반영)"""
+    cost = df['cost'].sum()
+    conv = df['conversions'].sum()
+    clicks = df['clicks'].sum()
+    impr = df['impressions'].sum()
 
     return {
         'cost': int(cost),
@@ -152,9 +151,8 @@ def classify_tier_weekly(df: pd.DataFrame, target_cpa: float) -> pd.DataFrame:
 
 
 def calc_branch_summary(df: pd.DataFrame) -> pd.DataFrame:
-    """지점별 요약 (효율점수 포함)"""
-    df_on = df[~df['is_off']]
-    branch = df_on.groupby('branch').agg(
+    """지점별 요약 (효율점수 포함, OFF 소재 포함 - KPI와 일관성)"""
+    branch = df.groupby('branch').agg(
         cost=('cost', 'sum'),
         conv=('conversions', 'sum'),
         clicks=('clicks', 'sum'),
@@ -543,35 +541,62 @@ def calc_daily_trend(df: pd.DataFrame, week_start, week_end) -> list:
     return result
 
 
-def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None):
-    """위클리 HTML 생성"""
+def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, campaign_filter: str = None):
+    """위클리 HTML 생성
+
+    Args:
+        output_dir: 출력 디렉토리
+        csv_path: 입력 CSV 경로
+        target_date: 대상 날짜 (YYYY-MM-DD)
+        campaign_filter: 필터링할 캠페인명 (예: '2603_다이트_전환캠페인')
+            - KPI/지점 비교: 전체 데이터 사용 (전주 비교 정상 작동)
+            - 소재 TIER 분석: 캠페인 필터 적용 (현재 라이브 소재 기준)
+    """
 
     df = load_and_parse_data(csv_path)
+
     end_date = pd.to_datetime(target_date) if target_date else df['date'].max()
+
+    # 1. KPI/지점 비교: 전체 데이터 사용 (캠페인 필터 적용 안 함)
     df_this, df_prev, this_start, this_end, prev_start, prev_end = filter_week_data(df, end_date)
 
     kpi_this = calc_kpi(df_this)
     kpi_prev = calc_kpi(df_prev)
 
-    df_on = df_this[~df_this['is_off']]
-    target_cpa = int(df_on['cost'].sum() / df_on['conversions'].sum()) if df_on['conversions'].sum() > 0 else 30000
-
-    tier_this = classify_tier_weekly(df_this, target_cpa)
-    tier_prev = classify_tier_weekly(df_prev, target_cpa) if len(df_prev) > 0 else pd.DataFrame()
-
-    tier_list = generate_tier_comparison(tier_this, tier_prev)
-    tier_detail = generate_tier_detail(tier_this)
-
     branch_this = calc_branch_summary(df_this)
     branch_prev = calc_branch_summary(df_prev) if len(df_prev) > 0 else pd.DataFrame()
     branch_data = generate_branch_comparison(branch_this, branch_prev)
+
+    # 2. 소재 TIER 분석: 캠페인 필터 적용
+    if campaign_filter:
+        campaign_col = '캠페인 이름' if '캠페인 이름' in df.columns else ('campaign_name' if 'campaign_name' in df.columns else None)
+        if campaign_col:
+            df_creative = df[df[campaign_col] == campaign_filter]
+            print(f"[INFO] Campaign filter for creative analysis: '{campaign_filter}' -> {len(df_creative)} rows")
+        else:
+            df_creative = df
+            print(f"[WARN] Campaign column not found, using all data for creative analysis")
+    else:
+        df_creative = df
+
+    # 소재 분석용 이번 주/전주 데이터 분리
+    df_this_creative, df_prev_creative, _, _, _, _ = filter_week_data(df_creative, end_date)
+
+    df_on = df_this_creative[~df_this_creative['is_off']]
+    target_cpa = int(df_on['cost'].sum() / df_on['conversions'].sum()) if df_on['conversions'].sum() > 0 else 30000
+
+    tier_this = classify_tier_weekly(df_this_creative, target_cpa)
+    tier_prev = classify_tier_weekly(df_prev_creative, target_cpa) if len(df_prev_creative) > 0 else pd.DataFrame()
+
+    tier_list = generate_tier_comparison(tier_this, tier_prev)
+    tier_detail = generate_tier_detail(tier_this)
 
     insights = generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail)
     off_list = generate_off_list(tier_this, branch_data, target_cpa)
     on_list = generate_on_list(tier_this)
 
-    # 소재×지점 성과
-    branch_creative = generate_branch_creative(df_this)
+    # 소재×지점 성과 (캠페인 필터 적용)
+    branch_creative = generate_branch_creative(df_this_creative)
 
     # 전환 예상
     month_start = pd.Timestamp(this_end.year, this_end.month, 1)
@@ -1267,7 +1292,13 @@ buildBranchCharts(); buildAction(); buildProjection();
 
 if __name__ == "__main__":
     import sys
-    csv_path = sys.argv[1] if len(sys.argv) > 1 else "input/tiktok_raw.csv"
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else "output"
-    target_date = sys.argv[3] if len(sys.argv) > 3 else None
-    build_weekly_html(output_dir, csv_path, target_date)
+    import argparse
+
+    parser = argparse.ArgumentParser(description='위클리 리포트 생성')
+    parser.add_argument('csv_path', nargs='?', default='input/tiktok_raw.csv', help='입력 CSV 경로')
+    parser.add_argument('output_dir', nargs='?', default='output', help='출력 디렉토리')
+    parser.add_argument('target_date', nargs='?', default=None, help='대상 날짜 (YYYY-MM-DD)')
+    parser.add_argument('--campaign', type=str, default=None, help='필터링할 캠페인명 (예: 2603_다이트_전환캠페인)')
+
+    args = parser.parse_args()
+    build_weekly_html(args.output_dir, args.csv_path, args.target_date, campaign_filter=args.campaign)

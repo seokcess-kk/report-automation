@@ -209,10 +209,27 @@ def build_daily_txt(
     parquet_path: str = None,
     output_dir: str = "output",
     target_date: str = None,
+    campaign_filter: str = None,
 ):
-    """데일리 리포트 카카오톡 친화 텍스트 생성"""
+    """데일리 리포트 카카오톡 친화 텍스트 생성
+
+    Args:
+        csv_path: 입력 CSV 경로
+        parquet_path: 입력 parquet 경로 (우선)
+        output_dir: 출력 디렉토리
+        target_date: 대상 날짜 (YYYY-MM-DD)
+        campaign_filter: 필터링할 캠페인명 (예: '2603_다이트_전환캠페인')
+    """
 
     df = load_data(csv_path, parquet_path)
+
+    # 캠페인 필터링
+    if campaign_filter:
+        if '캠페인 이름' in df.columns:
+            df = df[df['캠페인 이름'] == campaign_filter]
+        elif 'campaign_name' in df.columns:
+            df = df[df['campaign_name'] == campaign_filter]
+        print(f"[INFO] Campaign filter applied: '{campaign_filter}' -> {len(df)} rows")
 
     if target_date:
         report_date = pd.to_datetime(target_date)
@@ -252,6 +269,15 @@ def build_daily_txt(
     snapshot_path = os.path.join(daily_dir, "daily_snapshot.json")
     snapshot = load_snapshot(snapshot_path)
     prev_data = snapshot.get(day_before_str, {})
+
+    # 스냅샷에 전일 데이터 없으면 CSV에서 직접 계산
+    if not prev_data.get('daily'):
+        df_day_before = df[df['date'] == day_before]
+        if len(df_day_before) > 0:
+            prev_kpi = calc_kpi(df_day_before)
+            prev_data = {'daily': prev_kpi, 'cumulative': {}, 'branch': {}}
+            print(f"[INFO] 스냅샷에 {day_before_str} 없음 - CSV에서 전일 KPI 계산")
+
     prev_cum = prev_data.get('cumulative', {})
     prev_branch_cum = {b: d.get('cumulative', {}) for b, d in prev_data.get('branch', {}).items()}
 
@@ -438,9 +464,13 @@ def build_daily_md(*args, **kwargs):
 
 if __name__ == "__main__":
     import sys
+    import argparse
 
-    csv_path = sys.argv[1] if len(sys.argv) > 1 else "input/tiktok_raw.csv"
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else "output"
-    target_date = sys.argv[3] if len(sys.argv) > 3 else None
+    parser = argparse.ArgumentParser(description='데일리 리포트 생성')
+    parser.add_argument('csv_path', nargs='?', default='input/tiktok_raw.csv', help='입력 CSV 경로')
+    parser.add_argument('output_dir', nargs='?', default='output', help='출력 디렉토리')
+    parser.add_argument('target_date', nargs='?', default=None, help='대상 날짜 (YYYY-MM-DD)')
+    parser.add_argument('--campaign', type=str, default=None, help='필터링할 캠페인명 (예: 2603_다이트_전환캠페인)')
 
-    build_daily_txt(csv_path=csv_path, output_dir=output_dir, target_date=target_date)
+    args = parser.parse_args()
+    build_daily_txt(csv_path=args.csv_path, output_dir=args.output_dir, target_date=args.target_date, campaign_filter=args.campaign)

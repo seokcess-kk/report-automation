@@ -25,7 +25,11 @@
       "Bash(iconv:*)",
       "Bash(tree:*)",
       "Bash(start \"\" \"C:\\\\Users\\\\assag\\\\solution\\\\report-automation\\\\output\\\\monthly\\\\202603\\\\tiktok_monthly_dayt_202603.html\")",
-      "Bash(start \"\" \"C:\\\\Users\\\\assag\\\\solution\\\\report-automation\\\\output\\\\weekly\\\\20260228\\\\tiktok_weekly_dayt_20260228.html\")"
+      "Bash(start \"\" \"C:\\\\Users\\\\assag\\\\solution\\\\report-automation\\\\output\\\\weekly\\\\20260228\\\\tiktok_weekly_dayt_20260228.html\")",
+      "Bash(python3:*)",
+      "Bash(echo:*)",
+      "Bash(cd:*)",
+      "Bash(git pull:*)"
     ]
   }
 }

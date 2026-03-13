@@ -10,7 +10,7 @@ def calc_kpi(df: pd.DataFrame) -> dict:
     """KPI 계산 (CVR 포함)
 
     Args:
-        df: 분석 대상 DataFrame (is_off 컬럼 포함)
+        df: 분석 대상 DataFrame
 
     Returns:
         dict: {cost, conv, clicks, cpa, ctr, cvr}
@@ -18,12 +18,12 @@ def calc_kpi(df: pd.DataFrame) -> dict:
     Note:
         - CPA: int(cost/conv) if conv > 0 else None (표준)
         - CVR: 전환/클릭 기준 (CLAUDE.md 통일)
+        - OFF 소재 포함: KPI 계산에는 OFF 소재도 포함 (실제 집행 비용이므로)
     """
-    df_on = df[~df['is_off']] if 'is_off' in df.columns else df
-    cost = df_on['cost'].sum()
-    conv = df_on['conversions'].sum()
-    clicks = df_on['clicks'].sum()
-    impr = df_on['impressions'].sum()
+    cost = df['cost'].sum()
+    conv = df['conversions'].sum()
+    clicks = df['clicks'].sum()
+    impr = df['impressions'].sum()
 
     return {
         'cost': int(cost),
@@ -39,16 +39,18 @@ def calc_branch_kpi(df: pd.DataFrame) -> dict:
     """지점별 KPI 계산 (CVR 포함)
 
     Args:
-        df: 분석 대상 DataFrame (is_off, branch 컬럼 포함)
+        df: 분석 대상 DataFrame (branch 컬럼 포함)
 
     Returns:
         dict: {지점명: {cost, conv, clicks, cpa, cvr}}
+
+    Note:
+        - OFF 소재 포함: KPI 계산에는 OFF 소재도 포함 (실제 집행 비용이므로)
     """
-    df_on = df[~df['is_off']] if 'is_off' in df.columns else df
     result = {}
 
     for branch in VALID_BRANCHES:
-        branch_df = df_on[df_on['branch'] == branch]
+        branch_df = df[df['branch'] == branch]
         if len(branch_df) == 0:
             continue
 

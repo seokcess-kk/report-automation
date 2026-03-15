@@ -10,8 +10,8 @@ from .constants import VALID_BRANCHES
 
 def strip_date_code(name: str) -> str:
     """소재명에서 날짜코드 제거 (_YYMM, _YYMMDD 등 4~6자리)"""
-    if not name or pd.isna(name):
-        return str(name) if name else ''
+    if name is None or (isinstance(name, float) and pd.isna(name)) or not name:
+        return ''
     return re.sub(r'_\d{4,6}$', '', str(name))
 
 

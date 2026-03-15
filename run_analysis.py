@@ -96,8 +96,6 @@ def run_phase_2(parsed_path: str) -> dict:
     target_cpa_path = os.path.join(PROJECT_ROOT, "input", "target_cpa.csv")
     result = module.score_creatives(parsed_path, OUTPUT_DIR, target_cpa_path)
 
-    creative_tier_path = os.path.join(OUTPUT_DIR, "creative_tier.parquet")
-
     # 2-B: 훅 비교 (hook_comparison)
     print("\n[2-B] 훅 비교 분석...")
     script_path = os.path.join(SKILLS_DIR, "creative-analyzer", "scripts", "hook_comparison.py")
@@ -105,7 +103,7 @@ def run_phase_2(parsed_path: str) -> dict:
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    creative_df = pd.read_parquet(creative_tier_path)
+    creative_df = result['creative_tier']
     lineage_path = os.path.join(PROJECT_ROOT, "input", "creative_lineage.csv")
     module.compare_hooks(creative_df, OUTPUT_DIR, lineage_path)
 
@@ -130,9 +128,7 @@ def run_phase_3():
 
         creative_tier_path = os.path.join(OUTPUT_DIR, "creative_tier.parquet")
         if os.path.exists(creative_tier_path):
-            creative_df = pd.read_parquet(creative_tier_path)
-            if hasattr(module, 'generate_insights'):
-                module.generate_insights(creative_df, OUTPUT_DIR)
+            module.main(OUTPUT_DIR, OUTPUT_DIR)
 
         print_phase(3, "인사이트 생성", "OK")
     else:

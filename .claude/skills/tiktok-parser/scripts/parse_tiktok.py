@@ -156,7 +156,7 @@ def save_parse_failures(df: pd.DataFrame, output_path: str):
     """
     파싱 실패 소재를 별도 파일로 저장
     """
-    failures = df[df['parse_status'] == 'FAIL'].copy()
+    failures = df[df['parse_status'] == 'FAIL']
     if len(failures) > 0:
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         failures.to_csv(output_path, index=False, encoding='utf-8-sig')

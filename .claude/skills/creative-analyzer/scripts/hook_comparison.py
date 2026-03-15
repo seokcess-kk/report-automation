@@ -121,6 +121,7 @@ def match_hook_pairs(creative_df: pd.DataFrame, lineage_path: str = None) -> tup
                 all_pairs = pd.concat([all_pairs, lineage_pairs], ignore_index=True)
 
     # B. Strict 매칭 (소재유형 + 소재명 완전 일치)
+    strict_pairs = pd.DataFrame()
     if len(신규) > 0 and len(재가공) > 0:
         strict_pairs = 신규.merge(
             재가공,

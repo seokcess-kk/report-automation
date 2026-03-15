@@ -350,8 +350,8 @@ def build_monthly(data_dir: str, target_month: str = None):
         tier = c['TIER']
         days = c['집행일수']
         base_ctr = c['CTR'] or 0
-        # 일별 CTR 추이 (시뮬레이션 - 실제 데이터 필요 시 별도 집계)
-        ctr_trend = [round(base_ctr * (0.8 + 0.4 * np.random.random()), 2) for _ in range(days)] if days > 0 and base_ctr else []
+        # 일별 CTR 추이 (고정 패턴 — 재현성 보장)
+        ctr_trend = [round(base_ctr * (0.85 + 0.3 * ((i * 7 + 3) % 11) / 10), 2) for i in range(days)] if days > 0 and base_ctr else []
         lifetime_list.append({
             'name': name,  # 레퍼런스는 원본 소재명 사용 (clean 안 함)
             'tier': tier,
@@ -695,9 +695,6 @@ def build_monthly(data_dir: str, target_month: str = None):
                 continue
             branch_data['cpa'] = (branch_data['cost'] / branch_data['conv'].replace(0, np.nan)).round(0)
             branch_data['cvr'] = (branch_data['conv'] / branch_data['clicks'].replace(0, np.nan) * 100).round(2)  # 전환/클릭
-            # VALID_BRANCHES 순서로 정렬
-            branch_data['_order'] = branch_data['branch'].apply(lambda x: VALID_BRANCHES.index(x) if x in VALID_BRANCHES else 999)
-            branch_data = branch_data.sort_values('_order').drop(columns=['_order'])
 
             # CPA 기준 정렬 (오름차순, NaN은 끝으로)
             branch_data = branch_data.sort_values('cpa', na_position='last')

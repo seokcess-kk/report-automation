@@ -34,12 +34,16 @@ def load_target_cpa(file_path: str, evaluable_df: pd.DataFrame) -> callable:
 
         def get_target_cpa(지점목록):
             cpas = [TARGET_CPA_MAP.get(b) for b in 지점목록 if TARGET_CPA_MAP.get(b)]
-            return sum(cpas) / len(cpas) if cpas else evaluable_df['CPA'].median()
+            if cpas:
+                return sum(cpas) / len(cpas)
+            median = evaluable_df['CPA'].median() if len(evaluable_df) > 0 else np.nan
+            return median if pd.notna(median) else 30000
 
         return get_target_cpa
 
     except FileNotFoundError:
-        global_target_cpa = evaluable_df['CPA'].median() if len(evaluable_df) > 0 else 30000
+        median = evaluable_df['CPA'].median() if len(evaluable_df) > 0 else np.nan
+        global_target_cpa = median if pd.notna(median) else 30000
         print(f"[INFO] target_cpa.csv 없음 → 중앙값 CPA {global_target_cpa:,.0f}원 적용")
 
         def get_target_cpa(지점목록):
@@ -52,8 +56,8 @@ def separate_on_off(df: pd.DataFrame):
     """
     ON/OFF 소재 분리 (TIER 분류 전 첫 번째 단계)
     """
-    df_on = df[df['is_off'] == False].copy()
-    df_off = df[df['is_off'] == True].copy()
+    df_on = df[~df['is_off']]
+    df_off = df[df['is_off']]
 
     print(f"[소재 분리] ON: {len(df_on)}행 | OFF: {len(df_off)}행")
 
@@ -176,7 +180,8 @@ def classify_tier(creative_df: pd.DataFrame, target_cpa_path: str) -> pd.DataFra
         elif row['TIER'] == 'TIER2':
             return f"CPA({row['CPA']:,.0f}원) ≤ 목표({target_cpa:,.0f}원) / CVR {row['CVR']:.1f}% < 5% / 랜딩률 {row['랜딩률']:.1f}% ≥ 50%"
         elif row['TIER'] == 'TIER3':
-            return f"CPA({row['CPA']:,.0f}원) > 목표 / CVR({row['CVR']:.1f}%) ≥ 5%"
+            cpa_str = f"{row['CPA']:,.0f}" if pd.notna(row['CPA']) else '-'
+            return f"CPA({cpa_str}원) > 목표 / CVR({row['CVR']:.1f}%) ≥ 5%"
         elif row['TIER'] == 'TIER4':
             return "TIER1~3 조건 미충족"
         elif row['TIER'] == 'LOW_VOLUME':
@@ -328,9 +333,9 @@ def score_creatives(input_path: str, output_dir: str, target_cpa_path: str = "in
     print(f"[입력] {len(df)}행 로드됨")
 
     # 파싱 성공한 행만 사용
-    df_valid = df[df['parse_status'] == 'OK'].copy()
-    df_invalid = df[df['parse_status'] != 'OK'].copy()
-    print(f"[필터링] 유효: {len(df_valid)}행 | 파싱실패: {len(df_invalid)}행 (분석 제외)")
+    df_valid = df[df['parse_status'] == 'OK']
+    n_invalid = (df['parse_status'] != 'OK').sum()
+    print(f"[필터링] 유효: {len(df_valid)}행 | 파싱실패: {n_invalid}행 (분석 제외)")
 
     # ON/OFF 분리
     df_on, df_off = separate_on_off(df_valid)

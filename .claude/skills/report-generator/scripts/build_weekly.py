@@ -22,7 +22,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from common import (
     VALID_BRANCHES, VALID_AD_TYPES, MONTHLY_TARGET_CONV,
-    strip_date_code,
+    strip_date_code, calc_kpi as _common_calc_kpi,
 )
 
 
@@ -46,6 +46,8 @@ def load_and_parse_data(csv_path: str) -> pd.DataFrame:
     for col in ['clicks', 'impressions', 'conversions', 'cost', 'landing_views']:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
+        elif col == 'landing_views':
+            df['landing_views'] = 0
 
     df['date'] = pd.to_datetime(df['date'], errors='coerce')
     df['is_off'] = df['ad_name'].str.lower().str.endswith('_off')
@@ -92,19 +94,11 @@ def filter_week_data(df: pd.DataFrame, end_date: datetime = None):
 
 
 def calc_kpi(df: pd.DataFrame) -> dict:
-    """KPI 계산 (OFF 소재 포함 - 실제 집행 비용/전환 반영)"""
-    cost = df['cost'].sum()
-    conv = df['conversions'].sum()
-    clicks = df['clicks'].sum()
-    impr = df['impressions'].sum()
-
-    return {
-        'cost': int(cost),
-        'conv': int(conv),
-        'cpa': int(cost / conv) if conv > 0 else 0,
-        'ctr': round(clicks / impr * 100, 2) if impr > 0 else 0,
-        'cvr': round(conv / clicks * 100, 2) if clicks > 0 else 0,
-    }
+    """KPI 계산 (common.calc_kpi 래퍼 — JS 렌더링용 None→0 변환)"""
+    kpi = _common_calc_kpi(df)
+    if kpi['cpa'] is None:
+        kpi['cpa'] = 0
+    return kpi
 
 
 def classify_tier_weekly(df: pd.DataFrame, target_cpa: float) -> pd.DataFrame:
@@ -462,6 +456,45 @@ def generate_on_list(tier_this: pd.DataFrame) -> list:
     return sorted(on_list, key=lambda x: x['CPA'])[:5]
 
 
+def generate_off_creative_analysis(df_this: pd.DataFrame) -> list:
+    """OFF 소재 성과 분석 데이터 생성"""
+    df_off = df_this[df_this['is_off']]
+    if len(df_off) == 0:
+        return []
+
+    creative = df_off.groupby('creative_name').agg(
+        branches=('branch', lambda x: list(x.dropna().unique())),
+        ad_type=('ad_type', 'first'),
+        cost=('cost', 'sum'),
+        conv=('conversions', 'sum'),
+        clicks=('clicks', 'sum'),
+        impr=('impressions', 'sum'),
+        days=('date', 'nunique'),
+    ).reset_index()
+
+    creative['cpa'] = (creative['cost'] / creative['conv'].replace(0, np.nan)).round(0)
+    creative['ctr'] = (creative['clicks'] / creative['impr'].replace(0, np.nan) * 100).round(2)
+    creative['cvr'] = (creative['conv'] / creative['clicks'].replace(0, np.nan) * 100).round(2)
+
+    result = []
+    for _, row in creative.iterrows():
+        result.append({
+            'creative_name': strip_date_code(row['creative_name']),
+            '지점목록': row['branches'],
+            '소재유형': row['ad_type'],
+            '총비용': int(row['cost']),
+            '총전환': int(row['conv']),
+            '총클릭': int(row['clicks']),
+            '총노출': int(row['impr']),
+            '집행일수': int(row['days']),
+            'CPA': int(row['cpa']) if pd.notna(row['cpa']) else None,
+            'CTR': round(row['ctr'], 2) if pd.notna(row['ctr']) else None,
+            'CVR': round(row['cvr'], 2) if pd.notna(row['cvr']) else None,
+        })
+
+    return sorted(result, key=lambda x: -x['총비용'])
+
+
 def generate_branch_creative(df_this: pd.DataFrame) -> list:
     """소재×지점 성과 데이터 생성"""
     df_on = df_this[~df_this['is_off']].copy()
@@ -515,7 +548,7 @@ def generate_branch_creative(df_this: pd.DataFrame) -> list:
 
 def calc_daily_trend(df: pd.DataFrame, week_start, week_end) -> list:
     """일별 추이 (이번 주 7일만)"""
-    df_week = df[(df['date'] >= week_start) & (df['date'] <= week_end) & (~df['is_off'])]
+    df_week = df[(df['date'] >= week_start) & (df['date'] <= week_end)]
 
     daily = df_week.groupby('date').agg(
         cost=('cost', 'sum'),
@@ -598,9 +631,12 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
     # 소재×지점 성과 (캠페인 필터 적용)
     branch_creative = generate_branch_creative(df_this_creative)
 
+    # OFF 소재 성과 분석
+    off_creative_analysis = generate_off_creative_analysis(df_this_creative)
+
     # 전환 예상
     month_start = pd.Timestamp(this_end.year, this_end.month, 1)
-    df_month = df[(df['date'] >= month_start) & (df['date'] <= this_end) & (~df['is_off'])]
+    df_month = df[(df['date'] >= month_start) & (df['date'] <= this_end)]
     conv_so_far = int(df_month['conversions'].sum())
     days_so_far = (this_end - month_start).days + 1
     proj_conv = int(conv_so_far / days_so_far * 28) if days_so_far > 0 else 0
@@ -632,6 +668,7 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
         'branch': branch_data,
         'off_list': off_list,
         'on_list': on_list,
+        'off_creative_analysis': off_creative_analysis,
         'branch_creative': branch_creative,
         'monthly_target_conv': MONTHLY_TARGET_CONV,
         'conv_so_far': conv_so_far,
@@ -710,6 +747,11 @@ body{{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-ser
 
 .kpi-strip{{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
   background:var(--border);border-radius:10px;overflow:hidden}}
+.summary-strip{{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border);border-radius:8px;overflow:hidden}}
+.summary-strip>div{{background:var(--surface2);padding:12px 16px}}
+.summary-strip .s-label{{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:.06em}}
+.summary-strip .s-val{{font-size:18px;font-weight:900;font-family:'DM Mono',monospace;margin-top:4px}}
 @media(max-width:700px){{.kpi-strip{{grid-template-columns:repeat(2,1fr)}}}}
 .kpi-cell{{background:var(--surface);padding:18px 20px}}
 .kpi-cell-label{{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text2);
@@ -840,6 +882,18 @@ tr:hover td{{background:rgba(255,255,255,.015)}}
     </div>
     <div class="card">
       <div class="tbl-wrap"><table id="new-tbl"></table></div>
+    </div>
+  </div>
+
+  <div class="section" id="off-creative-sec" style="display:none">
+    <div class="section-label">OFF 소재 성과 분석
+      <span style="font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0;text-transform:none;margin-left:8px">
+        · 이번 주 OFF 상태에서 발생한 집행 성과
+      </span>
+    </div>
+    <div class="card">
+      <div id="off-creative-summary" style="margin-bottom:16px"></div>
+      <div class="tbl-wrap"><table id="off-creative-tbl"></table></div>
     </div>
   </div>
 
@@ -1001,6 +1055,58 @@ function buildNewCreativeTable(){{
       <td class="num">${{c.CVR!=null?c.CVR.toFixed(2)+'%':'-'}}</td>
       <td class="num" style="color:var(--warn)">${{c.집행일수||0}}일</td>
     </tr>`).join('')}}</tbody>`;
+}}
+
+// OFF 소재 성과 분석
+function buildOffCreativeTable(){{
+  const data = D.off_creative_analysis || [];
+  const sec = document.getElementById('off-creative-sec');
+  if(data.length === 0){{
+    sec.style.display = 'none';
+    return;
+  }}
+  sec.style.display = 'block';
+
+  const {{totalCost,totalConv,activeCount}} = data.reduce((a,c)=>({{
+    totalCost:a.totalCost+c.총비용, totalConv:a.totalConv+c.총전환,
+    activeCount:a.activeCount+(c.총비용>0?1:0)
+  }}),{{totalCost:0,totalConv:0,activeCount:0}});
+  const totalCpa = totalConv > 0 ? Math.round(totalCost/totalConv) : 0;
+
+  document.getElementById('off-creative-summary').innerHTML=`
+    <div class="summary-strip">
+      <div>
+        <div class="s-label">OFF 소재수</div>
+        <div class="s-val">${{data.length}}개 <span style="font-size:11px;color:var(--text2);font-weight:400">(실집행 ${{activeCount}}개)</span></div>
+      </div>
+      <div>
+        <div class="s-label">총 비용</div>
+        <div class="s-val">${{(totalCost/10000).toFixed(1)}}만</div>
+      </div>
+      <div>
+        <div class="s-label">총 전환</div>
+        <div class="s-val">${{totalConv}}건</div>
+      </div>
+      <div>
+        <div class="s-label">평균 CPA</div>
+        <div class="s-val">${{totalCpa>0?fmt(totalCpa)+'원':'-'}}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('off-creative-tbl').innerHTML=`
+    <thead><tr><th>소재명</th><th>지점</th><th>유형</th><th>비용</th><th>전환</th><th>CPA</th><th>CTR</th><th>CVR</th></tr></thead>
+    <tbody>${{data.map(c=>{{
+      const cpaColor = c.CPA==null ? 'var(--text2)' : c.CPA<=D.target_cpa ? 'var(--accent)' : 'var(--danger)';
+      return `<tr>
+      <td class="td-name" title="${{c.creative_name}}">${{c.creative_name}}</td>
+      <td style="font-size:11px;color:var(--text2)">${{(c.지점목록||[]).join(', ')||'-'}}</td>
+      <td style="font-size:11px;color:var(--text2)">${{c.소재유형||'-'}}</td>
+      <td class="num">${{c.총비용>0?(c.총비용/10000).toFixed(1)+'만':'-'}}</td>
+      <td class="num">${{c.총전환||0}}건</td>
+      <td class="num" style="color:${{cpaColor}}">${{c.CPA?fmt(c.CPA)+'원':'-'}}</td>
+      <td class="num">${{c.CTR!=null?c.CTR.toFixed(2)+'%':'-'}}</td>
+      <td class="num">${{c.CVR!=null?c.CVR.toFixed(2)+'%':'-'}}</td>
+    </tr>`}}).join('')}}</tbody>`;
 }}
 
 // Branch Creative Table (소재×지점)
@@ -1281,7 +1387,7 @@ function buildProjection(){{
   }});
 }}
 
-buildKpi(); buildInsights(); buildTierTable(); buildNewCreativeTable(); buildBranchCreativeTable(); buildBranchCards();
+buildKpi(); buildInsights(); buildTierTable(); buildNewCreativeTable(); buildOffCreativeTable(); buildBranchCreativeTable(); buildBranchCards();
 buildBranchCharts(); buildAction(); buildProjection();
 </script>
 </body>

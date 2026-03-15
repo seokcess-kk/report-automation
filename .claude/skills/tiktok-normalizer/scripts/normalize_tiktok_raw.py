@@ -40,6 +40,11 @@ def normalize(input_path: str, output_path: str):
                 df[col].astype(str).str.replace(',', ''), errors='coerce'
             ).fillna(0)
 
+    # 3-b. 필수 컬럼 존재 확인 (누락 시 0으로 생성)
+    for col in ['clicks', 'impressions', 'conversions', 'cost', 'landing_views']:
+        if col not in df.columns:
+            df[col] = 0
+
     # 4. KPI 재계산 (_calc 컬럼만 이후 분석에 사용)
     df['CTR_calc'] = (df['clicks'] / df['impressions'].replace(0, np.nan) * 100).round(4)
     df['CVR_calc'] = (df['conversions'] / df['clicks'].replace(0, np.nan) * 100).round(4)
@@ -70,7 +75,9 @@ def normalize(input_path: str, output_path: str):
             print(f"[WARNING] 중복 행 {len(dupes)}건 감지")
 
     # 9. 저장
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    out_dir = os.path.dirname(output_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     df.to_parquet(output_path, index=False)
     print(f"[OK] 표준화 완료: {len(df)}행 → {output_path}")
     return df

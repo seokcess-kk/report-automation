@@ -40,6 +40,7 @@ def load_data(csv_path: str = None, parquet_path: str = None) -> pd.DataFrame:
         df = pd.read_csv(csv_path, dtype={'광고 ID': str}, encoding='utf-8-sig')
 
         col_map = {
+            # 한글 헤더
             '클릭수(목적지)': 'clicks',
             '노출수': 'impressions',
             '전환수': 'conversions',
@@ -49,6 +50,14 @@ def load_data(csv_path: str = None, parquet_path: str = None) -> pd.DataFrame:
             '나이': 'age_group',
             '광고 이름': 'ad_name',
             '광고 ID': 'ad_id',
+            # 영문 헤더
+            'Clicks (destination)': 'clicks',
+            'Impressions': 'impressions',
+            'Conversions': 'conversions',
+            'Cost': 'cost',
+            'By Day': 'date',
+            'Ad name': 'ad_name',
+            'Ad ID': 'ad_id',
         }
         df = df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
 
@@ -171,6 +180,272 @@ def detect_anomalies(df_daily: pd.DataFrame, branch_cum: dict, prev_branch_cum: 
                     })
 
     return anomalies[:10]
+
+
+def analyze_dod_anomaly(df: pd.DataFrame, yesterday, day_before) -> list:
+    """전일비 이상치 감지 시 지점별/소재별 원인 분석
+
+    이상치 기준: 전환 감소 30% 이상 AND 5건 이상 감소
+    """
+    df_today = df[df['date'] == yesterday]
+    df_prev = df[df['date'] == day_before]
+
+    if len(df_today) == 0 or len(df_prev) == 0:
+        return []
+
+    conv_today = df_today['conversions'].sum()
+    conv_prev = df_prev['conversions'].sum()
+    cost_today = df_today['cost'].sum()
+    cost_prev = df_prev['cost'].sum()
+
+    if conv_prev == 0:
+        return []
+
+    conv_diff = conv_today - conv_prev
+    conv_pct = conv_diff / conv_prev * 100
+
+    # 이상치 기준: 30% 이상 감소 AND 5건 이상 차이
+    if conv_diff >= 0 or abs(conv_pct) < 30 or abs(conv_diff) < 5:
+        return []
+
+    lines = []
+    lines.append("📉 전일비 이상 감지")
+    lines.append(f"• 전환: {int(conv_prev)}건 -> {int(conv_today)}건 ({int(conv_diff):+d}건, {conv_pct:+.0f}%)")
+    lines.append(f"• 광고비: {fmt_man(cost_prev)} -> {fmt_man(cost_today)}")
+    lines.append("")
+
+    # 지점별 원인 분석
+    b_prev = df_prev.groupby('branch')['conversions'].sum()
+    b_today = df_today.groupby('branch')['conversions'].sum()
+    b_cost_prev = df_prev.groupby('branch')['cost'].sum()
+    b_cost_today = df_today.groupby('branch')['cost'].sum()
+
+    branch_diffs = []
+    for branch in VALID_BRANCHES:
+        prev_c = b_prev.get(branch, 0)
+        today_c = b_today.get(branch, 0)
+        diff = today_c - prev_c
+        prev_cost = b_cost_prev.get(branch, 0)
+        today_cost = b_cost_today.get(branch, 0)
+        if diff != 0 or prev_c > 0 or today_c > 0:
+            branch_diffs.append((branch, int(prev_c), int(today_c), int(diff), prev_cost, today_cost))
+
+    branch_diffs.sort(key=lambda x: x[3])
+
+    lines.append("[지점별 변화]")
+    for branch, prev_c, today_c, diff, prev_cost, today_cost in branch_diffs:
+        sign = f"{diff:+d}"
+        cpa_prev = f"{prev_cost/prev_c/10000:.1f}만" if prev_c > 0 else "-"
+        cpa_today = f"{today_cost/today_c/10000:.1f}만" if today_c > 0 else "-"
+        marker = " ⚠" if diff <= -3 or (diff == 0 and today_cost > prev_cost * 1.5) else ""
+        lines.append(f"  {branch}: {prev_c} -> {today_c}건 ({sign}) | CPA: {cpa_prev} -> {cpa_today}{marker}")
+    lines.append("")
+
+    # 소재별 원인 분석
+    def _creative_agg(d):
+        return d.groupby('creative_name').agg(
+            conv=('conversions', 'sum'),
+            clicks=('clicks', 'sum'),
+            cost=('cost', 'sum'),
+        ).reset_index()
+
+    c_prev = _creative_agg(df_prev)
+    c_today = _creative_agg(df_today)
+    merged = c_prev.merge(c_today, on='creative_name', suffixes=('_prev', '_today'), how='outer').fillna(0)
+    merged['conv_diff'] = merged['conv_today'] - merged['conv_prev']
+
+    down = merged[merged['conv_diff'] < 0].sort_values('conv_diff')
+    if len(down) > 0:
+        lines.append("[감소 소재]")
+        for _, r in down.head(5).iterrows():
+            name = strip_date_code(r['creative_name'])[:35] if r['creative_name'] else '-'
+            cvr_prev = r['conv_prev'] / r['clicks_prev'] * 100 if r['clicks_prev'] > 0 else 0
+            cvr_today = r['conv_today'] / r['clicks_today'] * 100 if r['clicks_today'] > 0 else 0
+            lines.append(f"  {name}: {int(r['conv_prev'])} -> {int(r['conv_today'])}건 ({int(r['conv_diff']):+d}) | CVR: {cvr_prev:.0f}% -> {cvr_today:.0f}%")
+        lines.append("")
+
+    up = merged[merged['conv_diff'] > 0].sort_values('conv_diff', ascending=False)
+    if len(up) > 0:
+        lines.append("[증가 소재]")
+        for _, r in up.head(3).iterrows():
+            name = strip_date_code(r['creative_name'])[:35] if r['creative_name'] else '-'
+            lines.append(f"  {name}: {int(r['conv_prev'])} -> {int(r['conv_today'])}건 ({int(r['conv_diff']):+d})")
+        lines.append("")
+
+    # 인사이트 생성
+    insights = _generate_anomaly_insights(
+        conv_diff, conv_pct, cost_today, cost_prev,
+        branch_diffs, down, up, df, yesterday,
+    )
+    if insights:
+        lines.append("[분석 인사이트]")
+        for insight in insights:
+            lines.append(f"  {insight}")
+        lines.append("")
+
+    return lines
+
+
+def _generate_anomaly_insights(
+    conv_diff, conv_pct, cost_today, cost_prev,
+    branch_diffs, down_creatives, up_creatives, df, yesterday,
+) -> list:
+    """이상치 패턴을 분석하여 원인 추정 및 액션 인사이트 생성"""
+    insights = []
+
+    # --- 1. 감소 집중도 분석 ---
+    # 지점: 감소분의 대부분이 소수 지점에 집중되었는지
+    total_drop = sum(abs(d[3]) for d in branch_diffs if d[3] < 0)
+    worst_branches = [(b, abs(d)) for b, _, _, d, _, _ in branch_diffs if d < 0]
+    worst_branches.sort(key=lambda x: x[1], reverse=True)
+
+    if total_drop > 0 and len(worst_branches) >= 1:
+        top_branch_drop = sum(x[1] for x in worst_branches[:2])
+        top_pct = top_branch_drop / total_drop * 100
+        if top_pct >= 70:
+            names = ', '.join(x[0] for x in worst_branches[:2])
+            insights.append(f"-> {names} 지점에서 감소분의 {top_pct:.0f}% 집중 발생")
+
+    # 소재: 특정 소재군이 감소를 주도했는지
+    if len(down_creatives) > 0:
+        top_creative = down_creatives.iloc[0]
+        top_name = strip_date_code(top_creative['creative_name'])[:30] if top_creative['creative_name'] else '-'
+        top_drop = abs(int(top_creative['conv_diff']))
+        top_share = top_drop / abs(conv_diff) * 100 if conv_diff != 0 else 0
+
+        # 같은 소재 시리즈 감지 (앞 10글자 동일)
+        if len(down_creatives) >= 2:
+            prefix = str(down_creatives.iloc[0]['creative_name'])[:10]
+            series = down_creatives[down_creatives['creative_name'].str[:10] == prefix]
+            if len(series) >= 2:
+                series_drop = abs(int(series['conv_diff'].sum()))
+                series_share = series_drop / abs(conv_diff) * 100 if conv_diff != 0 else 0
+                series_name = strip_date_code(prefix)[:20]
+                insights.append(f"-> '{series_name}' 시리즈 {len(series)}개 소재에서 -{series_drop}건 ({series_share:.0f}%) 집중")
+
+                # 소재 피로도 판단: 클릭은 유지되는데 CVR만 하락
+                clicks_prev = series['clicks_prev'].sum()
+                clicks_today = series['clicks_today'].sum()
+                if clicks_prev > 0:
+                    click_change = (clicks_today - clicks_prev) / clicks_prev * 100
+                    if abs(click_change) < 20:
+                        # 소재 코드에서 날짜 추출하여 운영 기간 추정
+                        raw_name = str(down_creatives.iloc[0]['creative_name'])
+                        parts = raw_name.rsplit('_', 1)
+                        if len(parts) == 2 and parts[1].isdigit() and len(parts[1]) == 6:
+                            code = parts[1]
+                            try:
+                                created = pd.to_datetime(f"20{code[:2]}-{code[2:4]}-{code[4:6]}")
+                                days_running = (yesterday - created).days
+                                if days_running >= 30:
+                                    insights.append(f"-> 클릭 유지 + CVR 급락 패턴 -> 소재 피로도 의심 (운영 약 {days_running}일)")
+                                else:
+                                    insights.append(f"-> 클릭 유지 + CVR 급락 -> 랜딩페이지/외부요인 점검 필요")
+                            except Exception:
+                                insights.append(f"-> 클릭 유지 + CVR 급락 패턴 -> 소재 피로도 또는 랜딩페이지 점검 필요")
+                        else:
+                            insights.append(f"-> 클릭 유지 + CVR 급락 패턴 -> 소재 피로도 또는 랜딩페이지 점검 필요")
+                    elif click_change < -20:
+                        insights.append(f"-> 클릭도 {click_change:+.0f}% 감소 -> 노출 축소/경쟁 심화 가능성")
+            elif top_share >= 40:
+                insights.append(f"-> '{top_name}' 단일 소재에서 -{top_drop}건 ({top_share:.0f}%) 발생")
+
+    # --- 2. 비용 효율 분석 ---
+    cost_change_pct = (cost_today - cost_prev) / cost_prev * 100 if cost_prev > 0 else 0
+    if cost_change_pct > 10 and conv_pct < -30:
+        insights.append(f"-> 비용 증가(+{cost_change_pct:.0f}%) 대비 전환 급감 -> 전체 효율 악화")
+    elif abs(cost_change_pct) <= 10 and conv_pct < -30:
+        insights.append(f"-> 비용 유사 수준에서 전환만 급감 -> 소재/랜딩 측 이슈 가능성")
+
+    # --- 3. 비용 증가 대비 전환 없는 지점 (창원 같은 케이스) ---
+    for branch, prev_c, today_c, diff, prev_cost, today_cost in branch_diffs:
+        if diff == 0 and today_c > 0 and prev_cost > 0 and today_cost > prev_cost * 1.4:
+            cost_up = (today_cost - prev_cost) / prev_cost * 100
+            insights.append(f"-> {branch}: 비용 +{cost_up:.0f}% 증가했으나 전환 동일 -> 비효율 소재 예산 점검")
+
+    # --- 4. 긍정 신호 ---
+    if len(up_creatives) > 0:
+        best = up_creatives.iloc[0]
+        best_name = strip_date_code(best['creative_name'])[:25] if best['creative_name'] else '-'
+        best_gain = int(best['conv_diff'])
+        # 증가 소재가 어느 지점에서 잘 되었는지
+        insights.append(f"-> '{best_name}' 소재 선전(+{best_gain}건) -> 타 지점 확산 테스트 검토")
+
+    return insights[:6]
+
+
+def analyze_zero_conv_branches(
+    branch_daily: dict, prev_branch_data: dict,
+    df: pd.DataFrame, yesterday, day_before,
+) -> list:
+    """전환 0건 지점에 대해 전일 대비 변화 코멘트 생성"""
+    lines = []
+    zero_branches = []
+
+    for branch in VALID_BRANCHES:
+        daily = branch_daily.get(branch, {})
+        if daily.get('conv', 0) == 0 and daily.get('cost', 0) > 0:
+            zero_branches.append(branch)
+
+    if not zero_branches:
+        return []
+
+    lines.append("🔍 전환 0건 지점 분석")
+
+    # 전일 지점 데이터: 스냅샷 우선, 없으면 CSV fallback
+    for branch in zero_branches:
+        today_cost = branch_daily.get(branch, {}).get('cost', 0)
+
+        # 전일 데이터 조회
+        prev_b = prev_branch_data.get(branch, {})
+        prev_daily = prev_b.get('daily', {})
+        prev_conv = prev_daily.get('conv', 0)
+        prev_cost = prev_daily.get('cost', 0)
+        prev_cvr = prev_daily.get('cvr')
+
+        # 스냅샷에 전일 데이터 없으면 CSV fallback
+        if not prev_daily:
+            df_prev_branch = df[(df['date'] == day_before) & (df['branch'] == branch)]
+            if len(df_prev_branch) > 0:
+                prev_conv = int(df_prev_branch['conversions'].sum())
+                prev_cost = df_prev_branch['cost'].sum()
+                clicks = df_prev_branch['clicks'].sum()
+                prev_cvr = (prev_conv / clicks * 100) if clicks > 0 else 0
+
+        # 비용 변화
+        if prev_cost > 0:
+            cost_change_pct = (today_cost - prev_cost) / prev_cost * 100
+            cost_arrow = '▲' if cost_change_pct > 0 else '▼'
+            cost_str = f"비용 {fmt_man(prev_cost)}→{fmt_man(today_cost)} ({cost_arrow}{abs(cost_change_pct):.0f}%)"
+        else:
+            cost_str = f"비용 {fmt_man(today_cost)}"
+
+        # 전환 변화
+        if prev_conv > 0:
+            conv_str = f"전환 {prev_conv}건→0건"
+        else:
+            conv_str = "전환 0건 (전일도 0건)"
+
+        # CVR 변화
+        cvr_str = ""
+        if prev_cvr and prev_cvr > 0:
+            cvr_str = f" | 전일CVR {prev_cvr:.1f}%→0%"
+
+        lines.append(f"• {branch}: {conv_str} | {cost_str}{cvr_str}")
+
+        # 원인 추정 코멘트
+        if prev_cost > 0 and today_cost > prev_cost * 1.2:
+            lines.append(f"  → 비용 증가에도 전환 없음 - 소재 효율 점검 필요")
+        elif prev_cost > 0 and today_cost < prev_cost * 0.5:
+            lines.append(f"  → 비용 대폭 감소 - 노출/예산 제한 확인")
+        elif prev_conv >= 2:
+            lines.append(f"  → 전일 대비 급감 - 소재 피로도 또는 타겟 이슈 점검")
+        elif prev_conv == 1:
+            lines.append(f"  → 전일 1건 수준으로 일시적 변동 가능성")
+        else:
+            lines.append(f"  → 지속적 전환 부진 - 소재 교체 또는 예산 재배분 검토")
+
+    return lines
 
 
 def generate_actions(anomalies: list) -> list:
@@ -363,7 +638,20 @@ def build_daily_txt(
             ratio = round(b['cpa'] / b['target'], 1) if b['cpa'] and b['target'] else 0
             lines.append(f"• {b['name']}: {b['conv']}건 | {b['cvr']:.1f}% | {cpa_str} (목표 {ratio}배)")
 
-    lines.append("")
+    # 🔍 전환 0건 지점 코멘트
+    zero_conv_lines = analyze_zero_conv_branches(
+        branch_daily, prev_data.get('branch', {}), df, yesterday, day_before
+    )
+    if zero_conv_lines:
+        lines.append("")
+        lines.extend(zero_conv_lines)
+
+    # 📉 전일비 이상치 분석
+    anomaly_lines = analyze_dod_anomaly(df, yesterday, day_before)
+    if anomaly_lines:
+        lines.append("")
+        lines.extend(anomaly_lines)
+
     lines.append(separator)
     lines.append("")
 

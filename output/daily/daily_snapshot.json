@@ -1492,5 +1492,114 @@
         }
       }
     }
+  },
+  "2026-03-18": {
+    "daily": {
+      "cost": 489027,
+      "conv": 15,
+      "cpa": 32601,
+      "ctr": 0.52,
+      "cvr": 6.02
+    },
+    "cumulative": {
+      "cost": 9186297,
+      "conv": 351,
+      "cpa": 26171,
+      "ctr": 0.49,
+      "cvr": 7.47
+    },
+    "branch": {
+      "서울": {
+        "daily": {
+          "cost": 65089,
+          "conv": 5,
+          "cvr": 11.9
+        },
+        "cumulative": {
+          "cost": 1153305,
+          "conv": 76,
+          "cpa": 15175,
+          "cvr": 10.63
+        }
+      },
+      "부평": {
+        "daily": {
+          "cost": 98384,
+          "conv": 3,
+          "cvr": 6.0
+        },
+        "cumulative": {
+          "cost": 1720620,
+          "conv": 67,
+          "cpa": 25680,
+          "cvr": 7.01
+        }
+      },
+      "수원": {
+        "daily": {
+          "cost": 97517,
+          "conv": 2,
+          "cvr": 6.06
+        },
+        "cumulative": {
+          "cost": 1727030,
+          "conv": 37,
+          "cpa": 46676,
+          "cvr": 5.77
+        }
+      },
+      "일산": {
+        "daily": {
+          "cost": 26501,
+          "conv": 2,
+          "cvr": 9.09
+        },
+        "cumulative": {
+          "cost": 570759,
+          "conv": 39,
+          "cpa": 14634,
+          "cvr": 10.1
+        }
+      },
+      "대구": {
+        "daily": {
+          "cost": 70080,
+          "conv": 1,
+          "cvr": 2.63
+        },
+        "cumulative": {
+          "cost": 1721562,
+          "conv": 74,
+          "cpa": 23264,
+          "cvr": 8.2
+        }
+      },
+      "창원": {
+        "daily": {
+          "cost": 66182,
+          "conv": 2,
+          "cvr": 5.71
+        },
+        "cumulative": {
+          "cost": 1139573,
+          "conv": 25,
+          "cpa": 45582,
+          "cvr": 4.66
+        }
+      },
+      "천안": {
+        "daily": {
+          "cost": 65274,
+          "conv": 0,
+          "cvr": 0.0
+        },
+        "cumulative": {
+          "cost": 1153448,
+          "conv": 33,
+          "cpa": 34952,
+          "cvr": 5.86
+        }
+      }
+    }
   }
 }

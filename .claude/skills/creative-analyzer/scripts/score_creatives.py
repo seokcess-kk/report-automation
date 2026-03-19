@@ -279,6 +279,10 @@ def analyze_age_groups(df_valid: pd.DataFrame) -> pd.DataFrame:
     """
     VALID_AGE_GROUPS = ['25-34', '35-44', '45-54', '≥55']
 
+    if 'age_group' not in df_valid.columns:
+        print("[WARNING] age_group 컬럼 없음 - 나이대 분석 건너뜀")
+        return pd.DataFrame()
+
     df_age = df_valid[df_valid['age_group'].isin(VALID_AGE_GROUPS)].copy()
 
     if len(df_age) == 0:

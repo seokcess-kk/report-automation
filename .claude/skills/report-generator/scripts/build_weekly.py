@@ -31,6 +31,7 @@ def load_and_parse_data(csv_path: str) -> pd.DataFrame:
     df = pd.read_csv(csv_path, dtype={'광고 ID': str}, encoding='utf-8-sig')
 
     col_map = {
+        # 한글 헤더
         '클릭수(목적지)': 'clicks',
         '노출수': 'impressions',
         '전환수': 'conversions',
@@ -40,6 +41,14 @@ def load_and_parse_data(csv_path: str) -> pd.DataFrame:
         '나이': 'age_group',
         '광고 이름': 'ad_name',
         '광고 ID': 'ad_id',
+        # 영문 헤더
+        'Clicks (destination)': 'clicks',
+        'Impressions': 'impressions',
+        'Conversions': 'conversions',
+        'Cost': 'cost',
+        'By Day': 'date',
+        'Ad name': 'ad_name',
+        'Ad ID': 'ad_id',
     }
     df = df.rename(columns={k: v for k, v in col_map.items() if k in df.columns})
 

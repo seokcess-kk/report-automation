@@ -18,6 +18,7 @@ def normalize(input_path: str, output_path: str):
 
     # 2. 컬럼명 표준화
     COLUMN_ALIAS = {
+        # 한글 헤더
         '클릭수(목적지)': 'clicks',
         '노출수': 'impressions',
         '전환수': 'conversions',
@@ -29,6 +30,18 @@ def normalize(input_path: str, output_path: str):
         '광고 ID': 'ad_id',
         '도달': 'reach',
         '동영상 조회수': 'video_views',
+        # 영문 헤더
+        'Clicks (destination)': 'clicks',
+        'Impressions': 'impressions',
+        'Conversions': 'conversions',
+        'Cost': 'cost',
+        'By Day': 'date',
+        'Ad name': 'ad_name',
+        'Ad ID': 'ad_id',
+        'Frequency': 'frequency',
+        'Video views': 'video_views',
+        'Currency': 'currency',
+        'Campaign name': 'campaign_name',
     }
     df = df.rename(columns={k: v for k, v in COLUMN_ALIAS.items() if k in df.columns})
 

@@ -526,7 +526,6 @@ def generate_branch_creative(df_this: pd.DataFrame) -> list:
 
     result = []
     for _, row in agg.iterrows():
-        creative = strip_date_code(row['creative_name'])
         min_cpa = min_cpa_by_creative.get(row['creative_name'])
 
         # CPA 색상 판단
@@ -539,7 +538,8 @@ def generate_branch_creative(df_this: pd.DataFrame) -> list:
                 cpa_color = 'good'
 
         result.append({
-            'creative_name': creative,
+            'creative_name': row['creative_name'],  # 원본 유지 (날짜코드 포함)
+            'display_name': strip_date_code(row['creative_name']),  # 표시용
             'branch': row['branch'],
             'CPA': int(row['cpa']) if pd.notna(row['cpa']) else None,
             'CTR': round(row['ctr'], 2) if pd.notna(row['ctr']) else None,
@@ -550,8 +550,31 @@ def generate_branch_creative(df_this: pd.DataFrame) -> list:
             'cpa_color': cpa_color,
         })
 
-    # 소재명 기준 정렬, 같은 소재명이면 CPA 오름차순
+    # 원본 소재명 기준 정렬, 같은 소재명이면 CPA 오름차순
     result = sorted(result, key=lambda x: (x['creative_name'], x['CPA'] or 999999))
+
+    # 동일 display_name 중복 시 지점 suffix 추가 (make_unique_names 방식)
+    display_groups = {}
+    for r in result:
+        dn = r['display_name']
+        cn = r['creative_name']
+        if dn not in display_groups:
+            display_groups[dn] = set()
+        display_groups[dn].add(cn)
+
+    for dn, cn_set in display_groups.items():
+        if len(cn_set) <= 1:
+            continue
+        # 동일 display_name에 여러 원본 creative_name → 각각 지점 suffix 추가
+        for r in result:
+            if r['display_name'] != dn:
+                continue
+            cn_branches = [x['branch'] for x in result if x['creative_name'] == r['creative_name']]
+            if len(cn_branches) == 1:
+                r['display_name'] = f"{dn} ({cn_branches[0]})"
+            elif len(cn_branches) > 1:
+                r['display_name'] = f"{dn} ({cn_branches[0]} 외 {len(cn_branches)-1}개)"
+
     return result
 
 
@@ -734,16 +757,17 @@ def generate_full_insight(data: dict) -> dict:
             'insights': insights
         })
 
-    # === 4. 크로스 분석 (소재×지점) ===
+    # === 4. 크로스 분석 (소재×지점) — 원본 creative_name 기준 그룹핑 ===
     cross_findings = []
     creative_branches = {}
     for c in data.get('branch_creative', []):
-        name = c['creative_name']
+        name = c['creative_name']  # 원본 (날짜코드 포함) → 정확한 소재 단위 매칭
         if name not in creative_branches:
             creative_branches[name] = []
         creative_branches[name].append(c)
 
     for name, entries in creative_branches.items():
+        display = entries[0].get('display_name', strip_date_code(name))
         with_cpa = [e for e in entries if e.get('CPA') is not None]
         if len(with_cpa) >= 2:
             cpas = [e['CPA'] for e in with_cpa]
@@ -752,7 +776,7 @@ def generate_full_insight(data: dict) -> dict:
                 best = min(with_cpa, key=lambda x: x['CPA'])
                 worst = max(with_cpa, key=lambda x: x['CPA'])
                 cross_findings.append({
-                    'creative': name, 'type': '지점 편차', 'color': '#fb923c',
+                    'creative': display, 'type': '지점 편차', 'color': '#fb923c',
                     'detail': f"최저 {best['branch']} CPA {best['CPA']:,}원 vs 최고 {worst['branch']} CPA {worst['CPA']:,}원 ({max_cpa/min_cpa:.1f}배)",
                     'ratio': max_cpa / min_cpa
                 })
@@ -761,12 +785,13 @@ def generate_full_insight(data: dict) -> dict:
 
     # 지점 특화 소재 (1개 지점에서만 전환 발생)
     for name, entries in creative_branches.items():
+        display = entries[0].get('display_name', strip_date_code(name))
         with_conv = [e for e in entries if e.get('총전환', 0) > 0]
         without_conv = [e for e in entries if e.get('총전환', 0) == 0 and e.get('총비용', 0) > 10000]
         if len(with_conv) == 1 and len(without_conv) >= 2:
             best = with_conv[0]
             cross_findings.append({
-                'creative': name, 'type': '지점 특화', 'color': '#60a5fa',
+                'creative': display, 'type': '지점 특화', 'color': '#60a5fa',
                 'detail': f"{best['branch']}에서만 전환 {best['총전환']}건 — 나머지 {len(without_conv)}개 지점 전환 0건 (비용 소진 중)",
                 'ratio': 0
             })
@@ -917,6 +942,11 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
 
     # 소재×지점 성과 (캠페인 필터 적용)
     branch_creative = generate_branch_creative(df_this_creative)
+
+    # branch_creative에 TIER 정보 직접 매핑 (원본 creative_name 기준)
+    tier_map = tier_this.set_index('creative_name')['tier'].to_dict() if len(tier_this) > 0 else {}
+    for bc in branch_creative:
+        bc['tier'] = tier_map.get(bc['creative_name'], '-')
 
     # OFF 소재 성과 분석
     off_creative_analysis = generate_off_creative_analysis(df_this_creative)
@@ -1473,7 +1503,7 @@ function buildBranchCreativeTable(){{
     return;
   }}
 
-  // rowspan 계산을 위해 소재명별 그룹핑
+  // rowspan 계산을 위해 원본 소재명별 그룹핑 (날짜코드 포함 → 정확한 소재 단위)
   const groups = {{}};
   data.forEach(r => {{
     if(!groups[r.creative_name]) groups[r.creative_name] = [];
@@ -1483,6 +1513,7 @@ function buildBranchCreativeTable(){{
   let rows = '';
   let prevName = '';
   data.forEach((r, idx) => {{
+    const displayName = r.display_name || r.creative_name;
     const isFirst = r.creative_name !== prevName;
     const rowspan = isFirst ? groups[r.creative_name].length : 0;
     prevName = r.creative_name;
@@ -1493,7 +1524,7 @@ function buildBranchCreativeTable(){{
 
     rows += '<tr>';
     if(isFirst){{
-      rows += `<td class="td-name" rowspan="${{rowspan}}" title="${{r.creative_name}}">${{r.creative_name}}</td>`;
+      rows += `<td class="td-name" rowspan="${{rowspan}}" title="${{displayName}}">${{displayName}}</td>`;
     }}
     rows += `<td>${{r.branch}}${{shortTag}}</td>`;
     rows += `<td class="num ${{cpaColor}}">${{cpaVal}}</td>`;
@@ -1535,9 +1566,7 @@ function buildBranchCards(){{
     return;
   }}
 
-  // TIER 데이터 매핑
-  const tierMap = {{}};
-  (D.tier_this || []).forEach(t => {{ tierMap[t.creative_name] = t.TIER; }});
+  // TIER 데이터는 branch_creative 각 항목에 직접 포함됨 (Python에서 매핑 완료)
 
   // 지점별 그룹핑
   const byBranch = {{}};
@@ -1568,14 +1597,15 @@ function buildBranchCards(){{
 
     let rows = '';
     items.forEach((r, idx) => {{
-      const tier = tierMap[r.creative_name] || '-';
+      const tier = r.tier || '-';
+      const displayName = r.display_name || r.creative_name;
       const isBest = idx === 0 && r.CPA != null;
       const rowClass = isBest ? 'row-best' : '';
       const cpaVal = r.CPA != null ? fmt(r.CPA) + '원' : '-';
       const cvrVal = r.CVR != null ? r.CVR.toFixed(1) + '%' : '-';
 
       rows += `<tr class="${{rowClass}}">
-        <td class="td-name" title="${{r.creative_name}}">${{r.creative_name}}</td>
+        <td class="td-name" title="${{displayName}}">${{displayName}}</td>
         <td><span class="tier-badge ${{tier}}">${{tier}}</span></td>
         <td class="num">${{cpaVal}}</td>
         <td class="num">${{cvrVal}}</td>

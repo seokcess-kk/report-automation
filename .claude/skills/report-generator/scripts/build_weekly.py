@@ -583,6 +583,284 @@ def calc_daily_trend(df: pd.DataFrame, week_start, week_end) -> list:
     return result
 
 
+def generate_full_insight(data: dict) -> dict:
+    """종합 인사이트 분석 데이터 생성"""
+    k, kp = data['kpi_this'], data['kpi_prev']
+    target = data['target_cpa']
+
+    # === 1. 전체 성과 요약 ===
+    cpa_diff = k['cpa'] - kp['cpa']
+    conv_diff = k['conv'] - kp['conv']
+    cvr_diff = round(k['cvr'] - kp['cvr'], 2)
+    ctr_diff = round(k['ctr'] - kp['ctr'], 2)
+    cost_diff = k['cost'] - kp['cost']
+
+    improvements = sum([cpa_diff < 0, conv_diff > 0, cvr_diff > 0])
+    if improvements >= 2:
+        headline, hcolor = '전반적 효율 개선', '#4ade80'
+    elif improvements == 1:
+        headline, hcolor = '혼조세', '#fb923c'
+    else:
+        headline, hcolor = '효율 악화', '#f87171'
+
+    summary_points = []
+    cost_dir = '감소' if cost_diff < 0 else '증가'
+    summary_points.append(f"비용 {abs(cost_diff):,}원 {cost_dir} ({abs(cost_diff)/max(kp['cost'],1)*100:.1f}%)")
+    conv_dir = '증가' if conv_diff > 0 else '감소'
+    summary_points.append(f"전환 {abs(conv_diff)}건 {conv_dir} ({conv_diff/max(kp['conv'],1)*100:+.1f}%)")
+    cpa_dir = '개선' if cpa_diff < 0 else '상승'
+    summary_points.append(f"CPA {abs(cpa_diff):,}원 {cpa_dir} ({cpa_diff/max(kp['cpa'],1)*100:+.1f}%)")
+    summary_points.append(f"CTR {k['ctr']}% ({ctr_diff:+.2f}%p) · CVR {k['cvr']}% ({cvr_diff:+.2f}%p)")
+
+    # === 2. 지점별 분석 ===
+    all_branches_set = set(VALID_BRANCHES)
+    branches_analysis = []
+    for b in data['branch']:
+        eff = b.get('효율점수') or 0
+        cpa = b.get('CPA') or 0
+        cpa_d = b.get('CPA_diff')
+        cvr = b.get('CVR') or 0
+        cvr_d = b.get('CVR_diff')
+        conv = b.get('총전환') or 0
+        cost = b.get('총비용') or 0
+
+        if eff >= 1.5:
+            grade, gc = '최우수', '#4ade80'
+        elif eff >= 1.0:
+            grade, gc = '양호', '#60a5fa'
+        elif eff >= 0.7:
+            grade, gc = '보통', '#fb923c'
+        else:
+            grade, gc = '약세', '#f87171'
+
+        points = []
+        if cpa_d is not None:
+            if cpa_d < -10000:
+                points.append(f"CPA {cpa:,}원 — 전주 대비 {abs(cpa_d):,}원 대폭 개선")
+            elif cpa_d < -3000:
+                points.append(f"CPA {cpa:,}원 — 전주 대비 {abs(cpa_d):,}원 개선")
+            elif cpa_d < 0:
+                points.append(f"CPA {cpa:,}원 — 전주 대비 {abs(cpa_d):,}원 소폭 개선")
+            elif cpa_d > 20000:
+                points.append(f"CPA {cpa:,}원 — 전주 대비 +{cpa_d:,}원 급등, 원인 분석 시급")
+            elif cpa_d > 5000:
+                points.append(f"CPA {cpa:,}원 — 전주 대비 +{cpa_d:,}원 상승")
+            else:
+                points.append(f"CPA {cpa:,}원 — 전주 대비 {cpa_d:+,}원")
+
+        if cvr_d is not None:
+            if abs(cvr_d) >= 3:
+                direction = '급등' if cvr_d > 0 else '급락'
+                points.append(f"CVR {cvr:.2f}% ({cvr_d:+.2f}%p) — {direction}")
+            elif abs(cvr_d) >= 1:
+                direction = '상승' if cvr_d > 0 else '하락'
+                points.append(f"CVR {cvr:.2f}% ({cvr_d:+.2f}%p {direction})")
+
+        if eff >= 1.5:
+            points.append(f"효율점수 {eff:.2f} — 비용 대비 전환 비중 탁월")
+        elif eff < 0.6:
+            points.append(f"효율점수 {eff:.2f} — 비용 대비 전환 비중 불균형")
+
+        if cpa > 0:
+            ratio = cpa / target
+            if ratio > 2:
+                points.append(f"TARGET CPA의 {ratio:.1f}배 — 소재 교체 시급")
+            elif ratio > 1.5:
+                points.append(f"TARGET CPA의 {ratio:.1f}배 — 개선 필요")
+            elif ratio <= 0.8:
+                points.append(f"TARGET CPA 대비 {(1-ratio)*100:.0f}% 절감")
+
+        branches_analysis.append({
+            'branch': b['branch'], 'grade': grade, 'grade_color': gc,
+            'points': points, 'conv': conv, 'cost': cost,
+            'cpa': cpa, 'eff_score': eff
+        })
+
+    # === 3. TIER 분석 ===
+    tier_groups = {}
+    for t in data['tier_this']:
+        tier = t['TIER']
+        if tier not in tier_groups:
+            tier_groups[tier] = []
+        tier_groups[tier].append(t)
+
+    tier_meta = {
+        'TIER1': {'title': '핵심 성장 소재', 'color': '#4ade80', 'desc': 'CPA ≤ TARGET + CVR ≥ 5%'},
+        'TIER2': {'title': '효율 양호 소재', 'color': '#60a5fa', 'desc': 'CPA ≤ TARGET + LPV ≥ 50%'},
+        'TIER3': {'title': 'CVR 양호 / CPA 초과', 'color': '#a78bfa', 'desc': 'CVR ≥ 5% but CPA > TARGET'},
+        'TIER4': {'title': '개선 또는 OFF 검토', 'color': '#f87171', 'desc': 'CPA 초과 + CVR 미달'},
+        'LOW_VOLUME': {'title': '저볼륨 (판단 보류)', 'color': '#6b7280', 'desc': '클릭 < 50 or 비용 < 5만원'},
+    }
+
+    tier_analysis = []
+    for tier_name in ['TIER1', 'TIER2', 'TIER3', 'TIER4', 'LOW_VOLUME']:
+        items = tier_groups.get(tier_name, [])
+        if not items:
+            continue
+        meta = tier_meta[tier_name]
+        insights = []
+
+        if tier_name == 'TIER1':
+            for item in items:
+                bs = set(item.get('지점목록', []))
+                missing = all_branches_set - bs
+                if len(missing) >= 2 and item.get('CPA'):
+                    insights.append(f"'{item['creative_name']}' (CPA {int(item['CPA']):,}원) → 미집행 {len(missing)}개 지점 확장 가능")
+            total_conv = sum(i.get('총전환', 0) for i in items)
+            insights.append(f"TIER1 소재 총 전환 {total_conv}건")
+        elif tier_name == 'TIER3':
+            for item in items:
+                if item.get('CPA') and pd.notna(item['CPA']):
+                    over = int(item['CPA']) - target
+                    insights.append(f"'{item['creative_name']}' CPA {over:,}원 초과 — 미세 조정으로 TIER1 승격 가능성")
+        elif tier_name == 'TIER4':
+            high_spend = [i for i in items if i.get('총비용', 0) > 150000]
+            for item in high_spend:
+                insights.append(f"'{item['creative_name']}' 비용 {item['총비용']/10000:.1f}만원 — OFF 또는 리뉴얼 검토")
+        elif tier_name == 'LOW_VOLUME':
+            zero_conv = [i for i in items if i.get('총전환', 0) == 0]
+            if zero_conv:
+                insights.append(f"전환 0건 소재 {len(zero_conv)}개 — 비용 미미하나 정리 검토")
+
+        tier_analysis.append({
+            'tier': tier_name, 'title': meta['title'], 'color': meta['color'],
+            'desc': meta['desc'], 'count': len(items),
+            'items': [{
+                'name': i['creative_name'],
+                'cpa': i.get('CPA'), 'cvr': i.get('CVR'), 'ctr': i.get('CTR'),
+                'conv': i.get('총전환', 0), 'cost': i.get('총비용', 0),
+                'branches': i.get('지점목록', [])
+            } for i in sorted(items, key=lambda x: x.get('CPA') or 999999)],
+            'insights': insights
+        })
+
+    # === 4. 크로스 분석 (소재×지점) ===
+    cross_findings = []
+    creative_branches = {}
+    for c in data.get('branch_creative', []):
+        name = c['creative_name']
+        if name not in creative_branches:
+            creative_branches[name] = []
+        creative_branches[name].append(c)
+
+    for name, entries in creative_branches.items():
+        with_cpa = [e for e in entries if e.get('CPA') is not None]
+        if len(with_cpa) >= 2:
+            cpas = [e['CPA'] for e in with_cpa]
+            min_cpa, max_cpa = min(cpas), max(cpas)
+            if min_cpa > 0 and max_cpa / min_cpa >= 2.0:
+                best = min(with_cpa, key=lambda x: x['CPA'])
+                worst = max(with_cpa, key=lambda x: x['CPA'])
+                cross_findings.append({
+                    'creative': name, 'type': '지점 편차', 'color': '#fb923c',
+                    'detail': f"최저 {best['branch']} CPA {best['CPA']:,}원 vs 최고 {worst['branch']} CPA {worst['CPA']:,}원 ({max_cpa/min_cpa:.1f}배)",
+                    'ratio': max_cpa / min_cpa
+                })
+    cross_findings.sort(key=lambda x: -x.get('ratio', 0))
+    cross_findings = cross_findings[:5]
+
+    # 지점 특화 소재 (1개 지점에서만 전환 발생)
+    for name, entries in creative_branches.items():
+        with_conv = [e for e in entries if e.get('총전환', 0) > 0]
+        without_conv = [e for e in entries if e.get('총전환', 0) == 0 and e.get('총비용', 0) > 10000]
+        if len(with_conv) == 1 and len(without_conv) >= 2:
+            best = with_conv[0]
+            cross_findings.append({
+                'creative': name, 'type': '지점 특화', 'color': '#60a5fa',
+                'detail': f"{best['branch']}에서만 전환 {best['총전환']}건 — 나머지 {len(without_conv)}개 지점 전환 0건 (비용 소진 중)",
+                'ratio': 0
+            })
+    cross_findings = cross_findings[:8]
+
+    # === 5. OFF 소재 분석 ===
+    off_findings = []
+    off_data = data.get('off_creative_analysis', [])
+    high_spend_off = [o for o in off_data if o.get('총비용', 0) > 100000]
+    for o in high_spend_off:
+        cpa_str = f"CPA {o['CPA']:,}원" if o.get('CPA') else "전환 0건"
+        off_findings.append({
+            'creative': o['creative_name'], 'type': '고비용 OFF', 'color': '#f87171',
+            'detail': f"비용 {o['총비용']/10000:.1f}만원, {cpa_str} — OFF 상태 비용 소진"
+        })
+
+    on_cpa_map = {t['creative_name']: t['CPA'] for t in data['tier_this'] if t.get('CPA')}
+    for o in off_data:
+        if o.get('CPA') and o['creative_name'] in on_cpa_map:
+            on_cpa = on_cpa_map[o['creative_name']]
+            if o['CPA'] < on_cpa:
+                off_findings.append({
+                    'creative': o['creative_name'], 'type': 'ON보다 우수', 'color': '#fb923c',
+                    'detail': f"OFF CPA {o['CPA']:,}원 < ON CPA {int(on_cpa):,}원 — 재등록 검토"
+                })
+
+    no_conv_off = [o for o in off_data if o.get('총전환', 0) == 0 and o.get('총비용', 0) > 50000]
+    for o in no_conv_off:
+        off_findings.append({
+            'creative': o['creative_name'], 'type': '전환 0건', 'color': '#6b7280',
+            'detail': f"비용 {o['총비용']/10000:.1f}만원 소진, 전환 없음 — 즉시 중단 검토"
+        })
+
+    # === 6. 액션 권고 ===
+    actions_immediate = []
+    for t in tier_groups.get('TIER1', []):
+        bs = set(t.get('지점목록', []))
+        missing = all_branches_set - bs
+        if len(missing) >= 2 and t.get('CPA'):
+            actions_immediate.append({
+                'action': f"'{t['creative_name']}' → {', '.join(sorted(missing))} 확장",
+                'reason': f"CPA {int(t['CPA']):,}원 (TIER1) · 미집행 {len(missing)}개 지점",
+                'priority': t['CPA'] or 999999
+            })
+    actions_immediate.sort(key=lambda x: x['priority'])
+
+    for t in tier_groups.get('TIER4', []):
+        if t.get('CPA') and t['CPA'] > target * 2:
+            actions_immediate.append({
+                'action': f"'{t['creative_name']}' OFF 검토",
+                'reason': f"CPA {int(t['CPA']):,}원 (TARGET의 {t['CPA']/target:.1f}배)",
+                'priority': 999999
+            })
+
+    actions_monitoring = []
+    for b in data['branch']:
+        if b.get('CPA_diff') and b['CPA_diff'] > 10000:
+            actions_monitoring.append(f"{b['branch']} CPA +{b['CPA_diff']:,}원 급등 — 소재 피로도/경쟁 심화 확인")
+
+    for t in data.get('tier_list', []):
+        if '↓' in t.get('change', '') and 'TIER' in t.get('change', ''):
+            actions_monitoring.append(f"'{t['creative_name']}' {t['change']} — 지속 모니터링")
+
+    daily = data.get('daily', [])
+    if len(daily) >= 6:
+        first_3 = sum(d['conv'] for d in daily[:3])
+        last_3 = sum(d['conv'] for d in daily[-3:])
+        if first_3 > 0:
+            ratio = last_3 / first_3
+            if ratio >= 1.5:
+                actions_monitoring.append(f"주 후반 전환 급증 ({first_3}건→{last_3}건) — 상승 추세 확인")
+            elif ratio <= 0.6:
+                actions_monitoring.append(f"주 후반 전환 감소 ({first_3}건→{last_3}건) — 하락 원인 점검")
+
+    gap = data['monthly_target_conv'] - data['conv_so_far']
+    if gap <= 0:
+        monthly_msg = f"목표 {data['monthly_target_conv']}건 달성 완료 (현재 {data['conv_so_far']}건)"
+    else:
+        monthly_msg = f"현재 {data['conv_so_far']}건 / 목표 {data['monthly_target_conv']}건 ({data['conv_pct']}%) — 잔여 {gap}건 필요, 예상 {data['proj_conv']}건 ({data['proj_pct']}%)"
+
+    return {
+        'summary': {'headline': headline, 'headline_color': hcolor, 'points': summary_points},
+        'branches': branches_analysis,
+        'tier_analysis': tier_analysis,
+        'cross_findings': cross_findings,
+        'off_findings': off_findings,
+        'actions': {
+            'immediate': actions_immediate,
+            'monitoring': actions_monitoring,
+            'monthly': monthly_msg
+        }
+    }
+
+
 def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, campaign_filter: str = None):
     """위클리 HTML 생성
 
@@ -648,7 +926,9 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
     df_month = df[(df['date'] >= month_start) & (df['date'] <= this_end)]
     conv_so_far = int(df_month['conversions'].sum())
     days_so_far = (this_end - month_start).days + 1
-    proj_conv = int(conv_so_far / days_so_far * 28) if days_so_far > 0 else 0
+    import calendar
+    days_in_month = calendar.monthrange(this_end.year, this_end.month)[1]
+    proj_conv = int(conv_so_far / days_so_far * days_in_month) if days_so_far > 0 else 0
     conv_pct = round(conv_so_far / MONTHLY_TARGET_CONV * 100, 1)
     proj_pct = round(proj_conv / MONTHLY_TARGET_CONV * 100, 1)
 
@@ -688,6 +968,8 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
         'daily': daily,
         'end_date_str': this_end.strftime('%m/%d'),
     }
+
+    data['full_insight'] = generate_full_insight(data)
 
     html = generate_html(data)
 
@@ -843,6 +1125,58 @@ tr:hover td{{background:rgba(255,255,255,.015)}}
 ::-webkit-scrollbar-thumb{{background:var(--border);border-radius:3px}}
 .num{{font-family:'DM Mono',monospace}}
 .text-good{{color:var(--accent)}} .text-bad{{color:var(--danger)}} .text-warn{{color:var(--warn)}} .text-muted{{color:var(--text2)}}
+
+/* Tab Navigation */
+.tab-nav{{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:32px;position:sticky;top:0;z-index:10;background:var(--bg);padding-top:4px}}
+.tab-btn{{padding:12px 28px;font-size:13px;font-weight:700;color:var(--text2);background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.03em}}
+.tab-btn:hover{{color:var(--text)}}
+.tab-btn.active{{color:var(--accent);border-bottom-color:var(--accent)}}
+.tab-panel{{display:none}}
+.tab-panel.active{{display:block}}
+
+/* Insight Tab Styles */
+.insight-summary{{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px}}
+.insight-headline{{font-size:18px;font-weight:900;margin-bottom:10px;display:flex;align-items:center;gap:10px}}
+.insight-summary-points{{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 16px}}
+@media(max-width:600px){{.insight-summary-points{{grid-template-columns:1fr}}}}
+.insight-summary-point{{font-size:12px;color:var(--text2);padding-left:12px;border-left:2px solid var(--border)}}
+
+/* Sub-tab navigation */
+.sub-tab-nav{{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}}
+.sub-tab-btn{{padding:8px 18px;font-size:12px;font-weight:600;color:var(--text2);background:var(--surface);
+  border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap}}
+.sub-tab-btn:hover{{color:var(--text);border-color:var(--text3)}}
+.sub-tab-btn.active{{color:var(--accent);background:rgba(74,222,128,.08);border-color:var(--accent)}}
+.sub-tab-btn .sub-tab-count{{font-size:10px;opacity:.6;margin-left:4px}}
+.sub-panel{{display:none}}.sub-panel.active{{display:block}}
+
+.bi-grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:8px}}
+.bi-card{{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:border-color .2s}}
+.bi-card:hover{{border-color:var(--text3)}}
+.bi-card-header{{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}}
+.bi-card-name{{font-size:14px;font-weight:800}}
+.bi-card-grade{{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px}}
+.bi-card-stats{{font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;gap:12px}}
+.bi-card-stats .num{{color:var(--text);font-weight:600}}
+.bi-point{{font-size:12px;color:var(--text2);padding:3px 0 3px 12px;border-left:2px solid var(--border);margin:3px 0}}
+
+.tier-section{{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px}}
+.tier-section-header{{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}}
+.tier-section-title{{display:flex;align-items:center;gap:10px}}
+.tier-section-desc{{font-size:11px;color:var(--text2)}}
+.tier-section-insights{{border-top:1px solid var(--border);padding-top:10px;margin-top:10px}}
+
+.action-card{{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 22px}}
+.action-group-title{{font-size:12px;font-weight:700;letter-spacing:.1em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}}
+.action-item{{background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:8px}}
+.action-item-title{{font-size:13px;font-weight:700;color:var(--text)}}
+.action-item-reason{{font-size:11px;color:var(--text2);margin-top:3px}}
+
+/* Cross/OFF combined section */
+.finding-grid{{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+@media(max-width:700px){{.finding-grid{{grid-template-columns:1fr}}}}
+.finding-col-title{{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;text-transform:uppercase}}
 </style>
 </head>
 <body>
@@ -865,6 +1199,13 @@ tr:hover td{{background:rgba(255,255,255,.015)}}
 </div>
 
 <div class="container">
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('dashboard',this)">대시보드</button>
+    <button class="tab-btn" onclick="switchTab('insight',this)">종합 인사이트</button>
+  </div>
+
+  <div id="tab-dashboard" class="tab-panel active">
 
   <div class="section">
     <div class="section-label">이번 주 KPI — 전주 대비</div>
@@ -958,6 +1299,12 @@ tr:hover td{{background:rgba(255,255,255,.015)}}
         <canvas id="dailyChart"></canvas>
       </div>
     </div>
+  </div>
+
+  </div><!-- end tab-dashboard -->
+
+  <div id="tab-insight" class="tab-panel">
+    <div id="insight-full"></div>
   </div>
 
 </div>
@@ -1396,8 +1743,174 @@ function buildProjection(){{
   }});
 }}
 
+// Tab switching
+function switchTab(name, btn){{
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}}
+
+// Full Insight Tab
+function switchSubTab(name, btn){{
+  document.querySelectorAll('.sub-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sub-'+name).classList.add('active');
+}}
+
+function buildFullInsight(){{
+  const I = D.full_insight;
+  if(!I || !I.summary || !I.branches || !I.tier_analysis) return;
+
+  const crossCnt = (I.cross_findings||[]).length;
+  const offCnt = (I.off_findings||[]).length;
+  const actionCnt = (I.actions.immediate||[]).length + (I.actions.monitoring||[]).length;
+
+  let h = '';
+
+  // === Summary (always visible) ===
+  h += `<div class="insight-summary">
+    <div class="insight-headline">
+      <span style="color:${{I.summary.headline_color}}">${{I.summary.headline}}</span>
+      <span style="font-size:12px;color:var(--text2);font-weight:400">${{D.period_this_full}}</span>
+    </div>
+    <div class="insight-summary-points">
+      ${{I.summary.points.map(p=>`<div class="insight-summary-point">${{p}}</div>`).join('')}}
+    </div>
+  </div>`;
+
+  // === Sub-tab Navigation ===
+  h += `<div class="sub-tab-nav">
+    <button class="sub-tab-btn active" onclick="switchSubTab('branch',this)">지점 분석<span class="sub-tab-count">${{I.branches.length}}</span></button>
+    <button class="sub-tab-btn" onclick="switchSubTab('tier',this)">TIER 분석<span class="sub-tab-count">${{I.tier_analysis.reduce((s,t)=>s+t.count,0)}}</span></button>
+    <button class="sub-tab-btn" onclick="switchSubTab('cross',this)">크로스 · OFF<span class="sub-tab-count">${{crossCnt+offCnt}}</span></button>
+    <button class="sub-tab-btn" onclick="switchSubTab('action',this)">액션 권고<span class="sub-tab-count">${{actionCnt}}</span></button>
+  </div>`;
+
+  // === Sub-panel 1: Branch Analysis ===
+  h += `<div id="sub-branch" class="sub-panel active">
+    <div class="bi-grid">
+      ${{I.branches.map(b=>`<div class="bi-card" style="border-left:3px solid ${{b.grade_color}}">
+        <div class="bi-card-header">
+          <span class="bi-card-name">${{b.branch}}</span>
+          <span class="bi-card-grade" style="color:${{b.grade_color}};background:${{b.grade_color}}15">${{b.grade}}</span>
+        </div>
+        <div class="bi-card-stats">
+          <span>전환 <span class="num">${{b.conv}}건</span></span>
+          <span>CPA <span class="num">${{fmt(b.cpa)}}원</span></span>
+          <span>효율 <span class="num">${{b.eff_score?b.eff_score.toFixed(2):'-'}}</span></span>
+        </div>
+        ${{b.points.map(p=>`<div class="bi-point">${{p}}</div>`).join('')}}
+      </div>`).join('')}}
+    </div>
+  </div>`;
+
+  // === Sub-panel 2: Tier Analysis ===
+  h += `<div id="sub-tier" class="sub-panel">
+    ${{I.tier_analysis.map(ta=>`
+      <div class="tier-section" style="border-left:3px solid ${{ta.color}}">
+        <div class="tier-section-header">
+          <div class="tier-section-title">
+            <span class="tier-badge ${{ta.tier}}">${{ta.tier==='LOW_VOLUME'?'저볼륨':ta.tier}}</span>
+            <span style="font-weight:700">${{ta.title}}</span>
+            <span style="font-size:12px;color:var(--text2)">${{ta.count}}개</span>
+          </div>
+          <div class="tier-section-desc">${{ta.desc}}</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>소재명</th><th>CPA</th><th>CVR</th><th>CTR</th><th>전환</th><th>비용</th><th>지점</th></tr></thead>
+            <tbody>${{ta.items.map(i=>`<tr>
+              <td class="td-name" title="${{i.name}}">${{i.name}}</td>
+              <td class="num">${{i.cpa?fmt(i.cpa)+'원':'-'}}</td>
+              <td class="num">${{i.cvr!=null?i.cvr.toFixed(2)+'%':'-'}}</td>
+              <td class="num">${{i.ctr!=null?i.ctr.toFixed(2)+'%':'-'}}</td>
+              <td class="num">${{i.conv}}건</td>
+              <td class="num">${{(i.cost/10000).toFixed(1)}}만</td>
+              <td style="font-size:11px;color:var(--text2)">${{(i.branches||[]).join(', ')}}</td>
+            </tr>`).join('')}}</tbody>
+          </table>
+        </div>
+        ${{ta.insights.length>0?`<div class="tier-section-insights">
+          ${{ta.insights.map(ins=>`<div class="bi-point" style="border-color:${{ta.color}};color:${{ta.color}}">${{ins}}</div>`).join('')}}
+        </div>`:''}}
+      </div>
+    `).join('')}}
+  </div>`;
+
+  // === Sub-panel 3: Cross + OFF Findings ===
+  h += `<div id="sub-cross" class="sub-panel">
+    <div class="finding-grid">`;
+
+  // Cross findings column
+  h += `<div>
+    <div class="finding-col-title">소재 × 지점 편차<span style="margin-left:6px;opacity:.5">${{crossCnt}}</span></div>`;
+  if(crossCnt > 0){{
+    h += `<div class="action-card">
+      ${{I.cross_findings.map(cf=>`
+        <div class="action-item" style="border-left:3px solid ${{cf.color}}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${{cf.color}};margin-bottom:4px">${{cf.type}}</div>
+          <div class="action-item-title">${{cf.creative}}</div>
+          <div class="action-item-reason">${{cf.detail}}</div>
+        </div>
+      `).join('')}}
+    </div>`;
+  }} else {{
+    h += `<div style="color:var(--text2);font-size:12px;padding:16px">편차 2배 이상 소재 없음</div>`;
+  }}
+  h += `</div>`;
+
+  // OFF findings column
+  h += `<div>
+    <div class="finding-col-title">OFF 소재 발견<span style="margin-left:6px;opacity:.5">${{offCnt}}</span></div>`;
+  if(offCnt > 0){{
+    h += `<div class="action-card">
+      ${{I.off_findings.map(of=>`
+        <div class="action-item" style="border-left:3px solid ${{of.color}}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${{of.color}};margin-bottom:4px">${{of.type}}</div>
+          <div class="action-item-title">${{of.creative}}</div>
+          <div class="action-item-reason">${{of.detail}}</div>
+        </div>
+      `).join('')}}
+    </div>`;
+  }} else {{
+    h += `<div style="color:var(--text2);font-size:12px;padding:16px">주요 발견 없음</div>`;
+  }}
+  h += `</div></div></div>`;
+
+  // === Sub-panel 4: Actions ===
+  h += `<div id="sub-action" class="sub-panel">
+    <div class="action-card">`;
+
+  if(I.actions.immediate && I.actions.immediate.length>0){{
+    h += `<div class="action-group-title" style="color:var(--accent)">즉시 실행</div>`;
+    I.actions.immediate.forEach((a,i)=>{{
+      h += `<div class="action-item" style="border-left:3px solid var(--accent)">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:4px">${{i+1}}순위</div>
+        <div class="action-item-title">${{a.action}}</div>
+        <div class="action-item-reason">${{a.reason}}</div>
+      </div>`;
+    }});
+  }}
+
+  if(I.actions.monitoring && I.actions.monitoring.length>0){{
+    h += `<div class="action-group-title" style="color:var(--warn);margin-top:20px">모니터링</div>`;
+    I.actions.monitoring.forEach(m=>{{
+      h += `<div class="bi-point" style="border-color:var(--warn);color:var(--warn)">${{m}}</div>`;
+    }});
+  }}
+
+  h += `<div class="action-group-title" style="color:var(--accent2);margin-top:20px">월간 목표</div>
+    <div class="bi-point" style="border-color:var(--accent2)">${{I.actions.monthly}}</div>`;
+
+  h += `</div></div>`;
+
+  document.getElementById('insight-full').innerHTML = h;
+}}
+
 buildKpi(); buildInsights(); buildTierTable(); buildNewCreativeTable(); buildOffCreativeTable(); buildBranchCreativeTable(); buildBranchCards();
-buildBranchCharts(); buildAction(); buildProjection();
+buildBranchCharts(); buildAction(); buildProjection(); buildFullInsight();
 </script>
 </body>
 </html>'''

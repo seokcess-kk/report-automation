@@ -52,9 +52,9 @@ def parse_ad_name(name: str) -> dict:
 
     name = str(name).strip()
 
-    # 1. _off 감지 후 제거
-    result['is_off'] = name.lower().endswith('_off')
-    clean_name = name[:-4] if result['is_off'] else name  # '_off' 4글자 제거
+    # 1. _off 접미사 제거 (ON/OFF는 비용 기반으로 판단하므로 파싱에서는 무시)
+    result['is_off'] = False  # 비용 기반 판단으로 이후 덮어씌움
+    clean_name = re.sub(r'_off$', '', name, flags=re.IGNORECASE)
 
     # 2. 언더스코어로 분리
     parts = clean_name.split('_')
@@ -152,6 +152,47 @@ def parse_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     return result_df
 
 
+def determine_on_off_by_cost(df: pd.DataFrame) -> pd.DataFrame:
+    """비용 기반 ON/OFF 판정
+
+    소재명×지점 기준으로, 데이터 마지막 3일 내 비용>0이면 ON, 아니면 OFF.
+    광고명의 _off 접미사와 무관하게 실제 집행 여부로 판단.
+    """
+    if 'date' not in df.columns or '소재명' not in df.columns or '지점' not in df.columns:
+        return df
+
+    df['date'] = pd.to_datetime(df['date'])
+    date_max = df['date'].max()
+    cutoff = date_max - pd.Timedelta(days=2)  # 마지막 3일
+
+    # 소재명×지점별 마지막 3일 비용 합계
+    recent = df[df['date'] >= cutoff]
+    recent_cost = recent.groupby(['소재명', '지점'])['cost'].sum().reset_index()
+    recent_cost.columns = ['소재명', '지점', '_recent_cost']
+
+    # 비용 > 0이면 ON (is_off=False), 아니면 OFF (is_off=True)
+    off_set = set()
+    for _, row in recent_cost.iterrows():
+        if row['_recent_cost'] <= 0:
+            off_set.add((row['소재명'], row['지점']))
+
+    # 마지막 3일에 아예 데이터가 없는 소재×지점도 OFF
+    all_pairs = set(zip(df['소재명'].fillna(''), df['지점'].fillna('')))
+    recent_pairs = set(zip(recent_cost['소재명'], recent_cost['지점']))
+    no_data_pairs = all_pairs - recent_pairs
+    off_set.update(no_data_pairs)
+
+    df['is_off'] = df.apply(
+        lambda r: (r.get('소재명', ''), r.get('지점', '')) in off_set, axis=1
+    )
+
+    on_count = (~df['is_off']).sum()
+    off_count = df['is_off'].sum()
+    print(f"[ON/OFF 판정] 비용 기반 | ON: {on_count}행 | OFF: {off_count}행 (기준: 마지막 3일 비용)")
+
+    return df
+
+
 def save_parse_failures(df: pd.DataFrame, output_path: str):
     """
     파싱 실패 소재를 별도 파일로 저장
@@ -178,6 +219,9 @@ def main(input_path: str, output_path: str, failures_path: str):
 
     # 파싱 실행
     parsed_df = parse_dataframe(df)
+
+    # 비용 기반 ON/OFF 판정: 소재×지점 기준, 데이터 마지막 3일 내 비용>0 → ON, 아니면 OFF
+    parsed_df = determine_on_off_by_cost(parsed_df)
 
     # 파싱 실패 저장
     save_parse_failures(parsed_df, failures_path)

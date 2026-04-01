@@ -209,7 +209,12 @@ def run_phase_5():
         module = module_from_spec(spec)
         spec.loader.exec_module(module)
 
-        month = datetime.now().strftime("%Y%m")
+        # 데이터 기준 월 추출 (데이터의 마지막 날짜 기준)
+        import pandas as _pd
+        _parsed = _pd.read_parquet(os.path.join(DATA_DIR, "parsed.parquet"))
+        _parsed['date'] = _pd.to_datetime(_parsed['date'])
+        month = _parsed['date'].max().strftime("%Y%m")
+        del _parsed
         # build_monthly는 data_dir과 month를 받아서 output/monthly/YYYYMM/에 저장
         module.build_monthly(DATA_DIR, month)
     else:

@@ -122,7 +122,21 @@ def calculate_monthly_kpis(df_on: pd.DataFrame) -> tuple:
 
 
 def build_creative_list(creative_df: pd.DataFrame, df_on: pd.DataFrame) -> list:
-    """소재 리스트 생성"""
+    """소재 리스트 생성 - TIER는 creative_df, 수치는 df_on(대상 월)에서 집계"""
+    # df_on에서 소재명별 수치 집계 (대상 월 기준)
+    on_agg = {}
+    if 'creative_name' in df_on.columns:
+        agg_dict = {
+            'cost': ('cost', 'sum'), 'conv': ('conversions', 'sum'),
+            'clicks': ('clicks', 'sum'), 'impr': ('impressions', 'sum'),
+            'days': ('date', 'nunique'),
+        }
+        if 'landing_views' in df_on.columns:
+            agg_dict['landing'] = ('landing_views', 'sum')
+        _agg = df_on.groupby('creative_name').agg(**agg_dict).reset_index()
+        for _, row in _agg.iterrows():
+            on_agg[row['creative_name']] = row
+
     # 소재명별 집행지점 집계
     creative_branches = {}
     if 'creative_name' in df_on.columns and 'branch' in df_on.columns:
@@ -138,22 +152,30 @@ def build_creative_list(creative_df: pd.DataFrame, df_on: pd.DataFrame) -> list:
             branches = r.get('branches', r.get('집행지점', []))
             if isinstance(branches, str):
                 branches = [branches] if branches else []
+
+        # 대상 월 수치 사용 (없으면 0)
+        m = on_agg.get(name)
+        if m is not None:
+            cost = int(m['cost']); conv = int(m['conv']); clicks = int(m['clicks'])
+            impr = int(m['impr']); days = int(m['days'])
+            landing = int(m['landing']) if 'landing' in m.index else 0
+            cpa = round(cost / conv) if conv > 0 else None
+            ctr = round(clicks / impr * 100, 2) if impr > 0 else None
+            cvr = round(conv / clicks * 100, 2) if clicks > 0 else None
+            lpv = round(landing / clicks * 100, 1) if clicks > 0 else None
+        else:
+            cost = conv = clicks = impr = days = landing = 0
+            cpa = ctr = cvr = lpv = None
+
         creative_list.append({
             'creative_name': str(name),
-            '총비용': int(r.get('cost', r.get('총비용', 0))),
-            '총전환': int(r.get('conv', r.get('총전환', 0))),
-            '총클릭': int(r.get('clicks', r.get('총클릭', 0))),
-            '총노출': int(r.get('impr', r.get('총노출', 0))),
-            '총랜딩': int(r.get('landing', r.get('총랜딩', 0))),
-            '집행일수': int(r.get('days', r.get('집행일수', 0))),
+            '총비용': cost, '총전환': conv, '총클릭': clicks,
+            '총노출': impr, '총랜딩': landing, '집행일수': days,
             '지점목록': branches,
             '소재유형': r.get('creative_type', r.get('소재유형', '')),
             '훅유형': r.get('hook_type', r.get('소재구분', '')),
             'ad_name_sample': str(name),
-            'CPA': round(r['CPA'], 0) if pd.notna(r.get('CPA')) else None,
-            'CTR': round(r['CTR'], 2) if pd.notna(r.get('CTR')) else None,
-            'CVR': round(r['CVR'], 2) if pd.notna(r.get('CVR')) else None,
-            'LPV': round(r.get('LPV', r.get('랜딩률', 0)), 1) if pd.notna(r.get('LPV', r.get('랜딩률'))) else None,
+            'CPA': cpa, 'CTR': ctr, 'CVR': cvr, 'LPV': lpv,
             'TIER': r.get('TIER', 'UNCLASSIFIED'),
         })
 
@@ -252,65 +274,113 @@ def build_monthly(data_dir: str, target_month: str = None):
 
     month = target_month or date_max.strftime('%Y%m')
 
-    # KPI 계산
-    kpi, total_cost, total_conv = calculate_monthly_kpis(df_on)
+    # 대상 월 기간 필터링 (YYYYMM → 해당 월 1일~말일)
+    month_start = pd.Timestamp(f"{month[:4]}-{month[4:]}-01")
+    if int(month[4:]) == 12:
+        month_end = pd.Timestamp(f"{int(month[:4])+1}-01-01") - pd.Timedelta(days=1)
+    else:
+        month_end = pd.Timestamp(f"{month[:4]}-{int(month[4:])+1:02d}-01") - pd.Timedelta(days=1)
 
-    # 목표 CPA
+    # KPI 계산 대상: ON+OFF 모두 포함, parse_status 무관 (실제 집행 비용 전액 반영)
+    df_all = parsed_df.copy()
+    if 'date' in df_all.columns:
+        df_all['date'] = pd.to_datetime(df_all['date'])
+        df_all = df_all[(df_all['date'] >= month_start) & (df_all['date'] <= month_end)]
+
+    # df_on도 대상 월로 필터링
+    if 'date' in df_on.columns:
+        df_on = df_on[(df_on['date'] >= month_start) & (df_on['date'] <= month_end)].copy()
+    if 'date' in df_off.columns:
+        df_off['date'] = pd.to_datetime(df_off['date'])
+        df_off = df_off[(df_off['date'] >= month_start) & (df_off['date'] <= month_end)].copy()
+
+    # 25-34 연령대 제외 (3월 기준 타겟 외 연령)
+    exclude_ages = ['25-34']
+    if 'age_group' in df_all.columns:
+        df_all = df_all[~df_all['age_group'].isin(exclude_ages)]
+    if 'age_group' in df_on.columns:
+        df_on = df_on[~df_on['age_group'].isin(exclude_ages)]
+    if 'age_group' in df_off.columns:
+        df_off = df_off[~df_off['age_group'].isin(exclude_ages)]
+
+    # 필터 후 날짜 범위 갱신
+    if 'date' in df_all.columns and len(df_all) > 0:
+        date_min = df_all['date'].min()
+        date_max = df_all['date'].max()
+
+    # KPI 계산 (ON+OFF, FAIL 포함)
+    kpi, total_cost, total_conv = calculate_monthly_kpis(df_all)
+
+    # 목표 CPA (CLAUDE.md: target_cpa.csv 우선, 없으면 df_on 평가가능 소재 CPA 중앙값)
+    # score_creatives.py와 동일 기준: 소재 단위 집계 → 평가가능(클릭≥100 OR 비용≥100K, 일수≥7) → CPA 중앙값
     target_cpa_dict = load_target_cpa()
-    target_cpa = int(np.mean(list(target_cpa_dict.values()))) if target_cpa_dict else kpi['cpa']
-
-    # 소재 리스트
-    creative_list = build_creative_list(creative_df, df_on)
-
-    # 지점 리스트
-    branch_list = build_branch_list(df_on, total_cost, total_conv)
-
-    # 나이대 리스트
-    age_list = build_age_list(df_on, total_cost, total_conv)
-
-    # ========== hook_compare (신규 vs 재가공) ==========
-    hook_list = []
-    if 'hook_type' in creative_df.columns or '소재구분' in creative_df.columns:
-        hook_col = 'hook_type' if 'hook_type' in creative_df.columns else '소재구분'
+    if target_cpa_dict:
+        target_cpa = int(np.mean(list(target_cpa_dict.values())))
+    else:
+        # creative_df에서 평가가능 소재의 CPA 중앙값 사용 (TIER 분류와 동일)
         cost_col = 'cost' if 'cost' in creative_df.columns else '총비용'
         conv_col = 'conv' if 'conv' in creative_df.columns else '총전환'
         clicks_col = 'clicks' if 'clicks' in creative_df.columns else '총클릭'
-        impr_col = 'impr' if 'impr' in creative_df.columns else '총노출'
-        landing_col = 'landing' if 'landing' in creative_df.columns else '총랜딩'
+        days_col = 'days' if 'days' in creative_df.columns else '집행일수'
+        evaluable = creative_df[
+            (creative_df[days_col] >= 7) &
+            ((creative_df[clicks_col] >= 100) | (creative_df[cost_col] >= 100000))
+        ]
+        evaluable_with_conv = evaluable[evaluable[conv_col] > 0]
+        if len(evaluable_with_conv) > 0:
+            target_cpa = int(evaluable_with_conv['CPA'].median())
+        else:
+            target_cpa = kpi['cpa']
 
-        agg_dict = {
-            'cost': (cost_col, 'sum'), 'conv': (conv_col, 'sum'),
-            'clicks': (clicks_col, 'sum'), 'impr': (impr_col, 'sum'),
-            'cnt': ('TIER', 'count'),
+    # 소재 리스트 (TIER 분류는 ON only → creative_df에서 이미 처리됨)
+    creative_list = build_creative_list(creative_df, df_on)
+
+    # 지점 리스트 (ON+OFF+FAIL 포함 - 실제 집행 전액 반영)
+    branch_list = build_branch_list(df_all, total_cost, total_conv)
+
+    # 나이대 리스트 (ON+OFF+FAIL 포함)
+    age_list = build_age_list(df_all, total_cost, total_conv)
+
+    # ========== hook_compare (신규 vs 재가공 - df_on 대상 월 기준) ==========
+    hook_list = []
+    hook_col_on = '소재구분' if '소재구분' in df_on.columns else None
+    if hook_col_on and hook_col_on in df_on.columns:
+        hook_agg_dict = {
+            'cost': ('cost', 'sum'), 'conv': ('conversions', 'sum'),
+            'clicks': ('clicks', 'sum'), 'impr': ('impressions', 'sum'),
         }
-        if landing_col in creative_df.columns:
-            agg_dict['landing'] = (landing_col, 'sum')
-
-        hook_agg = creative_df.groupby(hook_col).agg(**agg_dict).reset_index()
+        if 'landing_views' in df_on.columns:
+            hook_agg_dict['landing'] = ('landing_views', 'sum')
+        # 소재구분이 None이 아닌 행만
+        df_hook = df_on[df_on[hook_col_on].notna() & (df_on[hook_col_on] != '')]
+        hook_agg = df_hook.groupby(hook_col_on).agg(**hook_agg_dict).reset_index()
+        # 소재수는 unique creative_name count
+        hook_cnt = df_hook.groupby(hook_col_on)['creative_name'].nunique().to_dict()
 
         for _, r in hook_agg.iterrows():
             landing = int(r['landing']) if 'landing' in r else 0
             clicks = int(r['clicks'])
             conv = int(r['conv'])
             hook_list.append({
-                'hook_type': r[hook_col],
+                'hook_type': r[hook_col_on],
                 '총비용': int(r['cost']), '총전환': conv,
-                '총클릭': clicks, '총노출': int(r['impr']), '총랜딩': landing, '소재수': int(r['cnt']),
+                '총클릭': clicks, '총노출': int(r['impr']), '총랜딩': landing,
+                '소재수': hook_cnt.get(r[hook_col_on], 0),
                 'CPA': round(r['cost'] / conv) if conv > 0 else 0,
                 'CTR': round(clicks / r['impr'] * 100, 2) if r['impr'] > 0 else 0,
-                'CVR': round(conv / clicks * 100, 2) if clicks > 0 else 0,  # 전환/클릭 (그래프용 0 반환)
+                'CVR': round(conv / clicks * 100, 2) if clicks > 0 else 0,
             })
 
-    # ========== daily 트렌드 ==========
+    # ========== daily 트렌드 (전체 집행 데이터) ==========
     daily_list = []
-    if 'date' in df_on.columns:
+    if 'date' in df_all.columns:
         agg_dict = {
             'cost': ('cost', 'sum'), 'conv': ('conversions', 'sum'),
             'clicks': ('clicks', 'sum'), 'impr': ('impressions', 'sum'),
         }
-        if 'landing_views' in df_on.columns:
+        if 'landing_views' in df_all.columns:
             agg_dict['landing'] = ('landing_views', 'sum')
-        daily_agg = df_on.groupby('date').agg(**agg_dict).reset_index()
+        daily_agg = df_all.groupby('date').agg(**agg_dict).reset_index()
 
         for _, r in daily_agg.iterrows():
             daily_list.append({
@@ -321,17 +391,17 @@ def build_monthly(data_dir: str, target_month: str = None):
                 'cvr': round(r['conv'] / r['clicks'] * 100, 2) if r['clicks'] > 0 else None,  # 전환/클릭
             })
 
-    # ========== weekly (주차별 집계) ==========
+    # ========== weekly (주차별 집계, ON+OFF 포함) ==========
     weekly_list = []
-    if 'date' in df_on.columns:
-        df_on['week'] = df_on['date'].dt.isocalendar().week
+    if 'date' in df_all.columns:
+        df_all['week'] = df_all['date'].dt.isocalendar().week
         agg_dict = {
             'cost': ('cost', 'sum'), 'conv': ('conversions', 'sum'),
             'clicks': ('clicks', 'sum'), 'impr': ('impressions', 'sum'),
         }
-        if 'landing_views' in df_on.columns:
+        if 'landing_views' in df_all.columns:
             agg_dict['landing'] = ('landing_views', 'sum')
-        weekly_agg = df_on.groupby('week').agg(**agg_dict).reset_index()
+        weekly_agg = df_all.groupby('week').agg(**agg_dict).reset_index()
 
         for _, r in weekly_agg.iterrows():
             weekly_list.append({
@@ -368,36 +438,45 @@ def build_monthly(data_dir: str, target_month: str = None):
             # VALID_BRANCHES 순서로 정렬
             off_branches[name] = [b for b in VALID_BRANCHES if b in branches]
 
-    # ========== off_perf (OFF 소재 성과) ==========
+    # ========== off_perf (OFF 소재 성과 - 대상 월 df_off에서 직접 집계) ==========
     off_perf = []
-    if os.path.exists(off_path):
-        off_df = pd.read_parquet(off_path)
-        for _, r in off_df.iterrows():
-            name = r.get('creative_name', r.get('소재명', ''))
-            conv = int(r.get('총전환', r.get('conv', 0)))
-            cost = int(r.get('총비용', r.get('cost', 0)))
-            # 집행지점 가져오기
+    if 'creative_name' in df_off.columns and len(df_off) > 0:
+        off_agg = df_off.groupby('creative_name').agg(
+            cost=('cost', 'sum'), conv=('conversions', 'sum'),
+            clicks=('clicks', 'sum'), impr=('impressions', 'sum'),
+            landing=('landing_views', 'sum') if 'landing_views' in df_off.columns else ('cost', 'count'),
+            days=('date', 'nunique'),
+        ).reset_index()
+
+        # 소재유형 매핑
+        type_map = {}
+        if 'creative_type' in df_off.columns:
+            type_map = df_off.groupby('creative_name')['creative_type'].first().to_dict()
+
+        for _, r in off_agg.iterrows():
+            name = r['creative_name']
+            conv = int(r['conv'])
+            cost = int(r['cost'])
+            clicks = int(r['clicks'])
+            impr = int(r['impr'])
             branches = off_branches.get(name, [])
-            if not branches:
-                b = r.get('branch', r.get('지점', ''))
-                branches = [b] if b else []
-            # CPA 계산 (전환 < 3건이면 소량 표시)
             cpa = round(cost / conv) if conv > 0 else None
-            is_low_conv = conv < 3
+            ctr = round(clicks / impr * 100, 2) if impr > 0 else None
+            cvr = round(conv / clicks * 100, 2) if clicks > 0 else None
             off_perf.append({
                 'creative_name': str(name),
                 'branch': ', '.join(branches) if branches else '',
                 'branches': branches,
                 '총비용': cost,
                 '총전환': conv,
-                '총클릭': int(r.get('총클릭', r.get('clicks', 0))),
-                '총노출': int(r.get('총노출', r.get('impr', 0))),
-                '집행일수': int(r.get('집행일수', r.get('days', 0))),
-                '소재유형': r.get('소재유형', r.get('creative_type', '')),
+                '총클릭': clicks,
+                '총노출': impr,
+                '집행일수': int(r['days']),
+                '소재유형': type_map.get(name, ''),
                 'CPA': cpa,
-                'CTR': round(r['CTR'], 2) if pd.notna(r.get('CTR')) else None,
-                'CVR': round(r['CVR'], 2) if pd.notna(r.get('CVR')) else None,
-                'is_low_conv': is_low_conv,  # 전환 < 3건 플래그
+                'CTR': ctr,
+                'CVR': cvr,
+                'is_low_conv': conv < 3,
             })
 
     # ========== before_after 직접 생성 ==========
@@ -581,12 +660,12 @@ def build_monthly(data_dir: str, target_month: str = None):
         # ratio 기준 내림차순 정렬 (격차 큰 순)
         cross_gap.sort(key=lambda x: x['ratio'] or 0, reverse=True)
 
-    # ========== hm_ctr, hm_cvr (소재유형×나이대 히트맵) - Unknown 제외, 레퍼런스: list 형태 ==========
+    # ========== hm_ctr, hm_cvr (소재유형×나이대 히트맵) - Unknown 제외, ON+OFF 포함 ==========
     hm_ctr = []
     hm_cvr = []
-    if 'creative_type' in df_on.columns and 'age_group' in df_on.columns:
+    if 'creative_type' in df_all.columns and 'age_group' in df_all.columns:
         # Unknown 제외
-        df_hm_filtered = df_on[~df_on['age_group'].str.lower().str.contains('unknown', na=False)]
+        df_hm_filtered = df_all[~df_all['age_group'].str.lower().str.contains('unknown', na=False)]
         agg_dict = {
             'clicks': ('clicks', 'sum'), 'impr': ('impressions', 'sum'), 'conv': ('conversions', 'sum'),
         }
@@ -602,11 +681,11 @@ def build_monthly(data_dir: str, target_month: str = None):
             hm_ctr.append({'creative_type': ct, 'age_group': ag, 'CTR': ctr})
             hm_cvr.append({'creative_type': ct, 'age_group': ag, 'CVR': cvr})
 
-    # ========== hm_br_age (지점×나이대 히트맵) - Unknown 제외, 레퍼런스: list 형태 ==========
+    # ========== hm_br_age (지점×나이대 히트맵) - Unknown 제외, ON+OFF 포함 ==========
     hm_br_age = []
-    if 'branch' in df_on.columns and 'age_group' in df_on.columns:
+    if 'branch' in df_all.columns and 'age_group' in df_all.columns:
         # Unknown 제외
-        df_br_age_filtered = df_on[~df_on['age_group'].str.lower().str.contains('unknown', na=False)]
+        df_br_age_filtered = df_all[~df_all['age_group'].str.lower().str.contains('unknown', na=False)]
         br_age_agg = df_br_age_filtered.groupby(['branch', 'age_group']).agg(
             cost=('cost', 'sum'), conv=('conversions', 'sum'),
         ).reset_index()

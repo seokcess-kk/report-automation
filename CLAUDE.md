@@ -143,9 +143,9 @@ VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '�
 # .claude/skills/common/constants.py 에서 import
 from common import VALID_BRANCHES, MONTHLY_BUDGET, MONTHLY_TARGET_CONV
 
-MONTHLY_BUDGET = {'서울': 2_800_000, '부평': 4_000_000, '수원': 3_000_000,
-                  '일산': 1_007_617, '대구': 2_500_000, '창원': 2_000_000, '천안': 2_000_000}
-MONTHLY_TARGET_CONV = 600
+MONTHLY_BUDGET = {'서울': 2_000_000, '부평': 3_000_000, '수원': 4_000_000,
+                  '일산': 2_000_000, '대구': 3_000_000, '창원': 2_000_000, '천안': 2_000_000}
+MONTHLY_TARGET_CONV = 1_051
 ```
 
 ---

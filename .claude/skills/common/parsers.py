@@ -28,7 +28,10 @@ def load_target_cpa(target_cpa_path: str = "input/target_cpa.csv") -> dict:
 
 
 def parse_branch(name: str) -> str | None:
-    """광고명에서 지점 추출
+    """광고명에서 지점 추출 (위치 기반 우선)
+
+    광고명 구조: (재)_지점_소재유형_... 또는 지점_소재유형_...
+    두 번째 '_' 구분자 위치에서 지점을 먼저 찾고, 없으면 전체 매칭 fallback.
 
     Args:
         name: 광고명 문자열
@@ -39,6 +42,13 @@ def parse_branch(name: str) -> str | None:
     if pd.isna(name):
         return None
     name = str(name)
+    # 위치 기반: '_' 구분자에서 두 번째 토큰 우선 확인
+    parts = name.split('_')
+    for part in parts[:3]:
+        for b in VALID_BRANCHES:
+            if part == b:
+                return b
+    # fallback: 전체 문자열에서 매칭
     for b in VALID_BRANCHES:
         if b in name:
             return b

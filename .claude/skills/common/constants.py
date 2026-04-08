@@ -3,13 +3,13 @@
 모든 리포트 스크립트에서 공유하는 상수값
 """
 
-# 지점 순서 (고정 - CLAUDE.md 기준)
-VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']
+# 지점 순서 (고정 - 대전 추가)
+VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안', '대전']
 
 # 유효 광고 유형
 VALID_AD_TYPES = ['인플방문후기', '진료셀프캠', '의료진정보', '리얼모델후기', '진료QnA', '방문후기']
 
-# 지점별 월 예산 (CLAUDE.md 기준)
+# 지점별 월 예산
 MONTHLY_BUDGET = {
     '서울': 2_000_000,
     '부평': 3_000_000,
@@ -18,10 +18,33 @@ MONTHLY_BUDGET = {
     '대구': 3_000_000,
     '창원': 2_000_000,
     '천안': 2_000_000,
+    '대전': 2_000_000,
 }
 
 # 월 목표 전환수
-MONTHLY_TARGET_CONV = 1_051
+MONTHLY_TARGET_CONV = 1_131
 
-# 총 월 예산 (2026년 4월 기준 1,800만원)
-TOTAL_MONTHLY_BUDGET = 18_000_000
+# 지점별 월 목표 전환수
+MONTHLY_TARGET_CONV_BY_BRANCH = {
+    '서울': 150, '부평': 150, '수원': 201, '일산': 150,
+    '대구': 150, '창원': 100, '천안': 150, '대전': 80,
+}
+
+# 지점별 월 목표 노출수
+MONTHLY_TARGET_IMP_BY_BRANCH = {
+    '서울': 500_000, '부평': 750_000, '수원': 1_000_000, '일산': 500_000,
+    '대구': 750_000, '창원': 500_000, '천안': 500_000, '대전': 500_000,
+}
+
+# 지점별 월 목표 클릭수
+MONTHLY_TARGET_CLICK_BY_BRANCH = {
+    '서울': 5_000, '부평': 7_500, '수원': 10_000, '일산': 5_000,
+    '대구': 7_500, '창원': 5_000, '천안': 5_000, '대전': 5_000,
+}
+
+# 월 목표 노출수/클릭수 합계
+MONTHLY_TARGET_IMP = sum(MONTHLY_TARGET_IMP_BY_BRANCH.values())
+MONTHLY_TARGET_CLICK = sum(MONTHLY_TARGET_CLICK_BY_BRANCH.values())
+
+# 총 월 예산
+TOTAL_MONTHLY_BUDGET = sum(MONTHLY_BUDGET.values())

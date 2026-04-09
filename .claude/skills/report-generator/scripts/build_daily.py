@@ -448,6 +448,235 @@ def analyze_zero_conv_branches(
     return lines
 
 
+def analyze_notable_items(df: pd.DataFrame, yesterday, day_before) -> list:
+    """특이사항 분석 (내용 없으면 빈 리스트 반환)"""
+    lines = []
+    df_today = df[df['date'] == yesterday]
+    df_prev = df[df['date'] == day_before]
+    df_on_today = df_today[~df_today['is_off']]
+    df_on_prev = df_prev[~df_prev['is_off']]
+
+    # ── 1. 전일 대비 급변동 소재 (개별 소재 단위) ──
+    if len(df_on_today) > 0 and len(df_on_prev) > 0:
+        def _agg(d):
+            return d.groupby('creative_name').agg(
+                cost=('cost', 'sum'), conv=('conversions', 'sum'),
+                clicks=('clicks', 'sum'),
+            ).reset_index()
+
+        c_today = _agg(df_on_today)
+        c_prev = _agg(df_on_prev)
+        merged = c_prev.merge(c_today, on='creative_name', suffixes=('_prev', '_today'), how='inner')
+        # CPA 계산
+        merged['cpa_prev'] = merged.apply(lambda r: r['cost_prev'] / r['conv_prev'] if r['conv_prev'] > 0 else None, axis=1)
+        merged['cpa_today'] = merged.apply(lambda r: r['cost_today'] / r['conv_today'] if r['conv_today'] > 0 else None, axis=1)
+        # CVR 계산
+        merged['cvr_prev'] = merged.apply(lambda r: r['conv_prev'] / r['clicks_prev'] * 100 if r['clicks_prev'] > 0 else 0, axis=1)
+        merged['cvr_today'] = merged.apply(lambda r: r['conv_today'] / r['clicks_today'] * 100 if r['clicks_today'] > 0 else 0, axis=1)
+
+        movers = []
+        for _, r in merged.iterrows():
+            # 전환 2건 이상 변동만
+            conv_diff = r['conv_today'] - r['conv_prev']
+            if abs(conv_diff) < 2:
+                continue
+            # CPA 급변 (50% 이상)
+            cpa_change = None
+            if r['cpa_prev'] and r['cpa_today'] and r['cpa_prev'] > 0:
+                cpa_change = (r['cpa_today'] - r['cpa_prev']) / r['cpa_prev'] * 100
+            cvr_diff = r['cvr_today'] - r['cvr_prev']
+            if (cpa_change and abs(cpa_change) >= 50) or abs(conv_diff) >= 3:
+                movers.append({
+                    'name': strip_date_code(r['creative_name'])[:30] if r['creative_name'] else '-',
+                    'conv_diff': int(conv_diff),
+                    'cpa_prev': r['cpa_prev'], 'cpa_today': r['cpa_today'],
+                    'cvr_prev': r['cvr_prev'], 'cvr_today': r['cvr_today'],
+                    'cpa_change': cpa_change,
+                })
+        movers.sort(key=lambda x: abs(x['conv_diff']), reverse=True)
+        if movers:
+            lines.append("⚡ 급변동 소재")
+            for m in movers[:3]:
+                cpa_str = ""
+                if m['cpa_prev'] and m['cpa_today']:
+                    cpa_str = f" | CPA {m['cpa_prev']/10000:.1f}만→{m['cpa_today']/10000:.1f}만"
+                sign = '+' if m['conv_diff'] > 0 else ''
+                lines.append(f"  {m['name']}: 전환 {sign}{m['conv_diff']}건{cpa_str}")
+
+    # ── 1-2. 전환 이상 (지점 + 소재 단위, 전일비 & 평균 대비) ──
+    month_start_ts = pd.Timestamp(yesterday.year, yesterday.month, 1)
+    df_month_on = df[(df['date'] >= month_start_ts) & (df['date'] <= yesterday) & (~df['is_off'])]
+    conv_anomaly_lines = []
+
+    # (A) 지점별 전환 전일비 급변동
+    if len(df_on_today) > 0 and len(df_on_prev) > 0:
+        b_today = df_today.groupby('branch')['conversions'].sum()
+        b_prev = df_prev.groupby('branch')['conversions'].sum()
+        branch_moves = []
+        for branch in VALID_BRANCHES:
+            tc = int(b_today.get(branch, 0))
+            pc = int(b_prev.get(branch, 0))
+            diff = tc - pc
+            # 급증: +5건 이상 또는 전일 대비 3배 이상(전일 2건+)
+            if diff >= 5 or (pc >= 2 and tc >= pc * 3):
+                branch_moves.append((branch, pc, tc, diff, '↑급증'))
+            # 급감: -5건 이상 또는 전일 대비 1/3 이하(전일 3건+)
+            elif diff <= -5 or (pc >= 3 and tc <= pc / 3):
+                branch_moves.append((branch, pc, tc, diff, '↓급감'))
+        branch_moves.sort(key=lambda x: abs(x[3]), reverse=True)
+        for branch, pc, tc, diff, tag in branch_moves[:4]:
+            sign = '+' if diff > 0 else ''
+            conv_anomaly_lines.append(f"  [{branch}] {pc}건→{tc}건 ({sign}{diff}) {tag}")
+
+    # (B) 소재별 누적 평균 대비 급증/공백
+    if len(df_month_on) > 0 and len(df_on_today) > 0:
+        df_before_today = df_month_on[df_month_on['date'] < yesterday]
+        if len(df_before_today) > 0:
+            days_count = df_before_today['date'].nunique()
+            if days_count >= 3:
+                avg_conv = df_before_today.groupby('creative_name')['conversions'].sum().reset_index()
+                avg_conv.columns = ['creative_name', 'total_conv']
+                avg_conv['daily_avg'] = avg_conv['total_conv'] / days_count
+
+                today_conv = df_on_today.groupby('creative_name')['conversions'].sum().reset_index()
+                today_conv.columns = ['creative_name', 'today_conv']
+
+                conv_check = avg_conv.merge(today_conv, on='creative_name', how='outer').fillna(0)
+
+                spikes = []
+                blanks = []
+
+                for _, r in conv_check.iterrows():
+                    avg = r['daily_avg']
+                    today_c = r['today_conv']
+                    if avg >= 1 and today_c >= avg * 3 and today_c >= 3:
+                        dname = strip_date_code(r['creative_name'])[:30] if r['creative_name'] else '-'
+                        spikes.append((dname, avg, int(today_c)))
+                    elif avg >= 1 and today_c == 0:
+                        dname = strip_date_code(r['creative_name'])[:30] if r['creative_name'] else '-'
+                        blanks.append((dname, avg))
+
+                spikes.sort(key=lambda x: x[2], reverse=True)
+                blanks.sort(key=lambda x: x[1], reverse=True)
+
+                for name, avg, tc in spikes[:3]:
+                    conv_anomaly_lines.append(f"  {name}: 평균 {avg:.1f}건→어제 {tc}건 (↑급증)")
+                for name, avg in blanks[:3]:
+                    conv_anomaly_lines.append(f"  {name}: 평균 {avg:.1f}건→어제 0건 (공백)")
+
+    if conv_anomaly_lines:
+        if lines:
+            lines.append("")
+        lines.append("🔔 전환 이상")
+        lines.extend(conv_anomaly_lines)
+
+    # ── 2. 이상치 소재 (비용 과다 or 효율 극단) ──
+    if len(df_on_today) > 0:
+        cr = df_on_today.groupby('creative_name').agg(
+            cost=('cost', 'sum'), conv=('conversions', 'sum'), clicks=('clicks', 'sum'),
+        ).reset_index()
+        cr = cr[cr['cost'] >= 30000]  # 최소 비용 필터
+        if len(cr) > 0:
+            cr['cpa'] = cr.apply(lambda r: r['cost'] / r['conv'] if r['conv'] > 0 else None, axis=1)
+            avg_cpa = cr.loc[cr['conv'] > 0, 'cpa'].median() if cr['conv'].sum() > 0 else None
+
+            outliers = []
+            for _, r in cr.iterrows():
+                # 비용 높은데 전환 0
+                if r['conv'] == 0 and r['cost'] >= 80000:
+                    outliers.append(('waste', r['creative_name'], r['cost'], 0, None))
+                # CPA가 중앙값 대비 2.5배 이상
+                elif avg_cpa and r['cpa'] and r['cpa'] > avg_cpa * 2.5:
+                    outliers.append(('high_cpa', r['creative_name'], r['cost'], int(r['conv']), r['cpa']))
+                # CPA가 중앙값 대비 0.4배 이하 (초고효율)
+                elif avg_cpa and r['cpa'] and r['cpa'] < avg_cpa * 0.4 and r['conv'] >= 2:
+                    outliers.append(('star', r['creative_name'], r['cost'], int(r['conv']), r['cpa']))
+
+            if outliers:
+                if lines:
+                    lines.append("")
+                lines.append("🎯 이상치 소재")
+                for otype, name, cost, conv, cpa in outliers[:3]:
+                    dname = strip_date_code(name)[:30] if name else '-'
+                    if otype == 'waste':
+                        lines.append(f"  {dname}: 비용 {cost/10000:.1f}만 / 전환 0건 ⚠")
+                    elif otype == 'high_cpa':
+                        lines.append(f"  {dname}: CPA {cpa/10000:.1f}만 (중앙값 {avg_cpa/10000:.1f}만의 {cpa/avg_cpa:.1f}배) ⚠")
+                    elif otype == 'star':
+                        lines.append(f"  {dname}: CPA {cpa/10000:.1f}만 / {conv}건 ★ 확산 검토")
+
+    # ── 3. 신규 소재 성과 (최근 3일 내 첫 집행) ──
+    month_start = pd.Timestamp(yesterday.year, yesterday.month, 1)
+    df_month = df[(df['date'] >= month_start) & (df['date'] <= yesterday) & (~df['is_off'])]
+    if len(df_month) > 0:
+        first_seen = df_month.groupby('creative_name')['date'].min().reset_index()
+        first_seen.columns = ['creative_name', 'first_date']
+        cutoff = yesterday - timedelta(days=2)
+        new_creatives = first_seen[first_seen['first_date'] >= cutoff]['creative_name'].tolist()
+
+        if new_creatives:
+            new_data = df_month[df_month['creative_name'].isin(new_creatives)]
+            new_agg = new_data.groupby('creative_name').agg(
+                cost=('cost', 'sum'), conv=('conversions', 'sum'),
+                clicks=('clicks', 'sum'), impr=('impressions', 'sum'),
+            ).reset_index()
+            new_agg = new_agg[new_agg['cost'] >= 10000]  # 최소 집행 필터
+            new_agg['ctr'] = new_agg.apply(lambda r: r['clicks'] / r['impr'] * 100 if r['impr'] > 0 else 0, axis=1)
+            new_agg['cvr'] = new_agg.apply(lambda r: r['conv'] / r['clicks'] * 100 if r['clicks'] > 0 else 0, axis=1)
+            new_agg['cpa'] = new_agg.apply(lambda r: r['cost'] / r['conv'] if r['conv'] > 0 else None, axis=1)
+
+            if len(new_agg) > 0:
+                if lines:
+                    lines.append("")
+                lines.append("🆕 신규 소재")
+                new_agg = new_agg.sort_values('cost', ascending=False)
+                for _, r in new_agg.head(3).iterrows():
+                    dname = strip_date_code(r['creative_name'])[:30] if r['creative_name'] else '-'
+                    cpa_str = f"CPA {r['cpa']/10000:.1f}만" if r['cpa'] else "전환 대기"
+                    lines.append(f"  {dname}: CTR {r['ctr']:.1f}% / CVR {r['cvr']:.1f}% / {cpa_str}")
+
+    # ── 4. 지점 간 편차 (동일 소재, 지점별 성과 차이) ──
+    df_cum_on = df[(df['date'] >= month_start) & (df['date'] <= yesterday) & (~df['is_off'])]
+    if len(df_cum_on) > 0:
+        cb = df_cum_on.groupby(['creative_name', 'branch']).agg(
+            cost=('cost', 'sum'), conv=('conversions', 'sum'), clicks=('clicks', 'sum'),
+        ).reset_index()
+        # 2개 이상 지점에서 집행 + 최소 클릭
+        cb = cb[cb['clicks'] >= 20]
+        multi = cb.groupby('creative_name').filter(lambda x: len(x) >= 2)
+
+        if len(multi) > 0:
+            multi['cvr'] = multi.apply(lambda r: r['conv'] / r['clicks'] * 100 if r['clicks'] > 0 else 0, axis=1)
+            multi['cpa'] = multi.apply(lambda r: r['cost'] / r['conv'] if r['conv'] > 0 else None, axis=1)
+
+            variances = []
+            for cname, grp in multi.groupby('creative_name'):
+                grp_with_conv = grp[grp['conv'] > 0]
+                if len(grp_with_conv) < 2:
+                    continue
+                max_cpa = grp_with_conv['cpa'].max()
+                min_cpa = grp_with_conv['cpa'].min()
+                if min_cpa and min_cpa > 0 and max_cpa / min_cpa >= 2.0:
+                    best = grp_with_conv.loc[grp_with_conv['cpa'].idxmin()]
+                    worst = grp_with_conv.loc[grp_with_conv['cpa'].idxmax()]
+                    variances.append({
+                        'name': strip_date_code(cname)[:25] if cname else '-',
+                        'best_branch': best['branch'], 'best_cpa': best['cpa'],
+                        'worst_branch': worst['branch'], 'worst_cpa': worst['cpa'],
+                        'ratio': max_cpa / min_cpa,
+                    })
+
+            variances.sort(key=lambda x: x['ratio'], reverse=True)
+            if variances:
+                if lines:
+                    lines.append("")
+                lines.append("📊 지점 간 편차")
+                for v in variances[:3]:
+                    lines.append(f"  {v['name']}: {v['best_branch']} {v['best_cpa']/10000:.1f}만 vs {v['worst_branch']} {v['worst_cpa']/10000:.1f}만 ({v['ratio']:.1f}배)")
+
+    return lines
+
+
 def generate_actions(anomalies: list) -> list:
     """이상 감지 기반 액션 생성"""
     actions = []
@@ -651,6 +880,13 @@ def build_daily_txt(
     if anomaly_lines:
         lines.append("")
         lines.extend(anomaly_lines)
+
+    # 📋 특이사항 (내용 있을 때만 출력)
+    notable_lines = analyze_notable_items(df, yesterday, day_before)
+    if notable_lines:
+        lines.append("")
+        lines.append("📋 특이사항")
+        lines.extend(notable_lines)
 
     lines.append(separator)
     lines.append("")

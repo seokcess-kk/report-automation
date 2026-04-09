@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>다이트한의원 TikTok 위클리 리포트 · 03/30~04/05</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d0f14; --surface:#13161e; --surface2:#191d28;
+  --border:#1f2535; --accent:#4ade80; --accent2:#60a5fa;
+  --danger:#f87171; --warn:#fb923c; --purple:#a78bfa;
+  --text:#dde4f0; --text2:#7a8499; --text3:#3d4559;
+  --t1:#4ade80; --t2:#60a5fa; --t3:#a78bfa; --t4:#f87171;
+  --lv:#6b7280; --uc:#8b5cf6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6}
+.mono{font-family:'DM Mono',monospace}
+
+.report-header{
+  background:linear-gradient(135deg,#0d0f14 0%,#13161e 100%);
+  border-bottom:1px solid var(--border);
+  padding:36px 32px 28px;
+}
+.header-inner{max-width:1080px;margin:0 auto}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.brand{font-size:11px;font-weight:700;letter-spacing:.15em;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.logo{max-height:40px;width:auto;margin-bottom:12px;opacity:0.9}
+.header-title{font-size:26px;font-weight:900;letter-spacing:-.02em;color:var(--text)}
+.header-period{margin-top:6px;display:flex;gap:16px;flex-wrap:wrap}
+.period-chip{background:var(--surface2);border:1px solid var(--border);border-radius:6px;
+  padding:4px 12px;font-size:12px;color:var(--text2)}
+.period-chip span{color:var(--text);font-weight:600}
+.issue-badge{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);
+  border-radius:6px;padding:4px 14px;font-size:11px;color:var(--accent);font-weight:600;white-space:nowrap}
+
+.container{max-width:1080px;margin:0 auto;padding:32px 24px}
+.section{margin-bottom:40px}
+.section-label{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;
+  background:var(--border);border-radius:10px;overflow:hidden}
+.summary-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border);border-radius:8px;overflow:hidden}
+.summary-strip>div{background:var(--surface2);padding:12px 16px}
+.summary-strip .s-label{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:.06em}
+.summary-strip .s-val{font-size:18px;font-weight:900;font-family:'DM Mono',monospace;margin-top:4px}
+@media(max-width:700px){.kpi-strip{grid-template-columns:repeat(2,1fr)}}
+.kpi-cell{background:var(--surface);padding:18px 20px}
+.kpi-cell-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text2);
+  text-transform:uppercase;margin-bottom:8px}
+.kpi-val{font-size:20px;font-weight:900;font-family:'DM Mono',monospace;color:var(--text)}
+.kpi-diff{margin-top:5px;font-size:11px;font-family:'DM Mono',monospace}
+.kpi-diff.good{color:var(--accent)} .kpi-diff.bad{color:var(--danger)} .kpi-diff.neutral{color:var(--text2)}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 24px}
+.card-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.card-desc{font-size:11px;color:var(--text2);margin-bottom:18px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:680px){.two-col{grid-template-columns:1fr}}
+
+.insight-list{display:flex;flex-direction:column;gap:12px}
+.insight-card{border-radius:10px;padding:18px 20px;border-left:3px solid var(--ic)}
+.ic-type{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ic);margin-bottom:6px}
+.ic-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px}
+.ic-point{font-size:12px;color:var(--text2);padding:3px 0 3px 12px;border-left:2px solid var(--border);margin:3px 0}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--surface2);color:var(--text2);font-weight:600;font-size:10px;
+  letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;white-space:nowrap}
+.td-name{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.015)}
+.tier-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.TIER1{background:rgba(74,222,128,.12);color:var(--t1)}
+.TIER2{background:rgba(96,165,250,.12);color:var(--t2)}
+.TIER3{background:rgba(167,139,250,.12);color:var(--t3)}
+.TIER4{background:rgba(248,113,113,.12);color:var(--t4)}
+.LOW_VOLUME{background:rgba(107,114,128,.12);color:var(--lv)}
+.UNCLASSIFIED{background:rgba(139,92,246,.12);color:var(--uc)}
+.change-up{color:var(--accent);font-weight:700}
+.change-down{color:var(--danger);font-weight:700}
+.change-new{color:var(--warn)}
+
+.collapsible-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:0;transition:all .2s}
+.collapsible-header:hover{background:var(--surface2)}
+.collapsible-header .section-label{margin-bottom:0}
+.collapsible-header .section-label::after{display:none}
+.collapsible-toggle{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.collapsible-body{display:none;margin-top:12px}
+.collapsible-body.open{display:block}
+.collapsible-header.open{border-radius:10px 10px 0 0;margin-bottom:0}
+.collapsible-header.open + .collapsible-body{border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:16px}
+
+.branch-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(max-width:768px){.branch-cards{grid-template-columns:1fr}}
+.branch-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.branch-card-header{background:var(--surface2);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.branch-card-name{font-size:14px;font-weight:700}
+.branch-card-stats{font-size:11px;color:var(--text2)}
+.branch-card-stats .num{color:var(--text);font-weight:600}
+.branch-card table{font-size:11px}
+.branch-card th,.branch-card td{padding:8px 10px}
+.row-best{border-left:3px solid var(--accent)}
+
+.action-section{display:flex;flex-direction:column;gap:10px}
+.action-row{background:var(--surface2);border-radius:8px;padding:14px 16px;border-left:3px solid var(--ab)}
+.action-type{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--ab);margin-bottom:5px}
+.action-creative{font-size:13px;font-weight:700;color:var(--text)}
+.action-branch{font-size:11px;color:var(--accent2);margin-top:2px}
+.action-reason{font-size:11px;color:var(--text2);margin-top:4px}
+.action-guide{font-size:11px;color:var(--ab);margin-top:6px;font-weight:600}
+
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:500px){.proj-grid{grid-template-columns:1fr}}
+.proj-card{background:var(--surface2);border-radius:8px;padding:16px 18px}
+.proj-label{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--text2);margin-bottom:6px;text-transform:uppercase}
+.proj-val{font-size:22px;font-weight:900;font-family:'DM Mono',monospace}
+.proj-sub{font-size:11px;color:var(--text2);margin-top:4px}
+.progress-wrap{background:var(--border);border-radius:4px;height:6px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:var(--accent)}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.num{font-family:'DM Mono',monospace}
+.text-good{color:var(--accent)} .text-bad{color:var(--danger)} .text-warn{color:var(--warn)} .text-muted{color:var(--text2)}
+
+/* Tab Navigation */
+.tab-nav{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:32px;position:sticky;top:0;z-index:10;background:var(--bg);padding-top:4px}
+.tab-btn{padding:12px 28px;font-size:13px;font-weight:700;color:var(--text2);background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;letter-spacing:.03em}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Insight Tab Styles */
+.insight-summary{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:20px}
+.insight-headline{font-size:18px;font-weight:900;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.insight-summary-points{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 16px}
+@media(max-width:600px){.insight-summary-points{grid-template-columns:1fr}}
+.insight-summary-point{font-size:12px;color:var(--text2);padding-left:12px;border-left:2px solid var(--border)}
+
+/* Sub-tab navigation */
+.sub-tab-nav{display:flex;gap:6px;margin-bottom:24px;flex-wrap:wrap}
+.sub-tab-btn{padding:8px 18px;font-size:12px;font-weight:600;color:var(--text2);background:var(--surface);
+  border:1px solid var(--border);border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.sub-tab-btn:hover{color:var(--text);border-color:var(--text3)}
+.sub-tab-btn.active{color:var(--accent);background:rgba(74,222,128,.08);border-color:var(--accent)}
+.sub-tab-btn .sub-tab-count{font-size:10px;opacity:.6;margin-left:4px}
+.sub-panel{display:none}.sub-panel.active{display:block}
+
+.bi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:8px}
+.bi-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:border-color .2s}
+.bi-card:hover{border-color:var(--text3)}
+.bi-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.bi-card-name{font-size:14px;font-weight:800}
+.bi-card-grade{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px}
+.bi-card-stats{font-size:11px;color:var(--text2);margin-bottom:8px;display:flex;gap:12px}
+.bi-card-stats .num{color:var(--text);font-weight:600}
+.bi-point{font-size:12px;color:var(--text2);padding:3px 0 3px 12px;border-left:2px solid var(--border);margin:3px 0}
+
+.tier-section{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px}
+.tier-section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.tier-section-title{display:flex;align-items:center;gap:10px}
+.tier-section-desc{font-size:11px;color:var(--text2)}
+.tier-section-insights{border-top:1px solid var(--border);padding-top:10px;margin-top:10px}
+
+.action-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px 22px}
+.action-group-title{font-size:12px;font-weight:700;letter-spacing:.1em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.action-item{background:var(--surface2);border-radius:8px;padding:12px 14px;margin-bottom:8px}
+.action-item-title{font-size:13px;font-weight:700;color:var(--text)}
+.action-item-reason{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* Cross/OFF combined section */
+.finding-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.finding-grid{grid-template-columns:1fr}}
+.finding-col-title{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <div class="header-inner">
+    <div class="brand">다이트한의원 · TikTok 광고 분석</div>
+    <img src="../../../image/Logo_white 800x310.png" class="logo" alt="다이트한의원 로고">
+    <div class="header-top">
+      <div>
+        <div class="header-title">위클리 리포트</div>
+        <div class="header-period">
+          <div class="period-chip">분석 기간 <span id="period-this"></span></div>
+          <div class="period-chip">비교 기간 <span id="period-prev"></span></div>
+        </div>
+      </div>
+      <div class="issue-badge">발행 <span id="issue-date"></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('dashboard',this)">대시보드</button>
+    <button class="tab-btn" onclick="switchTab('insight',this)">종합 인사이트</button>
+  </div>
+
+  <div id="tab-dashboard" class="tab-panel active">
+
+  <div class="section">
+    <div class="section-label">이번 주 KPI — 전주 대비</div>
+    <div class="kpi-strip" id="kpi-strip"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">핵심 인사이트 — 변화 원인 분석</div>
+    <div class="insight-list" id="insight-list"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">소재 TIER 현황 (이번 주 기준 · 전주 대비)</div>
+    <div class="card">
+      <div class="tbl-wrap"><table id="tier-table"></table></div>
+    </div>
+  </div>
+
+  <div class="section" id="new-creative-sec" style="display:none">
+    <div class="section-label">신규 소재 (평가 중)
+      <span style="font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0;text-transform:none;margin-left:8px">
+        · 집행일수 3일 미만 · TIER 분류 대기
+      </span>
+    </div>
+    <div class="card">
+      <div class="tbl-wrap"><table id="new-tbl"></table></div>
+    </div>
+  </div>
+
+  <div class="section" id="off-creative-sec" style="display:none">
+    <div class="section-label">OFF 소재 성과 분석
+      <span style="font-size:11px;color:var(--text2);font-weight:400;letter-spacing:0;text-transform:none;margin-left:8px">
+        · 이번 주 OFF 상태에서 발생한 집행 성과
+      </span>
+    </div>
+    <div class="card">
+      <div id="off-creative-summary" style="margin-bottom:16px"></div>
+      <div class="tbl-wrap"><table id="off-creative-tbl"></table></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="collapsible-header" onclick="toggleCollapse(this)">
+      <div class="section-label">소재 × 지점 성과 — 이번 주</div>
+      <div class="collapsible-toggle"><span class="toggle-icon">▶</span> 펼치기</div>
+    </div>
+    <div class="collapsible-body">
+      <div class="tbl-wrap"><table id="branch-creative-table"></table></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="collapsible-header" onclick="toggleCollapse(this)">
+      <div class="section-label">지점별 소재 반응 — 이번 주</div>
+      <div class="collapsible-toggle"><span class="toggle-icon">▶</span> 펼치기</div>
+    </div>
+    <div class="collapsible-body">
+      <div class="branch-cards" id="branch-cards"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">지점별 성과 — 전주 대비</div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">CPA 전주 대비</div>
+        <div class="card-desc">기준선: 주간 목표 CPA <span class="num" id="target-cpa-label"></span>원</div>
+        <div style="position:relative;height:220px"><canvas id="branchCpaChart"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-title">CTR / CVR 전주 대비</div>
+        <div class="card-desc">막대: CVR(%) 좌축 · 선: CTR(%) 우축</div>
+        <div style="position:relative;height:220px"><canvas id="branchCvrChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="tbl-wrap"><table id="branch-table"></table></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">소재 ON/OFF 액션플랜</div>
+    <div class="action-section" id="action-list"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">이번 달 전환 목표 달성 예상</div>
+    <div class="card">
+      <div class="proj-grid" id="proj-grid"></div>
+      <div style="margin-top:20px;position:relative;height:180px">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end tab-dashboard -->
+
+  <div id="tab-insight" class="tab-panel">
+    <div id="insight-full"></div>
+  </div>
+
+</div>
+
+<script>
+const D = {"period_this": "03/30~04/05", "period_this_full": "2026.03.30(월) ~ 04.05(일)", "period_prev": "03/23(월) ~ 03/29(일)", "issue_date": "2026.04.06(월)", "kpi_this": {"cost": 1086831, "conv": 34, "clicks": 518, "cpa": 31965, "ctr": 0.64, "cvr": 6.56}, "kpi_prev": {"cost": 3642742, "conv": 103, "clicks": 1638, "cpa": 35366, "ctr": 0.53, "cvr": 6.29}, "target_cpa": 31965, "tier_list": [{"creative_name": "16kg 충격적인 아이들 반응", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "50대 20대처럼 체지방", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "50대 뱃살 체지방만 (창원)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "50대 뱃살 체지방만 (대구 외 5개)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "50대엄마 혈당다이어트(햅삐)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "건강한다이어트(대구,박고경)", "tier_this": "TIER4", "tier_prev": "TIER1", "change": "TIER1→TIER4 ↓"}, {"creative_name": "건강한다이어트(박고경)", "tier_this": "TIER4", "tier_prev": "TIER1", "change": "TIER1→TIER4 ↓"}, {"creative_name": "건강한다이어트(서울,박고경)", "tier_this": "LOW_VOLUME", "tier_prev": "TIER1", "change": "TIER1→저볼륨 ↓"}, {"creative_name": "건강한다이어트(수원,박고경)", "tier_this": "TIER1", "tier_prev": "TIER4", "change": "TIER4→TIER1 ↑"}, {"creative_name": "건강한다이어트(일산, 박고경)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "건강한다이어트(창원,박고경)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "건강한다이어트(천안, 박고경)", "tier_this": "LOW_VOLUME", "tier_prev": "TIER3", "change": "TIER3→저볼륨 ↓"}, {"creative_name": "끝내주는 다이어트(창원언니쓰)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "당뇨다이어트(대읽남)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "더먹어야 다이어트 가능(더먹어유)", "tier_this": "LOW_VOLUME", "tier_prev": "TIER4", "change": "TIER4→저볼륨 ↓"}, {"creative_name": "맘껏 먹는 다이어트", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "맘껏먹는 다이어트 한달후기", "tier_this": "TIER1", "tier_prev": "TIER3", "change": "TIER3→TIER1 ↑"}, {"creative_name": "먹으면서 다이어트(대읽남)", "tier_this": "LOW_VOLUME", "tier_prev": "TIER3", "change": "TIER3→저볼륨 ↓"}, {"creative_name": "먹으면서(대읽남)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "먹을거 다먹으면서(미미)", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "비만주사 10년은 늙어보인대요", "tier_this": "LOW_VOLUME", "tier_prev": "TIER3", "change": "TIER3→저볼륨 ↓"}, {"creative_name": "비만주사 굶는다이어트", "tier_this": "LOW_VOLUME", "tier_prev": "TIER4", "change": "TIER4→저볼륨 ↓"}, {"creative_name": "비만주사끊고15kg", "tier_this": "TIER4", "tier_prev": "TIER4", "change": "—"}, {"creative_name": "비만주사없이 체질", "tier_this": "TIER3", "tier_prev": "TIER3", "change": "—"}, {"creative_name": "비만주사요요 탄수중독", "tier_this": "LOW_VOLUME", "tier_prev": "TIER3", "change": "TIER3→저볼륨 ↓"}, {"creative_name": "상체비만 40대 팔뚝살부터", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "요요없는", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "주사형 비만치료제보다 더중요한이것", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "주사형비만치료제 10년은", "tier_this": "TIER3", "tier_prev": "TIER1", "change": "TIER1→TIER3 ↓"}, {"creative_name": "주사형비만치료제 고민끝에 40대부부 -32kg", "tier_this": "LOW_VOLUME", "tier_prev": "TIER1", "change": "TIER1→저볼륨 ↓"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "tier_this": "TIER1", "tier_prev": "TIER1", "change": "—"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "창원 다이어트 성지", "tier_this": "LOW_VOLUME", "tier_prev": "LOW_VOLUME", "change": "—"}, {"creative_name": "체지방만 14kg 먹으면서", "tier_this": "LOW_VOLUME", "tier_prev": "TIER4", "change": "TIER4→저볼륨 ↓"}, {"creative_name": "체지방만쏙빼는(부산잇츠)", "tier_this": "LOW_VOLUME", "tier_prev": "TIER4", "change": "TIER4→저볼륨 ↓"}, {"creative_name": "하체비만 40대 통짜바지", "tier_this": "LOW_VOLUME", "tier_prev": "TIER4", "change": "TIER4→저볼륨 ↓"}], "tier_this": [{"creative_name": "16kg 충격적인 아이들 반응", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 3, "지점목록": ["수원"], "소재유형": "리얼모델후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "50대 20대처럼 체지방", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 6, "지점목록": ["수원", "창원", "천안"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만 (창원)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 6, "지점목록": ["창원"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만 (대구 외 5개)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["대구", "일산", "수원", "천안", "서울", "부평"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "50대엄마 혈당다이어트(햅삐)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["부평", "대구"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(대구,박고경)", "총비용": 52456, "총전환": 0, "총클릭": 37, "총노출": 4613, "총랜딩": 16, "집행일수": 7, "지점목록": ["대구"], "소재유형": "인플방문후기", "CPA": null, "CTR": 0.8, "CVR": 0.0, "LPV": 43.2, "TIER": "TIER4"}, {"creative_name": "건강한다이어트(박고경)", "총비용": 58545, "총전환": 1, "총클릭": 34, "총노출": 4097, "총랜딩": 25, "집행일수": 7, "지점목록": ["부평", "서울", "대구"], "소재유형": "인플방문후기", "CPA": 58545.0, "CTR": 0.83, "CVR": 2.94, "LPV": 73.5, "TIER": "TIER4"}, {"creative_name": "건강한다이어트(서울,박고경)", "총비용": 14036, "총전환": 0, "총클릭": 8, "총노출": 783, "총랜딩": 6, "집행일수": 6, "지점목록": ["서울"], "소재유형": "인플방문후기", "CPA": null, "CTR": 1.02, "CVR": 0.0, "LPV": 75.0, "TIER": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(수원,박고경)", "총비용": 68125, "총전환": 3, "총클릭": 36, "총노출": 4149, "총랜딩": 29, "집행일수": 7, "지점목록": ["수원"], "소재유형": "인플방문후기", "CPA": 22708.0, "CTR": 0.87, "CVR": 8.33, "LPV": 80.6, "TIER": "TIER1"}, {"creative_name": "건강한다이어트(일산, 박고경)", "총비용": 4467, "총전환": 0, "총클릭": 4, "총노출": 329, "총랜딩": 2, "집행일수": 6, "지점목록": ["일산"], "소재유형": "인플방문후기", "CPA": null, "CTR": 1.22, "CVR": 0.0, "LPV": 50.0, "TIER": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(창원,박고경)", "총비용": 12130, "총전환": 0, "총클릭": 9, "총노출": 927, "총랜딩": 7, "집행일수": 5, "지점목록": ["창원"], "소재유형": "인플방문후기", "CPA": null, "CTR": 0.97, "CVR": 0.0, "LPV": 77.8, "TIER": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(천안, 박고경)", "총비용": 36902, "총전환": 1, "총클릭": 21, "총노출": 2528, "총랜딩": 14, "집행일수": 5, "지점목록": ["천안"], "소재유형": "인플방문후기", "CPA": 36902.0, "CTR": 0.83, "CVR": 4.76, "LPV": 66.7, "TIER": "LOW_VOLUME"}, {"creative_name": "끝내주는 다이어트(창원언니쓰)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["창원"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "당뇨다이어트(대읽남)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 5, "지점목록": ["대구"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "더먹어야 다이어트 가능(더먹어유)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["부평", "창원", "수원", "천안"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "맘껏 먹는 다이어트", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 3, "지점목록": ["창원", "부평", "수원", "대구"], "소재유형": "방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "맘껏먹는 다이어트 한달후기", "총비용": 83085, "총전환": 5, "총클릭": 31, "총노출": 7808, "총랜딩": 18, "집행일수": 7, "지점목록": ["창원", "천안", "일산", "서울", "대구", "부평", "수원"], "소재유형": "인플방문후기", "CPA": 16617.0, "CTR": 0.4, "CVR": 16.13, "LPV": 58.1, "TIER": "TIER1"}, {"creative_name": "먹으면서 다이어트(대읽남)", "총비용": 45849, "총전환": 0, "총클릭": 19, "총노출": 3927, "총랜딩": 9, "집행일수": 7, "지점목록": ["대구"], "소재유형": "인플방문후기", "CPA": null, "CTR": 0.48, "CVR": 0.0, "LPV": 47.4, "TIER": "LOW_VOLUME"}, {"creative_name": "먹으면서(대읽남)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["서울", "수원", "창원", "일산"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "먹을거 다먹으면서(미미)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["수원", "창원"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "비만주사 10년은 늙어보인대요", "총비용": 21651, "총전환": 0, "총클릭": 7, "총노출": 1782, "총랜딩": 5, "집행일수": 7, "지점목록": ["수원", "천안", "부평", "서울", "일산", "대구"], "소재유형": "진료셀프캠", "CPA": null, "CTR": 0.39, "CVR": 0.0, "LPV": 71.4, "TIER": "LOW_VOLUME"}, {"creative_name": "비만주사 굶는다이어트", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["대구", "수원", "천안", "부평", "서울"], "소재유형": "의료진정보", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "비만주사끊고15kg", "총비용": 73543, "총전환": 1, "총클릭": 29, "총노출": 6036, "총랜딩": 16, "집행일수": 7, "지점목록": ["부평", "수원", "대구", "천안", "창원", "서울", "일산"], "소재유형": "진료셀프캠", "CPA": 73543.0, "CTR": 0.48, "CVR": 3.45, "LPV": 55.2, "TIER": "TIER4"}, {"creative_name": "비만주사없이 체질", "총비용": 53100, "총전환": 1, "총클릭": 15, "총노출": 4858, "총랜딩": 9, "집행일수": 7, "지점목록": ["수원", "서울", "일산", "창원", "부평"], "소재유형": "진료셀프캠", "CPA": 53100.0, "CTR": 0.31, "CVR": 6.67, "LPV": 60.0, "TIER": "TIER3"}, {"creative_name": "비만주사요요 탄수중독", "총비용": 3421, "총전환": 3, "총클릭": 7, "총노출": 523, "총랜딩": 3, "집행일수": 7, "지점목록": ["대구", "창원", "수원", "천안", "부평"], "소재유형": "의료진정보", "CPA": 1140.0, "CTR": 1.34, "CVR": 42.86, "LPV": 42.9, "TIER": "LOW_VOLUME"}, {"creative_name": "상체비만 40대 팔뚝살부터", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 6, "지점목록": ["천안"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "요요없는", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 3, "지점목록": ["서울", "창원", "수원", "대구", "부평"], "소재유형": "인플방문후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "주사형 비만치료제보다 더중요한이것", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 7, "지점목록": ["부평", "서울", "대구", "천안", "일산"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "주사형비만치료제 10년은", "총비용": 315119, "총전환": 9, "총클릭": 157, "총노출": 20781, "총랜딩": 108, "집행일수": 7, "지점목록": ["수원", "부평", "서울", "천안", "대구", "창원", "일산"], "소재유형": "의료진정보", "CPA": 35013.0, "CTR": 0.76, "CVR": 5.73, "LPV": 68.8, "TIER": "TIER3"}, {"creative_name": "주사형비만치료제 고민끝에 40대부부 -32kg", "총비용": 18888, "총전환": 1, "총클릭": 5, "총노출": 1138, "총랜딩": 4, "집행일수": 7, "지점목록": ["일산"], "소재유형": "진료셀프캠", "CPA": 18888.0, "CTR": 0.44, "CVR": 20.0, "LPV": 80.0, "TIER": "LOW_VOLUME"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "총비용": 191176, "총전환": 8, "총클릭": 88, "총노출": 13825, "총랜딩": 60, "집행일수": 7, "지점목록": ["대구", "부평", "창원", "서울", "수원"], "소재유형": "진료셀프캠", "CPA": 23897.0, "CTR": 0.64, "CVR": 9.09, "LPV": 68.2, "TIER": "TIER1"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이", "총비용": 9523, "총전환": 0, "총클릭": 1, "총노출": 981, "총랜딩": 1, "집행일수": 7, "지점목록": ["천안", "서울", "일산", "부평", "수원", "대구", "창원"], "소재유형": "진료QnA", "CPA": null, "CTR": 0.1, "CVR": 0.0, "LPV": 100.0, "TIER": "LOW_VOLUME"}, {"creative_name": "창원 다이어트 성지", "총비용": 6702, "총전환": 0, "총클릭": 0, "총노출": 515, "총랜딩": 0, "집행일수": 4, "지점목록": ["창원"], "소재유형": "진료셀프캠", "CPA": null, "CTR": 0.0, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 6, "지점목록": ["부평", "대구", "천안", "일산", "서울", "창원", "수원"], "소재유형": "리얼모델후기", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}, {"creative_name": "체지방만쏙빼는(부산잇츠)", "총비용": 18113, "총전환": 1, "총클릭": 10, "총노출": 1970, "총랜딩": 5, "집행일수": 7, "지점목록": ["대구", "부평", "창원", "수원"], "소재유형": "인플방문후기", "CPA": 18113.0, "CTR": 0.51, "CVR": 10.0, "LPV": 50.0, "TIER": "LOW_VOLUME"}, {"creative_name": "하체비만 40대 통짜바지", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 6, "지점목록": ["수원"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "LOW_VOLUME"}], "new_creatives": [{"creative_name": "다이어트의 적!밥,빵,면 (서울)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 1, "지점목록": ["서울"], "소재유형": "의료진정보", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "UNCLASSIFIED"}, {"creative_name": "다이어트의 적!밥,빵,면 (일산)", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 1, "지점목록": ["일산"], "소재유형": "의료진정보", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "UNCLASSIFIED"}, {"creative_name": "복부비만 50대 통짜몸매", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 1, "지점목록": ["일산"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "UNCLASSIFIED"}, {"creative_name": "수원사는 50대 직장인", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 1, "지점목록": ["수원"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "UNCLASSIFIED"}, {"creative_name": "인천사는 50대 직장인", "총비용": 0, "총전환": 0, "총클릭": 0, "총노출": 0, "총랜딩": 0, "집행일수": 2, "지점목록": ["부평"], "소재유형": "진료셀프캠", "CPA": null, "CTR": null, "CVR": null, "LPV": null, "TIER": "UNCLASSIFIED"}], "branch": [{"branch": "서울", "총비용": 108000, "총전환": 2, "총클릭": 48, "총노출": 5986, "CPA": 54000, "CTR": 0.8, "CVR": 4.17, "CPA_prev": 16055, "CTR_prev": 0.66, "CVR_prev": 11.79, "CPA_diff": 37945, "CTR_diff": 0.14, "CVR_diff": -7.62, "효율점수": 0.6}, {"branch": "부평", "총비용": 208826, "총전환": 10, "총클릭": 113, "총노출": 17255, "CPA": 20883, "CTR": 0.65, "CVR": 8.85, "CPA_prev": 36124, "CTR_prev": 0.56, "CVR_prev": 6.01, "CPA_diff": -15241, "CTR_diff": 0.09, "CVR_diff": 2.84, "효율점수": 1.53}, {"branch": "수원", "총비용": 198517, "총전환": 4, "총클릭": 70, "총노출": 14101, "CPA": 49629, "CTR": 0.5, "CVR": 5.71, "CPA_prev": 68560, "CTR_prev": 0.44, "CVR_prev": 3.73, "CPA_diff": -18931, "CTR_diff": 0.06, "CVR_diff": 1.98, "효율점수": 0.64}, {"branch": "일산", "총비용": 70000, "총전환": 6, "총클릭": 43, "총노출": 4633, "CPA": 11667, "CTR": 0.93, "CVR": 13.95, "CPA_prev": 44778, "CTR_prev": 0.61, "CVR_prev": 4.9, "CPA_diff": -33111, "CTR_diff": 0.32, "CVR_diff": 9.05, "효율점수": 2.75}, {"branch": "대구", "총비용": 238597, "총전환": 8, "총클릭": 141, "총노출": 18939, "CPA": 29825, "CTR": 0.74, "CVR": 5.67, "CPA_prev": 30230, "CTR_prev": 0.58, "CVR_prev": 6.3, "CPA_diff": -405, "CTR_diff": 0.16, "CVR_diff": -0.63, "효율점수": 1.07}, {"branch": "창원", "총비용": 131984, "총전환": 1, "총클릭": 49, "총노출": 10220, "CPA": 131984, "CTR": 0.48, "CVR": 2.04, "CPA_prev": 51330, "CTR_prev": 0.47, "CVR_prev": 4.74, "CPA_diff": 80654, "CTR_diff": 0.01, "CVR_diff": -2.7, "효율점수": 0.24}, {"branch": "천안", "총비용": 130907, "총전환": 3, "총클릭": 54, "총노출": 10436, "CPA": 43636, "CTR": 0.52, "CVR": 5.56, "CPA_prev": 50475, "CTR_prev": 0.44, "CVR_prev": 5.39, "CPA_diff": -6839, "CTR_diff": 0.08, "CVR_diff": 0.17, "효율점수": 0.73}], "off_list": [{"branch": "부평", "creative_name": "건강한다이어트(박고경)", "CPA": 58545, "CVR": 2.94, "avg_cpa": 20883, "ratio": 2.8, "cost": 58545}, {"branch": "대구", "creative_name": "건강한다이어트(박고경)", "CPA": 58545, "CVR": 2.94, "avg_cpa": 29825, "ratio": 2.0, "cost": 58545}], "on_list": [{"creative_name": "건강한다이어트(수원,박고경)", "missing": ["대구", "부평", "서울", "일산", "창원", "천안"], "CPA": 22708}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "missing": ["일산", "천안"], "CPA": 23897}], "off_creative_analysis": [], "branch_creative": [{"creative_name": "16kg 충격적인 아이들 반응_260324", "display_name": "16kg 충격적인 아이들 반응", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 20대처럼 체지방_260317", "display_name": "50대 20대처럼 체지방", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 20대처럼 체지방_260317", "display_name": "50대 20대처럼 체지방", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 20대처럼 체지방_260317", "display_name": "50대 20대처럼 체지방", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260311", "display_name": "50대 뱃살 체지방만 (창원)", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260317", "display_name": "50대 뱃살 체지방만 (대구 외 5개)", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260317", "display_name": "50대 뱃살 체지방만 (대구 외 5개)", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260317", "display_name": "50대 뱃살 체지방만 (대구 외 5개)", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260317", "display_name": "50대 뱃살 체지방만 (대구 외 5개)", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260317", "display_name": "50대 뱃살 체지방만 (대구 외 5개)", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대 뱃살 체지방만_260317", "display_name": "50대 뱃살 체지방만 (대구 외 5개)", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대엄마 혈당다이어트(햅삐)_260317", "display_name": "50대엄마 혈당다이어트(햅삐)", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "50대엄마 혈당다이어트(햅삐)_260317", "display_name": "50대엄마 혈당다이어트(햅삐)", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(대구,박고경)_260325", "display_name": "건강한다이어트(대구,박고경)", "branch": "대구", "CPA": null, "CTR": 0.8, "CVR": 0.0, "총전환": 0, "총비용": 52456, "집행일수": 7, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "건강한다이어트(박고경)_260324", "display_name": "건강한다이어트(박고경)", "branch": "부평", "CPA": 58545, "CTR": 0.83, "CVR": 2.94, "총전환": 1, "총비용": 58545, "집행일수": 7, "cpa_color": "good", "tier": "TIER4"}, {"creative_name": "건강한다이어트(박고경)_260324", "display_name": "건강한다이어트(박고경)", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "건강한다이어트(박고경)_260324", "display_name": "건강한다이어트(박고경)", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "건강한다이어트(서울,박고경)_260325", "display_name": "건강한다이어트(서울,박고경)", "branch": "서울", "CPA": null, "CTR": 1.02, "CVR": 0.0, "총전환": 0, "총비용": 14036, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(수원,박고경)_260325", "display_name": "건강한다이어트(수원,박고경)", "branch": "수원", "CPA": 22708, "CTR": 0.87, "CVR": 8.33, "총전환": 3, "총비용": 68125, "집행일수": 7, "cpa_color": "good", "tier": "TIER1"}, {"creative_name": "건강한다이어트(일산, 박고경)_260325", "display_name": "건강한다이어트(일산, 박고경)", "branch": "일산", "CPA": null, "CTR": 1.22, "CVR": 0.0, "총전환": 0, "총비용": 4467, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(창원,박고경)_260325", "display_name": "건강한다이어트(창원,박고경)", "branch": "창원", "CPA": null, "CTR": 0.97, "CVR": 0.0, "총전환": 0, "총비용": 12130, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "건강한다이어트(천안, 박고경)_260325", "display_name": "건강한다이어트(천안, 박고경)", "branch": "천안", "CPA": 36902, "CTR": 0.83, "CVR": 4.76, "총전환": 1, "총비용": 36902, "집행일수": 5, "cpa_color": "good", "tier": "LOW_VOLUME"}, {"creative_name": "끝내주는 다이어트(창원언니쓰)_260211", "display_name": "끝내주는 다이어트(창원언니쓰)", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "다이어트의 적!밥,빵,면_251020", "display_name": "다이어트의 적!밥,빵,면 (서울)", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "UNCLASSIFIED"}, {"creative_name": "다이어트의 적!밥,빵,면_251208", "display_name": "다이어트의 적!밥,빵,면 (일산)", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "UNCLASSIFIED"}, {"creative_name": "당뇨다이어트(대읽남)_260311", "display_name": "당뇨다이어트(대읽남)", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "더먹어야 다이어트 가능(더먹어유)_260313", "display_name": "더먹어야 다이어트 가능(더먹어유)", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "더먹어야 다이어트 가능(더먹어유)_260313", "display_name": "더먹어야 다이어트 가능(더먹어유)", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "더먹어야 다이어트 가능(더먹어유)_260313", "display_name": "더먹어야 다이어트 가능(더먹어유)", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "더먹어야 다이어트 가능(더먹어유)_260313", "display_name": "더먹어야 다이어트 가능(더먹어유)", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "맘껏 먹는 다이어트_260220", "display_name": "맘껏 먹는 다이어트", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "맘껏 먹는 다이어트_260220", "display_name": "맘껏 먹는 다이어트", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "맘껏 먹는 다이어트_260220", "display_name": "맘껏 먹는 다이어트", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "맘껏 먹는 다이어트_260220", "display_name": "맘껏 먹는 다이어트", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "일산", "CPA": 5059, "CTR": 0.79, "CVR": 30.77, "총전환": 4, "총비용": 20235, "집행일수": 7, "cpa_color": "good", "tier": "TIER1"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "창원", "CPA": 29572, "CTR": 0.36, "CVR": 10.0, "총전환": 1, "총비용": 29572, "집행일수": 7, "cpa_color": "danger", "tier": "TIER1"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "서울", "CPA": null, "CTR": 0.45, "CVR": 0.0, "총전환": 0, "총비용": 8947, "집행일수": 6, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "맘껏먹는 다이어트 한달후기_260306", "display_name": "맘껏먹는 다이어트 한달후기", "branch": "천안", "CPA": null, "CTR": 0.18, "CVR": 0.0, "총전환": 0, "총비용": 24331, "집행일수": 6, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "먹으면서 다이어트(대읽남)_251017", "display_name": "먹으면서 다이어트(대읽남)", "branch": "대구", "CPA": null, "CTR": 0.48, "CVR": 0.0, "총전환": 0, "총비용": 45849, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "먹으면서(대읽남)_260306", "display_name": "먹으면서(대읽남)", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "먹으면서(대읽남)_260306", "display_name": "먹으면서(대읽남)", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "먹으면서(대읽남)_260306", "display_name": "먹으면서(대읽남)", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "먹으면서(대읽남)_260306", "display_name": "먹으면서(대읽남)", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "먹을거 다먹으면서(미미)_260317", "display_name": "먹을거 다먹으면서(미미)", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "먹을거 다먹으면서(미미)_260317", "display_name": "먹을거 다먹으면서(미미)", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "복부비만 50대 통짜몸매_260311", "display_name": "복부비만 50대 통짜몸매", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "UNCLASSIFIED"}, {"creative_name": "비만주사 10년은 늙어보인대요_260326", "display_name": "비만주사 10년은 늙어보인대요", "branch": "대구", "CPA": null, "CTR": 0.45, "CVR": 0.0, "총전환": 0, "총비용": 1663, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 10년은 늙어보인대요_260326", "display_name": "비만주사 10년은 늙어보인대요", "branch": "부평", "CPA": null, "CTR": 0.24, "CVR": 0.0, "총전환": 0, "총비용": 4992, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 10년은 늙어보인대요_260326", "display_name": "비만주사 10년은 늙어보인대요", "branch": "서울", "CPA": null, "CTR": 0.73, "CVR": 0.0, "총전환": 0, "총비용": 2715, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 10년은 늙어보인대요_260326", "display_name": "비만주사 10년은 늙어보인대요", "branch": "수원", "CPA": null, "CTR": 0.38, "CVR": 0.0, "총전환": 0, "총비용": 6463, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 10년은 늙어보인대요_260326", "display_name": "비만주사 10년은 늙어보인대요", "branch": "일산", "CPA": null, "CTR": 0.0, "CVR": null, "총전환": 0, "총비용": 1346, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 10년은 늙어보인대요_260326", "display_name": "비만주사 10년은 늙어보인대요", "branch": "천안", "CPA": null, "CTR": 0.55, "CVR": 0.0, "총전환": 0, "총비용": 4472, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 굶는다이어트_260320", "display_name": "비만주사 굶는다이어트", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 굶는다이어트_260320", "display_name": "비만주사 굶는다이어트", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 굶는다이어트_260320", "display_name": "비만주사 굶는다이어트", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 굶는다이어트_260320", "display_name": "비만주사 굶는다이어트", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사 굶는다이어트_260320", "display_name": "비만주사 굶는다이어트", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "서울", "CPA": 8512, "CTR": 1.31, "CVR": 14.29, "총전환": 1, "총비용": 8512, "집행일수": 6, "cpa_color": "good", "tier": "TIER4"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "대구", "CPA": null, "CTR": 0.22, "CVR": 0.0, "총전환": 0, "총비용": 9467, "집행일수": 5, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "부평", "CPA": null, "CTR": 0.43, "CVR": 0.0, "총전환": 0, "총비용": 21318, "집행일수": 7, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "수원", "CPA": null, "CTR": 0.16, "CVR": 0.0, "총전환": 0, "총비용": 16044, "집행일수": 6, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "일산", "CPA": null, "CTR": 0.0, "CVR": null, "총전환": 0, "총비용": 2168, "집행일수": 2, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "창원", "CPA": null, "CTR": 0.82, "CVR": 0.0, "총전환": 0, "총비용": 5955, "집행일수": 4, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "비만주사끊고15kg_260326", "display_name": "비만주사끊고15kg", "branch": "천안", "CPA": null, "CTR": 0.75, "CVR": 0.0, "총전환": 0, "총비용": 10079, "집행일수": 7, "cpa_color": "normal", "tier": "TIER4"}, {"creative_name": "비만주사없이 체질_260320", "display_name": "비만주사없이 체질", "branch": "수원", "CPA": 53100, "CTR": 0.31, "CVR": 6.67, "총전환": 1, "총비용": 53100, "집행일수": 7, "cpa_color": "good", "tier": "TIER3"}, {"creative_name": "비만주사없이 체질_260320", "display_name": "비만주사없이 체질", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "TIER3"}, {"creative_name": "비만주사없이 체질_260320", "display_name": "비만주사없이 체질", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "TIER3"}, {"creative_name": "비만주사없이 체질_260320", "display_name": "비만주사없이 체질", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "TIER3"}, {"creative_name": "비만주사없이 체질_260320", "display_name": "비만주사없이 체질", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "TIER3"}, {"creative_name": "비만주사요요 탄수중독_260320", "display_name": "비만주사요요 탄수중독", "branch": "대구", "CPA": 1140, "CTR": 1.34, "CVR": 42.86, "총전환": 3, "총비용": 3421, "집행일수": 5, "cpa_color": "good", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사요요 탄수중독_260320", "display_name": "비만주사요요 탄수중독", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사요요 탄수중독_260320", "display_name": "비만주사요요 탄수중독", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사요요 탄수중독_260320", "display_name": "비만주사요요 탄수중독", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "비만주사요요 탄수중독_260320", "display_name": "비만주사요요 탄수중독", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "상체비만 40대 팔뚝살부터_260311", "display_name": "상체비만 40대 팔뚝살부터", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "수원사는 50대 직장인_260311", "display_name": "수원사는 50대 직장인", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "UNCLASSIFIED"}, {"creative_name": "요요없는_260220", "display_name": "요요없는", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "요요없는_260220", "display_name": "요요없는", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "요요없는_260220", "display_name": "요요없는", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "요요없는_260220", "display_name": "요요없는", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "요요없는_260220", "display_name": "요요없는", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "인천사는 50대 직장인_260311", "display_name": "인천사는 50대 직장인", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "UNCLASSIFIED"}, {"creative_name": "주사형 비만치료제보다 더중요한이것_260120", "display_name": "주사형 비만치료제보다 더중요한이것", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "주사형 비만치료제보다 더중요한이것_260120", "display_name": "주사형 비만치료제보다 더중요한이것", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "주사형 비만치료제보다 더중요한이것_260120", "display_name": "주사형 비만치료제보다 더중요한이것", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "주사형 비만치료제보다 더중요한이것_260120", "display_name": "주사형 비만치료제보다 더중요한이것", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 5, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "주사형 비만치료제보다 더중요한이것_260120", "display_name": "주사형 비만치료제보다 더중요한이것", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "일산", "CPA": 22896, "CTR": 1.73, "CVR": 4.76, "총전환": 1, "총비용": 22896, "집행일수": 5, "cpa_color": "good", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "부평", "CPA": 23110, "CTR": 0.79, "CVR": 6.82, "총전환": 3, "총비용": 69331, "집행일수": 7, "cpa_color": "good", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "대구", "CPA": 23950, "CTR": 0.93, "CVR": 6.67, "총전환": 2, "총비용": 47901, "집행일수": 7, "cpa_color": "good", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "천안", "CPA": 24070, "CTR": 0.58, "CVR": 10.53, "총전환": 2, "총비용": 48141, "집행일수": 6, "cpa_color": "good", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "서울", "CPA": 38307, "CTR": 1.06, "CVR": 5.26, "총전환": 1, "총비용": 38307, "집행일수": 4, "cpa_color": "danger", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "수원", "CPA": null, "CTR": 0.45, "CVR": 0.0, "총전환": 0, "총비용": 54785, "집행일수": 5, "cpa_color": "normal", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 10년은_260116", "display_name": "주사형비만치료제 10년은", "branch": "창원", "CPA": null, "CTR": 0.39, "CVR": 0.0, "총전환": 0, "총비용": 33758, "집행일수": 4, "cpa_color": "normal", "tier": "TIER3"}, {"creative_name": "주사형비만치료제 고민끝에 40대부부 -32kg_260225", "display_name": "주사형비만치료제 고민끝에 40대부부 -32kg", "branch": "일산", "CPA": 18888, "CTR": 0.44, "CVR": 20.0, "총전환": 1, "총비용": 18888, "집행일수": 7, "cpa_color": "good", "tier": "LOW_VOLUME"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225", "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "branch": "부평", "CPA": 9107, "CTR": 0.49, "CVR": 23.08, "총전환": 6, "총비용": 54640, "집행일수": 7, "cpa_color": "good", "tier": "TIER1"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225", "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "branch": "대구", "CPA": 29864, "CTR": 0.99, "CVR": 5.71, "총전환": 2, "총비용": 59727, "집행일수": 7, "cpa_color": "danger", "tier": "TIER1"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225", "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "branch": "서울", "CPA": null, "CTR": 0.55, "CVR": 0.0, "총전환": 0, "총비용": 32942, "집행일수": 7, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225", "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 7, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225", "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "branch": "창원", "CPA": null, "CTR": 0.53, "CVR": 0.0, "총전환": 0, "총비용": 43867, "집행일수": 7, "cpa_color": "normal", "tier": "TIER1"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "서울", "CPA": null, "CTR": 0.0, "CVR": null, "총전환": 0, "총비용": 2541, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "지긋지긋 40대 뱃살 고생없이_260309", "display_name": "지긋지긋 40대 뱃살 고생없이", "branch": "천안", "CPA": null, "CTR": 0.13, "CVR": 0.0, "총전환": 0, "총비용": 6982, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "창원 다이어트 성지_260309", "display_name": "창원 다이어트 성지", "branch": "창원", "CPA": null, "CTR": 0.0, "CVR": null, "총전환": 0, "총비용": 6702, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "대구", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "서울", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 4, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "일산", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만 14kg 먹으면서_260324", "display_name": "체지방만 14kg 먹으면서", "branch": "천안", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만쏙빼는(부산잇츠)_260220", "display_name": "체지방만쏙빼는(부산잇츠)", "branch": "대구", "CPA": 18113, "CTR": 0.51, "CVR": 10.0, "총전환": 1, "총비용": 18113, "집행일수": 7, "cpa_color": "good", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만쏙빼는(부산잇츠)_260220", "display_name": "체지방만쏙빼는(부산잇츠)", "branch": "부평", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 2, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만쏙빼는(부산잇츠)_260220", "display_name": "체지방만쏙빼는(부산잇츠)", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 3, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "체지방만쏙빼는(부산잇츠)_260220", "display_name": "체지방만쏙빼는(부산잇츠)", "branch": "창원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 1, "cpa_color": "normal", "tier": "LOW_VOLUME"}, {"creative_name": "하체비만 40대 통짜바지_260311", "display_name": "하체비만 40대 통짜바지", "branch": "수원", "CPA": null, "CTR": null, "CVR": null, "총전환": 0, "총비용": 0, "집행일수": 6, "cpa_color": "normal", "tier": "LOW_VOLUME"}], "monthly_target_conv": 1051, "conv_so_far": 1, "proj_conv": 6, "conv_pct": 0.1, "proj_pct": 0.6, "insights": [{"type": "악화", "color": "#f87171", "title": "서울 CPA 동반 상승", "points": ["서울 CPA 각 +37,945원 전주 대비 상승", "원인 1: 소재 피로도 의심 - CTR/CVR 동반 하락 추세", "원인 2: 경쟁 심화로 단가 상승 가능성"]}, {"type": "개선", "color": "#4ade80", "title": "'건강한다이어트(수원,박고경)' TIER4→TIER1 ↑", "points": ["CTR/CVR 전주 대비 개선", "미집행 지점 추가 등록 검토"]}, {"type": "변동", "color": "#f59e0b", "title": "'건강한다이어트(대구,박고경)' TIER1→TIER4 ↓", "points": ["이번 주 성과 하락", "지속 모니터링 필요"]}, {"type": "확장 기회", "color": "#60a5fa", "title": "TIER1 '건강한다이어트(수원,박고경)' 미집행 지점 확장", "points": ["미집행 지점: 대구, 부평, 서울, 일산...", "현재 CPA: 22,708.0원", "TIER1 소재 2개 확장 가능"]}], "daily": [{"date_str": "03/30", "cost": 547094, "conv": 17, "cpa": 32182, "ctr": 0.59}, {"date_str": "03/31", "cost": 539737, "conv": 16, "cpa": 33734, "ctr": 0.69}, {"date_str": "04/01", "cost": 0, "conv": 1, "cpa": 0, "ctr": 0}, {"date_str": "04/02", "cost": 0, "conv": 0, "cpa": 0, "ctr": 0}, {"date_str": "04/03", "cost": 0, "conv": 0, "cpa": 0, "ctr": 0}, {"date_str": "04/04", "cost": 0, "conv": 0, "cpa": 0, "ctr": 0}, {"date_str": "04/05", "cost": 0, "conv": 0, "cpa": 0, "ctr": 0}], "end_date_str": "04/05", "full_insight": {"summary": {"headline": "전반적 효율 개선", "headline_color": "#4ade80", "points": ["비용 2,555,911원 감소 (70.2%)", "전환 69건 감소 (-67.0%)", "CPA 3,401원 개선 (-9.6%)", "CTR 0.64% (+0.11%p) · CVR 6.56% (+0.27%p)"]}, "branches": [{"branch": "서울", "grade": "약세", "grade_color": "#f87171", "points": ["CPA 54,000원 — 전주 대비 +37,945원 급등, 원인 분석 시급", "CVR 4.17% (-7.62%p) — 급락", "TARGET CPA의 1.7배 — 개선 필요"], "conv": 2, "cost": 108000, "cpa": 54000, "eff_score": 0.6}, {"branch": "부평", "grade": "최우수", "grade_color": "#4ade80", "points": ["CPA 20,883원 — 전주 대비 15,241원 대폭 개선", "CVR 8.85% (+2.84%p 상승)", "효율점수 1.53 — 비용 대비 전환 비중 탁월", "TARGET CPA 대비 35% 절감"], "conv": 10, "cost": 208826, "cpa": 20883, "eff_score": 1.53}, {"branch": "수원", "grade": "약세", "grade_color": "#f87171", "points": ["CPA 49,629원 — 전주 대비 18,931원 대폭 개선", "CVR 5.71% (+1.98%p 상승)", "TARGET CPA의 1.6배 — 개선 필요"], "conv": 4, "cost": 198517, "cpa": 49629, "eff_score": 0.64}, {"branch": "일산", "grade": "최우수", "grade_color": "#4ade80", "points": ["CPA 11,667원 — 전주 대비 33,111원 대폭 개선", "CVR 13.95% (+9.05%p) — 급등", "효율점수 2.75 — 비용 대비 전환 비중 탁월", "TARGET CPA 대비 64% 절감"], "conv": 6, "cost": 70000, "cpa": 11667, "eff_score": 2.75}, {"branch": "대구", "grade": "양호", "grade_color": "#60a5fa", "points": ["CPA 29,825원 — 전주 대비 405원 소폭 개선"], "conv": 8, "cost": 238597, "cpa": 29825, "eff_score": 1.07}, {"branch": "창원", "grade": "약세", "grade_color": "#f87171", "points": ["CPA 131,984원 — 전주 대비 +80,654원 급등, 원인 분석 시급", "CVR 2.04% (-2.70%p 하락)", "효율점수 0.24 — 비용 대비 전환 비중 불균형", "TARGET CPA의 4.1배 — 소재 교체 시급"], "conv": 1, "cost": 131984, "cpa": 131984, "eff_score": 0.24}, {"branch": "천안", "grade": "보통", "grade_color": "#fb923c", "points": ["CPA 43,636원 — 전주 대비 6,839원 개선"], "conv": 3, "cost": 130907, "cpa": 43636, "eff_score": 0.73}], "tier_analysis": [{"tier": "TIER1", "title": "핵심 성장 소재", "color": "#4ade80", "desc": "CPA ≤ TARGET + CVR ≥ 5%", "count": 3, "items": [{"name": "맘껏먹는 다이어트 한달후기", "cpa": 16617.0, "cvr": 16.13, "ctr": 0.4, "conv": 5, "cost": 83085, "branches": ["창원", "천안", "일산", "서울", "대구", "부평", "수원"]}, {"name": "건강한다이어트(수원,박고경)", "cpa": 22708.0, "cvr": 8.33, "ctr": 0.87, "conv": 3, "cost": 68125, "branches": ["수원"]}, {"name": "주사형비만치료제 고민끝에 50대부부 -32kg", "cpa": 23897.0, "cvr": 9.09, "ctr": 0.64, "conv": 8, "cost": 191176, "branches": ["대구", "부평", "창원", "서울", "수원"]}], "insights": ["'건강한다이어트(수원,박고경)' (CPA 22,708원) → 미집행 6개 지점 확장 가능", "'주사형비만치료제 고민끝에 50대부부 -32kg' (CPA 23,897원) → 미집행 2개 지점 확장 가능", "TIER1 소재 총 전환 16건"]}, {"tier": "TIER3", "title": "CVR 양호 / CPA 초과", "color": "#a78bfa", "desc": "CVR ≥ 5% but CPA > TARGET", "count": 2, "items": [{"name": "주사형비만치료제 10년은", "cpa": 35013.0, "cvr": 5.73, "ctr": 0.76, "conv": 9, "cost": 315119, "branches": ["수원", "부평", "서울", "천안", "대구", "창원", "일산"]}, {"name": "비만주사없이 체질", "cpa": 53100.0, "cvr": 6.67, "ctr": 0.31, "conv": 1, "cost": 53100, "branches": ["수원", "서울", "일산", "창원", "부평"]}], "insights": ["'비만주사없이 체질' CPA 21,135원 초과 — 미세 조정으로 TIER1 승격 가능성", "'주사형비만치료제 10년은' CPA 3,048원 초과 — 미세 조정으로 TIER1 승격 가능성"]}, {"tier": "TIER4", "title": "개선 또는 OFF 검토", "color": "#f87171", "desc": "CPA 초과 + CVR 미달", "count": 3, "items": [{"name": "건강한다이어트(박고경)", "cpa": 58545.0, "cvr": 2.94, "ctr": 0.83, "conv": 1, "cost": 58545, "branches": ["부평", "서울", "대구"]}, {"name": "비만주사끊고15kg", "cpa": 73543.0, "cvr": 3.45, "ctr": 0.48, "conv": 1, "cost": 73543, "branches": ["부평", "수원", "대구", "천안", "창원", "서울", "일산"]}, {"name": "건강한다이어트(대구,박고경)", "cpa": null, "cvr": 0.0, "ctr": 0.8, "conv": 0, "cost": 52456, "branches": ["대구"]}], "insights": []}, {"tier": "LOW_VOLUME", "title": "저볼륨 (판단 보류)", "color": "#6b7280", "desc": "클릭 < 50 or 비용 < 5만원", "count": 28, "items": [{"name": "비만주사요요 탄수중독", "cpa": 1140.0, "cvr": 42.86, "ctr": 1.34, "conv": 3, "cost": 3421, "branches": ["대구", "창원", "수원", "천안", "부평"]}, {"name": "체지방만쏙빼는(부산잇츠)", "cpa": 18113.0, "cvr": 10.0, "ctr": 0.51, "conv": 1, "cost": 18113, "branches": ["대구", "부평", "창원", "수원"]}, {"name": "주사형비만치료제 고민끝에 40대부부 -32kg", "cpa": 18888.0, "cvr": 20.0, "ctr": 0.44, "conv": 1, "cost": 18888, "branches": ["일산"]}, {"name": "건강한다이어트(천안, 박고경)", "cpa": 36902.0, "cvr": 4.76, "ctr": 0.83, "conv": 1, "cost": 36902, "branches": ["천안"]}, {"name": "16kg 충격적인 아이들 반응", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["수원"]}, {"name": "50대 20대처럼 체지방", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["수원", "창원", "천안"]}, {"name": "50대 뱃살 체지방만 (창원)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["창원"]}, {"name": "50대 뱃살 체지방만 (대구 외 5개)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["대구", "일산", "수원", "천안", "서울", "부평"]}, {"name": "50대엄마 혈당다이어트(햅삐)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["부평", "대구"]}, {"name": "건강한다이어트(서울,박고경)", "cpa": null, "cvr": 0.0, "ctr": 1.02, "conv": 0, "cost": 14036, "branches": ["서울"]}, {"name": "건강한다이어트(일산, 박고경)", "cpa": null, "cvr": 0.0, "ctr": 1.22, "conv": 0, "cost": 4467, "branches": ["일산"]}, {"name": "건강한다이어트(창원,박고경)", "cpa": null, "cvr": 0.0, "ctr": 0.97, "conv": 0, "cost": 12130, "branches": ["창원"]}, {"name": "끝내주는 다이어트(창원언니쓰)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["창원"]}, {"name": "당뇨다이어트(대읽남)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["대구"]}, {"name": "더먹어야 다이어트 가능(더먹어유)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["부평", "창원", "수원", "천안"]}, {"name": "맘껏 먹는 다이어트", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["창원", "부평", "수원", "대구"]}, {"name": "먹으면서 다이어트(대읽남)", "cpa": null, "cvr": 0.0, "ctr": 0.48, "conv": 0, "cost": 45849, "branches": ["대구"]}, {"name": "먹으면서(대읽남)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["서울", "수원", "창원", "일산"]}, {"name": "먹을거 다먹으면서(미미)", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["수원", "창원"]}, {"name": "비만주사 10년은 늙어보인대요", "cpa": null, "cvr": 0.0, "ctr": 0.39, "conv": 0, "cost": 21651, "branches": ["수원", "천안", "부평", "서울", "일산", "대구"]}, {"name": "비만주사 굶는다이어트", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["대구", "수원", "천안", "부평", "서울"]}, {"name": "상체비만 40대 팔뚝살부터", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["천안"]}, {"name": "요요없는", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["서울", "창원", "수원", "대구", "부평"]}, {"name": "주사형 비만치료제보다 더중요한이것", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["부평", "서울", "대구", "천안", "일산"]}, {"name": "지긋지긋 40대 뱃살 고생없이", "cpa": null, "cvr": 0.0, "ctr": 0.1, "conv": 0, "cost": 9523, "branches": ["천안", "서울", "일산", "부평", "수원", "대구", "창원"]}, {"name": "창원 다이어트 성지", "cpa": null, "cvr": null, "ctr": 0.0, "conv": 0, "cost": 6702, "branches": ["창원"]}, {"name": "체지방만 14kg 먹으면서", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["부평", "대구", "천안", "일산", "서울", "창원", "수원"]}, {"name": "하체비만 40대 통짜바지", "cpa": null, "cvr": null, "ctr": null, "conv": 0, "cost": 0, "branches": ["수원"]}], "insights": ["전환 0건 소재 24개 — 비용 미미하나 정리 검토"]}], "cross_findings": [{"creative": "맘껏먹는 다이어트 한달후기", "type": "지점 편차", "color": "#fb923c", "detail": "최저 일산 CPA 5,059원 vs 최고 창원 CPA 29,572원 (5.8배)", "ratio": 5.84542399683732}, {"creative": "주사형비만치료제 고민끝에 50대부부 -32kg", "type": "지점 편차", "color": "#fb923c", "detail": "최저 부평 CPA 9,107원 vs 최고 대구 CPA 29,864원 (3.3배)", "ratio": 3.27923575271769}, {"creative": "비만주사끊고15kg", "type": "지점 특화", "color": "#60a5fa", "detail": "서울에서만 전환 1건 — 나머지 3개 지점 전환 0건 (비용 소진 중)", "ratio": 0}], "off_findings": [], "actions": {"immediate": [{"action": "'건강한다이어트(수원,박고경)' → 대구, 부평, 서울, 일산, 창원, 천안 확장", "reason": "CPA 22,708원 (TIER1) · 미집행 6개 지점", "priority": 22708.0}, {"action": "'주사형비만치료제 고민끝에 50대부부 -32kg' → 일산, 천안 확장", "reason": "CPA 23,897원 (TIER1) · 미집행 2개 지점", "priority": 23897.0}, {"action": "'비만주사끊고15kg' OFF 검토", "reason": "CPA 73,543원 (TARGET의 2.3배)", "priority": 999999}], "monitoring": ["서울 CPA +37,945원 급등 — 소재 피로도/경쟁 심화 확인", "창원 CPA +80,654원 급등 — 소재 피로도/경쟁 심화 확인", "'건강한다이어트(대구,박고경)' TIER1→TIER4 ↓ — 지속 모니터링", "'건강한다이어트(박고경)' TIER1→TIER4 ↓ — 지속 모니터링", "'건강한다이어트(서울,박고경)' TIER1→저볼륨 ↓ — 지속 모니터링", "'건강한다이어트(천안, 박고경)' TIER3→저볼륨 ↓ — 지속 모니터링", "'더먹어야 다이어트 가능(더먹어유)' TIER4→저볼륨 ↓ — 지속 모니터링", "'먹으면서 다이어트(대읽남)' TIER3→저볼륨 ↓ — 지속 모니터링", "'비만주사 10년은 늙어보인대요' TIER3→저볼륨 ↓ — 지속 모니터링", "'비만주사 굶는다이어트' TIER4→저볼륨 ↓ — 지속 모니터링", "'비만주사요요 탄수중독' TIER3→저볼륨 ↓ — 지속 모니터링", "'주사형비만치료제 10년은' TIER1→TIER3 ↓ — 지속 모니터링", "'주사형비만치료제 고민끝에 40대부부 -32kg' TIER1→저볼륨 ↓ — 지속 모니터링", "'체지방만 14kg 먹으면서' TIER4→저볼륨 ↓ — 지속 모니터링", "'체지방만쏙빼는(부산잇츠)' TIER4→저볼륨 ↓ — 지속 모니터링", "'하체비만 40대 통짜바지' TIER4→저볼륨 ↓ — 지속 모니터링", "주 후반 전환 감소 (34건→0건) — 하락 원인 점검"], "monthly": "현재 1건 / 목표 1051건 (0.1%) — 잔여 1050건 필요, 예상 6건 (0.6%)"}}};
+
+const fmt = n => n==null||n===0 ? '-' : Math.round(n).toLocaleString('ko-KR');
+const fmtp = n => n==null ? '-' : parseFloat(n).toFixed(2)+'%';
+const TIER_COLOR = {TIER1:'#4ade80',TIER2:'#60a5fa',TIER3:'#a78bfa',TIER4:'#f87171',LOW_VOLUME:'#6b7280',UNCLASSIFIED:'#8b5cf6'};
+const axisStyle = {grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#3d4559',font:{size:10}}};
+const tooltipStyle = {backgroundColor:'#13161e',titleColor:'#dde4f0',bodyColor:'#7a8499',borderColor:'#1f2535',borderWidth:1};
+
+// Header
+document.getElementById('period-this').textContent = D.period_this_full;
+document.getElementById('period-prev').textContent = D.period_prev;
+document.getElementById('issue-date').textContent = D.issue_date;
+
+// KPI
+function buildKpi(){
+  const t=D.kpi_this, p=D.kpi_prev;
+  const items=[
+    {label:'광고비', val:fmt(t.cost)+'원', diff:t.cost-p.cost, pct:((t.cost-p.cost)/p.cost*100).toFixed(1), unit:'원', good:'neutral'},
+    {label:'전환수', val:fmt(t.conv)+'건', diff:t.conv-p.conv, pct:((t.conv-p.conv)/p.conv*100).toFixed(1), unit:'건', good:'up'},
+    {label:'평균 CPA', val:fmt(t.cpa)+'원', diff:t.cpa-p.cpa, pct:((t.cpa-p.cpa)/p.cpa*100).toFixed(1), unit:'원', good:'down'},
+    {label:'CTR', val:fmtp(t.ctr), diff:+(t.ctr-p.ctr).toFixed(2), pct:((t.ctr-p.ctr)/p.ctr*100).toFixed(1), unit:'%p', good:'up'},
+    {label:'CVR', val:fmtp(t.cvr), diff:+(t.cvr-p.cvr).toFixed(2), pct:((t.cvr-p.cvr)/p.cvr*100).toFixed(1), unit:'%p', good:'up'},
+  ];
+  document.getElementById('kpi-strip').innerHTML = items.map(item=>{
+    const isGood = item.good==='down' ? item.diff<0 : item.diff>0;
+    const cls = item.good==='neutral' ? 'neutral' : (item.diff===0 ? 'neutral' : isGood ? 'good' : 'bad');
+    const arrow = item.diff>0 ? '▲' : '▼';
+    const sign = item.diff>0 ? '+' : '';
+    const diffStr = item.unit==='%p'
+      ? `${arrow} ${sign}${item.diff}%p (${sign}${item.pct}%)`
+      : `${arrow} ${sign}${Math.round(item.diff).toLocaleString()}${item.unit} (${sign}${item.pct}%)`;
+    return `<div class="kpi-cell">
+      <div class="kpi-cell-label">${item.label}</div>
+      <div class="kpi-val">${item.val}</div>
+      <div class="kpi-diff ${cls}">${diffStr}</div>
+    </div>`;
+  }).join('');
+}
+
+// Insights
+function buildInsights(){
+  if(!D.insights || D.insights.length===0){
+    document.getElementById('insight-list').innerHTML = '<div class="insight-card" style="--ic:#7a8499;background:#7a849908"><div class="ic-title">이번 주 특이사항 없음</div></div>';
+    return;
+  }
+  document.getElementById('insight-list').innerHTML = D.insights.map(ins=>`
+    <div class="insight-card" style="--ic:${ins.color};background:${ins.color}08">
+      <div class="ic-type">${ins.type}</div>
+      <div class="ic-title">${ins.title}</div>
+      ${ins.points.map(p=>`<div class="ic-point">${p}</div>`).join('')}
+    </div>`).join('');
+}
+
+// TIER Table (UNCLASSIFIED 제외)
+function buildTierTable(){
+  const torder={TIER1:1,TIER2:2,TIER3:3,TIER4:4,LOW_VOLUME:5};
+  const sorted=[...D.tier_list].sort((a,b)=>(torder[a.tier_this]||9)-(torder[b.tier_this]||9));
+  const tierData = Object.fromEntries(D.tier_this.map(c=>[c.creative_name,c]));
+  // TIER 레이블 한글 변환 (CSS 클래스는 유지)
+  const tierLabel = t => t === 'UNCLASSIFIED' ? '평가중' : t === 'LOW_VOLUME' ? '저볼륨' : t;
+  document.getElementById('tier-table').innerHTML=`
+    <thead><tr><th>소재명</th><th>이번 주 TIER</th><th>전주</th><th>변동</th>
+      <th>CPA</th><th>CTR</th><th>CVR</th><th>전환</th><th>집행지점</th></tr></thead>
+    <tbody>${sorted.map(t=>{
+      const d=tierData[t.creative_name]||{};
+      const chgClass = t.change.includes('↑') ? 'change-up' : t.change.includes('↓') ? 'change-down' : t.change==='신규' ? 'change-new' : 'text-muted';
+      return `<tr>
+        <td class="td-name" title="${t.creative_name}">${t.creative_name}</td>
+        <td><span class="tier-badge ${t.tier_this}">${tierLabel(t.tier_this)}</span></td>
+        <td>${t.tier_prev?`<span class="tier-badge ${t.tier_prev}" style="opacity:.6">${tierLabel(t.tier_prev)}</span>`:'<span class="text-muted">—</span>'}</td>
+        <td class="${chgClass}">${t.change}</td>
+        <td class="num">${d.CPA?fmt(d.CPA)+'원':'-'}</td>
+        <td class="num">${d.CTR!=null?d.CTR.toFixed(2)+'%':'-'}</td>
+        <td class="num">${d.CVR!=null?d.CVR.toFixed(2)+'%':'-'}</td>
+        <td class="num">${d.총전환||0}건</td>
+        <td style="font-size:11px;color:var(--text2)">${(d.지점목록||[]).join(', ')}</td>
+      </tr>`;
+    }).join('')}</tbody>`;
+}
+
+// 신규 소재 테이블 (집행일수 < 3일)
+function buildNewCreativeTable(){
+  const data = D.new_creatives || [];
+  const sec = document.getElementById('new-creative-sec');
+  if(data.length === 0){
+    sec.style.display = 'none';
+    return;
+  }
+  sec.style.display = 'block';
+  document.getElementById('new-tbl').innerHTML=`
+    <thead><tr><th>소재명</th><th>지점</th><th>비용</th><th>전환</th><th>CPA</th><th>CTR</th><th>CVR</th><th>집행일수</th></tr></thead>
+    <tbody>${data.map(c=>`<tr>
+      <td class="td-name" title="${c.creative_name}">${c.creative_name}</td>
+      <td style="font-size:11px;color:var(--text2)">${(c.지점목록||[]).join(', ')||'-'}</td>
+      <td class="num">${(c.총비용/10000).toFixed(1)}만</td>
+      <td class="num">${c.총전환||0}건</td>
+      <td class="num">${c.CPA?fmt(c.CPA)+'원':'-'}</td>
+      <td class="num">${c.CTR!=null?c.CTR.toFixed(2)+'%':'-'}</td>
+      <td class="num">${c.CVR!=null?c.CVR.toFixed(2)+'%':'-'}</td>
+      <td class="num" style="color:var(--warn)">${c.집행일수||0}일</td>
+    </tr>`).join('')}</tbody>`;
+}
+
+// OFF 소재 성과 분석
+function buildOffCreativeTable(){
+  const data = D.off_creative_analysis || [];
+  const sec = document.getElementById('off-creative-sec');
+  if(data.length === 0){
+    sec.style.display = 'none';
+    return;
+  }
+  sec.style.display = 'block';
+
+  const {totalCost,totalConv,activeCount} = data.reduce((a,c)=>({
+    totalCost:a.totalCost+c.총비용, totalConv:a.totalConv+c.총전환,
+    activeCount:a.activeCount+(c.총비용>0?1:0)
+  }),{totalCost:0,totalConv:0,activeCount:0});
+  const totalCpa = totalConv > 0 ? Math.round(totalCost/totalConv) : 0;
+
+  document.getElementById('off-creative-summary').innerHTML=`
+    <div class="summary-strip">
+      <div>
+        <div class="s-label">OFF 소재수</div>
+        <div class="s-val">${data.length}개 <span style="font-size:11px;color:var(--text2);font-weight:400">(실집행 ${activeCount}개)</span></div>
+      </div>
+      <div>
+        <div class="s-label">총 비용</div>
+        <div class="s-val">${(totalCost/10000).toFixed(1)}만</div>
+      </div>
+      <div>
+        <div class="s-label">총 전환</div>
+        <div class="s-val">${totalConv}건</div>
+      </div>
+      <div>
+        <div class="s-label">평균 CPA</div>
+        <div class="s-val">${totalCpa>0?fmt(totalCpa)+'원':'-'}</div>
+      </div>
+    </div>`;
+
+  document.getElementById('off-creative-tbl').innerHTML=`
+    <thead><tr><th>소재명</th><th>지점</th><th>유형</th><th>비용</th><th>전환</th><th>CPA</th><th>CTR</th><th>CVR</th></tr></thead>
+    <tbody>${data.map(c=>{
+      const cpaColor = c.CPA==null ? 'var(--text2)' : c.CPA<=D.target_cpa ? 'var(--accent)' : 'var(--danger)';
+      return `<tr>
+      <td class="td-name" title="${c.creative_name}">${c.creative_name}</td>
+      <td style="font-size:11px;color:var(--text2)">${(c.지점목록||[]).join(', ')||'-'}</td>
+      <td style="font-size:11px;color:var(--text2)">${c.소재유형||'-'}</td>
+      <td class="num">${c.총비용>0?(c.총비용/10000).toFixed(1)+'만':'-'}</td>
+      <td class="num">${c.총전환||0}건</td>
+      <td class="num" style="color:${cpaColor}">${c.CPA?fmt(c.CPA)+'원':'-'}</td>
+      <td class="num">${c.CTR!=null?c.CTR.toFixed(2)+'%':'-'}</td>
+      <td class="num">${c.CVR!=null?c.CVR.toFixed(2)+'%':'-'}</td>
+    </tr>`}).join('')}</tbody>`;
+}
+
+// Branch Creative Table (소재×지점)
+function buildBranchCreativeTable(){
+  const data = D.branch_creative || [];
+  if(data.length === 0){
+    document.getElementById('branch-creative-table').innerHTML = '<tbody><tr><td colspan="7" style="text-align:center;color:var(--text2)">데이터 없음</td></tr></tbody>';
+    return;
+  }
+
+  // rowspan 계산을 위해 원본 소재명별 그룹핑 (날짜코드 포함 → 정확한 소재 단위)
+  const groups = {};
+  data.forEach(r => {
+    if(!groups[r.creative_name]) groups[r.creative_name] = [];
+    groups[r.creative_name].push(r);
+  });
+
+  let rows = '';
+  let prevName = '';
+  data.forEach((r, idx) => {
+    const displayName = r.display_name || r.creative_name;
+    const isFirst = r.creative_name !== prevName;
+    const rowspan = isFirst ? groups[r.creative_name].length : 0;
+    prevName = r.creative_name;
+
+    const cpaColor = r.cpa_color === 'danger' ? 'text-bad' : r.cpa_color === 'good' ? 'text-good' : '';
+    const cpaVal = r.CPA != null ? fmt(r.CPA) + '원' : '-';
+    const shortTag = r.집행일수 < 3 ? ' <span style="color:var(--warn);font-size:10px">(단기)</span>' : '';
+
+    rows += '<tr>';
+    if(isFirst){
+      rows += `<td class="td-name" rowspan="${rowspan}" title="${displayName}">${displayName}</td>`;
+    }
+    rows += `<td>${r.branch}${shortTag}</td>`;
+    rows += `<td class="num ${cpaColor}">${cpaVal}</td>`;
+    rows += `<td class="num">${r.CTR != null ? r.CTR.toFixed(2) + '%' : '-'}</td>`;
+    rows += `<td class="num">${r.CVR != null ? r.CVR.toFixed(2) + '%' : '-'}</td>`;
+    rows += `<td class="num">${r.총전환}건</td>`;
+    rows += `<td class="num">${(r.총비용/10000).toFixed(1)}만</td>`;
+    rows += '</tr>';
+  });
+
+  document.getElementById('branch-creative-table').innerHTML = `
+    <thead><tr><th>소재명</th><th>지점</th><th>CPA</th><th>CTR</th><th>CVR</th><th>전환</th><th>비용</th></tr></thead>
+    <tbody>${rows}</tbody>`;
+}
+
+// Toggle collapsible sections
+function toggleCollapse(header){
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.collapsible-toggle');
+  const icon = header.querySelector('.toggle-icon');
+  const isOpen = body.classList.contains('open');
+
+  if(isOpen){
+    body.classList.remove('open');
+    header.classList.remove('open');
+    toggle.innerHTML = '<span class="toggle-icon">▶</span> 펼치기';
+  } else {
+    body.classList.add('open');
+    header.classList.add('open');
+    toggle.innerHTML = '<span class="toggle-icon">▼</span> 접기';
+  }
+}
+
+// Branch Cards (지점별 소재 반응)
+function buildBranchCards(){
+  const data = D.branch_creative || [];
+  if(data.length === 0){
+    document.getElementById('branch-cards').innerHTML = '<div style="color:var(--text2);text-align:center;padding:20px">데이터 없음</div>';
+    return;
+  }
+
+  // TIER 데이터는 branch_creative 각 항목에 직접 포함됨 (Python에서 매핑 완료)
+
+  // 지점별 그룹핑
+  const byBranch = {};
+  data.forEach(r => {
+    if(!byBranch[r.branch]) byBranch[r.branch] = [];
+    byBranch[r.branch].push(r);
+  });
+
+  // 지점별 CPA 오름차순 정렬
+  Object.keys(byBranch).forEach(b => {
+    byBranch[b].sort((a,c) => (a.CPA || 999999) - (c.CPA || 999999));
+  });
+
+  // 지점 순서 (VALID_BRANCHES 순)
+  const branchOrder = ['서울', '부평', '수원', '일산', '대구', '창원', '천안'];
+  const sortedBranches = branchOrder.filter(b => byBranch[b]);
+
+  // 지점별 요약 (D.branch에서)
+  const branchSummary = {};
+  (D.branch || []).forEach(b => { branchSummary[b.branch] = b; });
+
+  let cards = '';
+  sortedBranches.forEach(branch => {
+    const items = byBranch[branch];
+    const summary = branchSummary[branch] || {};
+    const branchCpa = summary.CPA ? fmt(summary.CPA) + '원' : '-';
+    const branchConv = summary.총전환 || 0;
+
+    let rows = '';
+    items.forEach((r, idx) => {
+      const tier = r.tier || '-';
+      const displayName = r.display_name || r.creative_name;
+      const isBest = idx === 0 && r.CPA != null;
+      const rowClass = isBest ? 'row-best' : '';
+      const cpaVal = r.CPA != null ? fmt(r.CPA) + '원' : '-';
+      const cvrVal = r.CVR != null ? r.CVR.toFixed(1) + '%' : '-';
+
+      rows += `<tr class="${rowClass}">
+        <td class="td-name" title="${displayName}">${displayName}</td>
+        <td><span class="tier-badge ${tier}">${tier}</span></td>
+        <td class="num">${cpaVal}</td>
+        <td class="num">${cvrVal}</td>
+        <td class="num">${r.총전환}건</td>
+      </tr>`;
+    });
+
+    cards += `<div class="branch-card">
+      <div class="branch-card-header">
+        <div class="branch-card-name">${branch}</div>
+        <div class="branch-card-stats">CPA <span class="num">${branchCpa}</span> · 전환 <span class="num">${branchConv}건</span></div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>소재명</th><th>TIER</th><th>CPA</th><th>CVR</th><th>전환</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('branch-cards').innerHTML = cards;
+}
+
+// Branch Charts
+function buildBranchCharts(){
+  document.getElementById('target-cpa-label').textContent = fmt(D.target_cpa);
+  const branchOrder = ['서울', '부평', '수원', '일산', '대구', '창원', '천안'];
+  const br = branchOrder.map(name => D.branch.find(b => b.branch === name)).filter(Boolean);
+  const labels=br.map(b=>b.branch);
+
+  new Chart(document.getElementById('branchCpaChart'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'이번 주 CPA',data:br.map(b=>Math.round(b.CPA||0)),
+        backgroundColor:br.map(b=>(b.CPA||0)<=D.target_cpa?'#4ade8033':'#f8717133'),
+        borderColor:br.map(b=>(b.CPA||0)<=D.target_cpa?'#4ade80':'#f87171'),
+        borderWidth:1.5,borderRadius:3},
+      {label:'전주 CPA',data:br.map(b=>Math.round(b.CPA_prev||0)),
+        backgroundColor:'rgba(255,255,255,.04)',borderColor:'#3d4559',
+        borderWidth:1,borderRadius:3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#7a8499',font:{size:10}}},
+        tooltip:{...tooltipStyle,callbacks:{label:ctx=>`${ctx.dataset.label}: ${Math.round(ctx.parsed.y).toLocaleString('ko-KR')}원`}}},
+      scales:{x:{...axisStyle},y:{...axisStyle,ticks:{...axisStyle.ticks,callback:v=>fmt(v)+'원'}}}}
+  });
+
+  new Chart(document.getElementById('branchCvrChart'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'CVR 이번 주',data:br.map(b=>b.CVR||0),
+        backgroundColor:'#60a5fa33',borderColor:'#60a5fa',borderWidth:1.5,borderRadius:3,yAxisID:'y'},
+      {label:'CVR 전주',data:br.map(b=>b.CVR_prev||0),
+        backgroundColor:'rgba(255,255,255,.04)',borderColor:'#3d4559',borderWidth:1,borderRadius:3,yAxisID:'y'},
+      {label:'CTR 이번 주',data:br.map(b=>b.CTR||0),
+        type:'line',borderColor:'#4ade80',pointBackgroundColor:'#4ade80',
+        borderWidth:2,tension:.3,pointRadius:4,yAxisID:'y2'},
+      {label:'CTR 전주',data:br.map(b=>b.CTR_prev||0),
+        type:'line',borderColor:'#4ade8055',borderDash:[4,3],
+        borderWidth:1.5,tension:.3,pointRadius:3,pointStyle:'circle',yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#7a8499',font:{size:10},boxWidth:12}},
+        tooltip:{...tooltipStyle,callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}%`}}},
+      scales:{
+        x:{...axisStyle},
+        y:{...axisStyle,position:'left',title:{display:true,text:'CVR (%)',color:'#3d4559',font:{size:10}},
+          ticks:{...axisStyle.ticks,callback:v=>v+'%'}},
+        y2:{...axisStyle,position:'right',grid:{display:false},
+          title:{display:true,text:'CTR (%)',color:'#3d4559',font:{size:10}},
+          ticks:{...axisStyle.ticks,callback:v=>v+'%'}}
+      }}
+  });
+
+  // 효율점수 색상 함수
+  const effColor = e => e >= 1.2 ? 'var(--accent)' : e >= 0.8 ? 'var(--accent2)' : 'var(--danger)';
+
+  document.getElementById('branch-table').innerHTML=`
+    <thead><tr><th>지점</th><th>CPA</th><th>전주대비CPA</th><th>CTR</th><th>전주대비CTR</th>
+      <th>CVR</th><th>전주대비CVR</th><th>전환</th><th>효율점수</th></tr></thead>
+    <tbody>${br.map(b=>{
+      const cd=b.CPA_diff||0, ctd=b.CTR_diff||0, cvd=b.CVR_diff||0;
+      const cpaCls=cd<0?'text-good':cd>3000?'text-bad':'';
+      const ctrCls=ctd>0?'text-good':ctd<-0.1?'text-bad':'';
+      const cvrCls=cvd>0?'text-good':cvd<-0.5?'text-bad':'';
+      const eff = b['효율점수'];
+      const effStyle = eff != null ? `color:${effColor(eff)}` : '';
+      return `<tr>
+        <td style="font-weight:700">${b.branch}</td>
+        <td class="num">${fmt(b.CPA)}원</td>
+        <td class="num ${cpaCls}">${cd>=0?'▲ +':'▼ '}${fmt(Math.abs(cd))}원${Math.abs(cd)>3000?' ⚠️':''}</td>
+        <td class="num">${(b.CTR||0).toFixed(2)}%</td>
+        <td class="num ${ctrCls}">${ctd>=0?'▲ +':'▼ '}${Math.abs(ctd).toFixed(2)}%p</td>
+        <td class="num">${(b.CVR||0).toFixed(2)}%</td>
+        <td class="num ${cvrCls}">${cvd>=0?'▲ +':'▼ '}${Math.abs(cvd).toFixed(2)}%p${Math.abs(cvd)>=0.5?' ⚠️':''}</td>
+        <td class="num">${b.총전환||0}건</td>
+        <td class="num" style="${effStyle}">${eff!=null?eff.toFixed(2):'-'}</td>
+      </tr>`;
+    }).join('')}</tbody>`;
+}
+
+// Action
+function buildAction(){
+  const items=[
+    ...D.off_list.map(o=>({
+      type:'OFF 권고', color:'#f87171',
+      creative: o.creative_name, branch: o.branch,
+      reason: `CPA ${fmt(o.CPA)}원 — 지점 평균 ${fmt(o.avg_cpa)}원의 ${o.ratio}배 / CVR ${o.CVR.toFixed(2)}%`,
+      guide: '해당 소재 OFF 전환 검토 (권고, 최종 결정은 클라이언트)'
+    })),
+    ...D.on_list.map(o=>({
+      type:'ON 권고', color:'#4ade80',
+      creative: o.creative_name, branch: o.missing.join(', '),
+      reason: `이번 주 TIER1 · CPA ${fmt(o.CPA)}원 — 현재 미집행 지점에서 효과 기대`,
+      guide: '해당 지점에 소재 추가 등록 검토 (권고, 최종 결정은 클라이언트)'
+    }))
+  ];
+  document.getElementById('action-list').innerHTML = items.length ? items.map(a=>`
+    <div class="action-row" style="--ab:${a.color};background:${a.color}06">
+      <div class="action-type">${a.type}</div>
+      <div class="action-creative">${a.creative}</div>
+      <div class="action-branch">${a.type.includes('OFF')?'대상 지점: ':'대상 지점: '}${a.branch}</div>
+      <div class="action-reason">${a.reason}</div>
+      <div class="action-guide">→ ${a.guide}</div>
+    </div>`).join('')
+  : '<div style="color:var(--text2);font-size:13px;padding:12px">이번 주 ON/OFF 권고 대상 없음</div>';
+}
+
+// Projection
+function buildProjection(){
+  const pct = Math.min(D.conv_pct, 100);
+  const ppct = Math.min(D.proj_pct, 100);
+  document.getElementById('proj-grid').innerHTML=`
+    <div class="proj-card">
+      <div class="proj-label">현재 누적 전환 (${D.end_date_str} 기준)</div>
+      <div class="proj-val" style="color:${D.conv_pct>=80?'#4ade80':'#fb923c'}">${fmt(D.conv_so_far)}건</div>
+      <div class="proj-sub">목표 ${fmt(D.monthly_target_conv)}건 대비 ${D.conv_pct}%</div>
+      <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%;background:${D.conv_pct>=80?'#4ade80':'#fb923c'}"></div></div>
+    </div>
+    <div class="proj-card">
+      <div class="proj-label">현재 페이스 기준 월말 예상</div>
+      <div class="proj-val" style="color:${D.proj_pct>=100?'#4ade80':'#f87171'}">${fmt(D.proj_conv)}건</div>
+      <div class="proj-sub">목표 ${fmt(D.monthly_target_conv)}건 대비 ${D.proj_pct}% ${D.proj_pct>=100?'달성 예상':'미달 예상'}</div>
+      <div class="progress-wrap"><div class="progress-fill" style="width:${ppct}%;background:${D.proj_pct>=100?'#4ade80':'#f87171'}"></div></div>
+    </div>`;
+
+  const labels=D.daily.map(d=>d.date_str);
+  new Chart(document.getElementById('dailyChart'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'일별 전환',data:D.daily.map(d=>d.conv),borderColor:'#4ade80',
+        backgroundColor:'#4ade8011',fill:true,tension:.3,pointRadius:2,borderWidth:2,yAxisID:'y'},
+      {label:'일별 CPA',data:D.daily.map(d=>Math.round(d.cpa||0)),
+        borderColor:'#60a5fa',tension:.3,pointRadius:2,borderWidth:1.5,yAxisID:'y1'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#7a8499',font:{size:10}}},tooltip:tooltipStyle},
+      scales:{
+        x:{...axisStyle},
+        y:{...axisStyle,position:'left',title:{display:true,text:'전환(건)',color:'#4ade80'}},
+        y1:{...axisStyle,position:'right',grid:{drawOnChartArea:false},title:{display:true,text:'CPA(원)',color:'#60a5fa'}}
+      }
+    }
+  });
+}
+
+// Tab switching
+function switchTab(name, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// Full Insight Tab
+function switchSubTab(name, btn){
+  document.querySelectorAll('.sub-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sub-'+name).classList.add('active');
+}
+
+function buildFullInsight(){
+  const I = D.full_insight;
+  if(!I || !I.summary || !I.branches || !I.tier_analysis) return;
+
+  const crossCnt = (I.cross_findings||[]).length;
+  const offCnt = (I.off_findings||[]).length;
+  const actionCnt = (I.actions.immediate||[]).length + (I.actions.monitoring||[]).length;
+
+  let h = '';
+
+  // === Summary (always visible) ===
+  h += `<div class="insight-summary">
+    <div class="insight-headline">
+      <span style="color:${I.summary.headline_color}">${I.summary.headline}</span>
+      <span style="font-size:12px;color:var(--text2);font-weight:400">${D.period_this_full}</span>
+    </div>
+    <div class="insight-summary-points">
+      ${I.summary.points.map(p=>`<div class="insight-summary-point">${p}</div>`).join('')}
+    </div>
+  </div>`;
+
+  // === Sub-tab Navigation ===
+  h += `<div class="sub-tab-nav">
+    <button class="sub-tab-btn active" onclick="switchSubTab('branch',this)">지점 분석<span class="sub-tab-count">${I.branches.length}</span></button>
+    <button class="sub-tab-btn" onclick="switchSubTab('tier',this)">TIER 분석<span class="sub-tab-count">${I.tier_analysis.reduce((s,t)=>s+t.count,0)}</span></button>
+    <button class="sub-tab-btn" onclick="switchSubTab('cross',this)">크로스 · OFF<span class="sub-tab-count">${crossCnt+offCnt}</span></button>
+    <button class="sub-tab-btn" onclick="switchSubTab('action',this)">액션 권고<span class="sub-tab-count">${actionCnt}</span></button>
+  </div>`;
+
+  // === Sub-panel 1: Branch Analysis ===
+  h += `<div id="sub-branch" class="sub-panel active">
+    <div class="bi-grid">
+      ${I.branches.map(b=>`<div class="bi-card" style="border-left:3px solid ${b.grade_color}">
+        <div class="bi-card-header">
+          <span class="bi-card-name">${b.branch}</span>
+          <span class="bi-card-grade" style="color:${b.grade_color};background:${b.grade_color}15">${b.grade}</span>
+        </div>
+        <div class="bi-card-stats">
+          <span>전환 <span class="num">${b.conv}건</span></span>
+          <span>CPA <span class="num">${fmt(b.cpa)}원</span></span>
+          <span>효율 <span class="num">${b.eff_score?b.eff_score.toFixed(2):'-'}</span></span>
+        </div>
+        ${b.points.map(p=>`<div class="bi-point">${p}</div>`).join('')}
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  // === Sub-panel 2: Tier Analysis ===
+  h += `<div id="sub-tier" class="sub-panel">
+    ${I.tier_analysis.map(ta=>`
+      <div class="tier-section" style="border-left:3px solid ${ta.color}">
+        <div class="tier-section-header">
+          <div class="tier-section-title">
+            <span class="tier-badge ${ta.tier}">${ta.tier==='LOW_VOLUME'?'저볼륨':ta.tier}</span>
+            <span style="font-weight:700">${ta.title}</span>
+            <span style="font-size:12px;color:var(--text2)">${ta.count}개</span>
+          </div>
+          <div class="tier-section-desc">${ta.desc}</div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>소재명</th><th>CPA</th><th>CVR</th><th>CTR</th><th>전환</th><th>비용</th><th>지점</th></tr></thead>
+            <tbody>${ta.items.map(i=>`<tr>
+              <td class="td-name" title="${i.name}">${i.name}</td>
+              <td class="num">${i.cpa?fmt(i.cpa)+'원':'-'}</td>
+              <td class="num">${i.cvr!=null?i.cvr.toFixed(2)+'%':'-'}</td>
+              <td class="num">${i.ctr!=null?i.ctr.toFixed(2)+'%':'-'}</td>
+              <td class="num">${i.conv}건</td>
+              <td class="num">${(i.cost/10000).toFixed(1)}만</td>
+              <td style="font-size:11px;color:var(--text2)">${(i.branches||[]).join(', ')}</td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+        ${ta.insights.length>0?`<div class="tier-section-insights">
+          ${ta.insights.map(ins=>`<div class="bi-point" style="border-color:${ta.color};color:${ta.color}">${ins}</div>`).join('')}
+        </div>`:''}
+      </div>
+    `).join('')}
+  </div>`;
+
+  // === Sub-panel 3: Cross + OFF Findings ===
+  h += `<div id="sub-cross" class="sub-panel">
+    <div class="finding-grid">`;
+
+  // Cross findings column
+  h += `<div>
+    <div class="finding-col-title">소재 × 지점 편차<span style="margin-left:6px;opacity:.5">${crossCnt}</span></div>`;
+  if(crossCnt > 0){
+    h += `<div class="action-card">
+      ${I.cross_findings.map(cf=>`
+        <div class="action-item" style="border-left:3px solid ${cf.color}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${cf.color};margin-bottom:4px">${cf.type}</div>
+          <div class="action-item-title">${cf.creative}</div>
+          <div class="action-item-reason">${cf.detail}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  } else {
+    h += `<div style="color:var(--text2);font-size:12px;padding:16px">편차 2배 이상 소재 없음</div>`;
+  }
+  h += `</div>`;
+
+  // OFF findings column
+  h += `<div>
+    <div class="finding-col-title">OFF 소재 발견<span style="margin-left:6px;opacity:.5">${offCnt}</span></div>`;
+  if(offCnt > 0){
+    h += `<div class="action-card">
+      ${I.off_findings.map(of=>`
+        <div class="action-item" style="border-left:3px solid ${of.color}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${of.color};margin-bottom:4px">${of.type}</div>
+          <div class="action-item-title">${of.creative}</div>
+          <div class="action-item-reason">${of.detail}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  } else {
+    h += `<div style="color:var(--text2);font-size:12px;padding:16px">주요 발견 없음</div>`;
+  }
+  h += `</div></div></div>`;
+
+  // === Sub-panel 4: Actions ===
+  h += `<div id="sub-action" class="sub-panel">
+    <div class="action-card">`;
+
+  if(I.actions.immediate && I.actions.immediate.length>0){
+    h += `<div class="action-group-title" style="color:var(--accent)">즉시 실행</div>`;
+    I.actions.immediate.forEach((a,i)=>{
+      h += `<div class="action-item" style="border-left:3px solid var(--accent)">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:4px">${i+1}순위</div>
+        <div class="action-item-title">${a.action}</div>
+        <div class="action-item-reason">${a.reason}</div>
+      </div>`;
+    });
+  }
+
+  if(I.actions.monitoring && I.actions.monitoring.length>0){
+    h += `<div class="action-group-title" style="color:var(--warn);margin-top:20px">모니터링</div>`;
+    I.actions.monitoring.forEach(m=>{
+      h += `<div class="bi-point" style="border-color:var(--warn);color:var(--warn)">${m}</div>`;
+    });
+  }
+
+  h += `<div class="action-group-title" style="color:var(--accent2);margin-top:20px">월간 목표</div>
+    <div class="bi-point" style="border-color:var(--accent2)">${I.actions.monthly}</div>`;
+
+  h += `</div></div>`;
+
+  document.getElementById('insight-full').innerHTML = h;
+}
+
+buildKpi(); buildInsights(); buildTierTable(); buildNewCreativeTable(); buildOffCreativeTable(); buildBranchCreativeTable(); buildBranchCards();
+buildBranchCharts(); buildAction(); buildProjection(); buildFullInsight();
+</script>
+</body>
+</html>

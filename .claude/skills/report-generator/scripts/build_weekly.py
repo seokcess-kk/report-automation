@@ -927,6 +927,33 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
     # 소재 분석용 이번 주/전주 데이터 분리
     df_this_creative, df_prev_creative, _, _, _, _ = filter_week_data(df_creative, end_date)
 
+    # OFF 소재 판단: input/off_creatives.tsv 기준 (off_date <= 리포트 종료일이면 OFF)
+    off_csv_path = os.path.join(os.path.dirname(csv_path), 'off_creatives.tsv')
+    off_ad_set = set()
+    if os.path.exists(off_csv_path):
+        df_off_list = pd.read_csv(off_csv_path, sep='\t', encoding='utf-8-sig')
+        df_off_list['off_date'] = pd.to_datetime(df_off_list['off_date'])
+        # off_date <= 이번 주 종료일인 소재 = OFF
+        off_in_period = df_off_list[df_off_list['off_date'] <= this_end]
+        off_ad_set = set(off_in_period['ad_name'].values)
+        print(f"[INFO] OFF 소재 목록 로드: {len(off_ad_set)}개 (from {off_csv_path})")
+    else:
+        print(f"[WARN] OFF 소재 목록 없음: {off_csv_path}")
+
+    if len(df_this_creative) > 0:
+        df_this_creative = df_this_creative.copy()
+        df_this_creative['is_off'] = df_this_creative['ad_name'].isin(off_ad_set)
+        on_count = df_this_creative[~df_this_creative['is_off']]['ad_name'].nunique()
+        off_count = df_this_creative[df_this_creative['is_off']]['ad_name'].nunique()
+        print(f"[INFO] OFF 소재 판단: ON {on_count}개, OFF {off_count}개")
+
+    if len(df_prev_creative) > 0:
+        # 전주 데이터: 전주 종료일 기준으로 OFF 판단
+        prev_off = df_off_list[df_off_list['off_date'] <= prev_end] if os.path.exists(off_csv_path) else pd.DataFrame()
+        prev_off_set = set(prev_off['ad_name'].values) if len(prev_off) > 0 else set()
+        df_prev_creative = df_prev_creative.copy()
+        df_prev_creative['is_off'] = df_prev_creative['ad_name'].isin(prev_off_set)
+
     df_on = df_this_creative[~df_this_creative['is_off']]
     target_cpa = int(df_on['cost'].sum() / df_on['conversions'].sum()) if df_on['conversions'].sum() > 0 else 30000
 

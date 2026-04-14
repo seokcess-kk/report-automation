@@ -498,8 +498,12 @@ def analyze_notable_items(df: pd.DataFrame, yesterday, day_before) -> list:
             lines.append("⚡ 급변동 소재")
             for m in movers[:3]:
                 cpa_str = ""
-                if m['cpa_prev'] and m['cpa_today']:
-                    cpa_str = f" | CPA {m['cpa_prev']/10000:.1f}만→{m['cpa_today']/10000:.1f}만"
+                has_prev = pd.notna(m['cpa_prev'])
+                has_today = pd.notna(m['cpa_today'])
+                cpa_prev_s = f"{m['cpa_prev']/10000:.1f}만" if has_prev else "-"
+                cpa_today_s = f"{m['cpa_today']/10000:.1f}만" if has_today else "-"
+                if has_prev or has_today:
+                    cpa_str = f" | CPA {cpa_prev_s}→{cpa_today_s}"
                 sign = '+' if m['conv_diff'] > 0 else ''
                 lines.append(f"  {m['name']}: 전환 {sign}{m['conv_diff']}건{cpa_str}")
 

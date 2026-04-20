@@ -329,7 +329,7 @@ def generate_branch_comparison(branch_this: pd.DataFrame, branch_prev: pd.DataFr
     return sorted(result, key=lambda x: branch_order.get(x['branch'], 999))
 
 
-def generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail) -> list:
+def generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail, df_this_creative=None) -> list:
     """인사이트 생성 (TIER1 미집행 지점 확장 기회 포함)"""
     insights = []
 
@@ -337,15 +337,42 @@ def generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail) -
     bad_branches = [b for b in branch_data if b.get('CPA_diff') and b['CPA_diff'] > 3000]
     if bad_branches:
         b = bad_branches[0]
+        branch_name = b['branch']
+        points = [f"{branch_name} CPA +{b['CPA_diff']:,}원 전주 대비 상승"]
+
+        # 구체 원인: 해당 지점 고비용 + 고CPA 소재 TOP3
+        if df_this_creative is not None and len(df_this_creative) > 0:
+            df_br = df_this_creative[df_this_creative['branch'] == branch_name]
+            if len(df_br) > 0:
+                by_ad = df_br.groupby('ad_name').agg(
+                    cost=('cost', 'sum'),
+                    conv=('conversions', 'sum'),
+                ).reset_index()
+                target_cpa = (df_this_creative[~df_this_creative.get('is_off', False)]['cost'].sum() /
+                              max(df_this_creative[~df_this_creative.get('is_off', False)]['conversions'].sum(), 1))
+                by_ad['cpa'] = np.where(by_ad['conv'] > 0, by_ad['cost'] / by_ad['conv'], np.nan)
+                # 고비용(전주 평균 이상) + 고CPA(target 초과 또는 전환 0)
+                hot = by_ad[by_ad['cost'] >= 50000].copy()
+                hot['cpa_fill'] = hot['cpa'].fillna(9_999_999)
+                hot = hot.sort_values(['cpa_fill', 'cost'], ascending=[False, False]).head(3)
+
+                for _, r in hot.iterrows():
+                    name = strip_date_code(r['ad_name']).split('_')[-1] if '_' in r['ad_name'] else r['ad_name']
+                    # 소재명 부분만 추출: 형식이 (재)_지점_유형_소재명_날짜
+                    parts = strip_date_code(r['ad_name']).split('_')
+                    creative_nm = parts[-1] if len(parts) >= 4 else r['ad_name']
+                    cpa_str = f"CPA {int(r['cpa']):,}원" if pd.notna(r['cpa']) else "전환 0건"
+                    cost_k = int(r['cost']/1000)
+                    points.append(f"'{creative_nm}' 비용 {cost_k}K · {cpa_str}")
+
+        if len(points) == 1:
+            points.append("소재 피로도/경쟁 심화 가능성 — 상세 원인 집계 불가")
+
         insights.append({
             'type': '악화',
             'color': '#f87171',
-            'title': f"{b['branch']} CPA 동반 상승",
-            'points': [
-                f"{b['branch']} CPA 각 +{b['CPA_diff']:,}원 전주 대비 상승",
-                "원인 1: 소재 피로도 의심 - CTR/CVR 동반 하락 추세",
-                "원인 2: 경쟁 심화로 단가 상승 가능성"
-            ]
+            'title': f"{branch_name} CPA 동반 상승",
+            'points': points
         })
 
     # TIER 상승 소재
@@ -446,20 +473,37 @@ def generate_off_list(tier_this: pd.DataFrame, branch_data: list, target_cpa: fl
     return sorted(off_list, key=lambda x: -x['ratio'])[:5]
 
 
-def generate_on_list(tier_this: pd.DataFrame) -> list:
-    """ON 권고 리스트 (TIER1 확장)"""
+def generate_on_list(tier_this: pd.DataFrame, off_ad_set: set = None) -> list:
+    """ON 권고 리스트 (TIER1 확장) — 과거 운영 후 OFF한 지점은 missing에서 제외"""
     on_list = []
     tier1 = tier_this[tier_this['tier'] == 'TIER1']
     all_branches = set(VALID_BRANCHES)
 
+    # creative_name(순수 소재명) → 과거 OFF 등록된 지점 집합 매핑
+    # ad_name 구조: "(재)_지점_소재유형_소재명_날짜코드"  →  소재명은 [3]번 토큰
+    off_branches_by_creative = {}
+    if off_ad_set:
+        for ad in off_ad_set:
+            parts = ad.split('_')
+            if len(parts) >= 5:
+                branch = parts[1]
+                creative_nm = parts[3]
+                if branch in VALID_BRANCHES:
+                    off_branches_by_creative.setdefault(creative_nm, set()).add(branch)
+
     for _, row in tier1.iterrows():
         current = set(row['branches']) if row['branches'] else set()
-        missing = all_branches - current
+        display = strip_date_code(row['creative_name'])
+        # row['creative_name']은 이미 순수 소재명. strip_date_code는 안전망.
+        past_off_branches = off_branches_by_creative.get(row['creative_name'], set())
+        past_off_branches |= off_branches_by_creative.get(display, set())
+        missing = all_branches - current - past_off_branches
         if len(missing) >= 2:
             on_list.append({
-                'creative_name': strip_date_code(row['creative_name']),
+                'creative_name': display,
                 'missing': sorted(list(missing)),
-                'CPA': int(row['cpa']) if pd.notna(row['cpa']) else 0
+                'CPA': int(row['cpa']) if pd.notna(row['cpa']) else 0,
+                'excluded_past_off': sorted(list(past_off_branches)) if past_off_branches else []
             })
 
     return sorted(on_list, key=lambda x: x['CPA'])[:5]
@@ -963,9 +1007,9 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
     tier_list = generate_tier_comparison(tier_this, tier_prev)
     tier_detail = generate_tier_detail(tier_this)
 
-    insights = generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail)
+    insights = generate_insights(kpi_this, kpi_prev, tier_list, branch_data, tier_detail, df_this_creative)
     off_list = generate_off_list(tier_this, branch_data, target_cpa)
-    on_list = generate_on_list(tier_this)
+    on_list = generate_on_list(tier_this, off_ad_set)
 
     # 소재×지점 성과 (캠페인 필터 적용)
     branch_creative = generate_branch_creative(df_this_creative)

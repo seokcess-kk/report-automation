@@ -1,16 +1,16 @@
-name: Daily TikTok Report
+name: TikTok Report (Daily + Weekly on Mondays)
 
 on:
   schedule:
-    # 06:30 KST = 21:30 UTC (전일)
-    - cron: '30 21 * * *'
+    # 매일 09:00 KST = 00:00 UTC (전일 기준 데일리 리포트)
+    - cron: '0 0 * * *'
   workflow_dispatch:  # 수동 트리거 가능
 
 permissions:
   contents: write
 
 concurrency:
-  group: daily-report
+  group: report-build
   cancel-in-progress: false
 
 jobs:
@@ -44,11 +44,18 @@ jobs:
       - name: Run analysis pipeline (normalize + parse + TIER + monthly)
         run: python run_analysis.py
 
-      - name: Build daily report
+      - name: Build daily report (매일)
         run: python .claude/skills/report-generator/scripts/build_daily.py input/tiktok_raw.csv output
 
-      - name: Build weekly report
-        run: python .claude/skills/report-generator/scripts/build_weekly.py input/tiktok_raw.csv output
+      - name: Build weekly report (월요일만)
+        run: |
+          KST_DOW=$(TZ=Asia/Seoul date +%u)   # 1=월요일 .. 7=일요일
+          if [ "$KST_DOW" = "1" ]; then
+            echo "월요일 KST — 위클리 리포트 생성"
+            python .claude/skills/report-generator/scripts/build_weekly.py input/tiktok_raw.csv output
+          else
+            echo "월요일 아님 (KST DOW=$KST_DOW) — 위클리 스킵"
+          fi
 
       - name: Commit & push
         run: |

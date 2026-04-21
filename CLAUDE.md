@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 아키텍처 개요
 
 ```
-input/tiktok_raw.csv
+[0] fetch_tiktok_raw.py      → input/tiktok_raw.csv (+ tiktok_raw_by_age.csv)  ※ --collect 시
         ↓
 [1] normalize_tiktok_raw.py  → output/normalized.parquet
         ↓
@@ -106,8 +106,17 @@ output/daily/daily_snapshot.json
 ## 실행 방법
 
 ```bash
-# 전체 파이프라인 (분석 + 먼슬리)
+# 전체 파이프라인 (분석 + 먼슬리) — 수동 CSV 사용
 python run_analysis.py
+
+# API로 수집 후 분석 (수동 다운로드 불필요)
+python run_analysis.py --collect                       # 최근 14일
+python run_analysis.py --collect --days 30
+python run_analysis.py --collect --include-age         # 나이대 breakdown 포함
+python run_analysis.py --collect --start 2026-04-01 --end 2026-04-20
+
+# 수집만 단독 실행
+python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --days 14
 
 # 개별 리포트
 python .claude/skills/report-generator/scripts/build_monthly.py output/data/YYYYMMDD 202603
@@ -184,6 +193,7 @@ from common import (
 
 | 버전 | 날짜 | 변경 |
 |------|------|------|
+| v3.9 | 2026-04-21 | Phase 0 자동화 (`--collect`), 랜딩/도달/나이 컬럼 API 수집 추가 |
 | v3.8 | 2026-03-09 | 위클리 KPI OFF 소재 포함, 데일리 전일비 fallback 로직 추가 |
 | v3.7 | 2026-03-03 | 공용 모듈 생성 (.claude/skills/common/), 코드 품질 개선 |
 | v3.6 | 2026-03-03 | 먼슬리 지점 분석 탭에 지점별 소재 분석 섹션 추가 |

@@ -189,3 +189,119 @@ export async function loadMonthly(month: string): Promise<MonthlyData | null> {
     return null;
   }
 }
+
+// ─────── Tracker (Phase 1: 목표 달성 트래커) ───────
+
+export interface BranchPace {
+  branch: string;
+  budget: number;
+  cost_so_far: number;
+  budget_pct: number;
+  conv_target: number;
+  conv_so_far: number;
+  conv_pct: number;
+  proj_conv: number;
+  proj_pct: number;
+  clicks: number;
+  impressions: number;
+  cpa: number | null;
+  target_cpa: number;
+  cpa_vs_target_pct: number | null;
+  status: 'ok' | 'warn' | 'danger';
+  sparkline: { date: string; cost: number; conv: number }[];
+}
+
+export interface BranchPaceData {
+  updated: string;
+  month: string;
+  days_total: number;
+  days_elapsed: number;
+  date_progress: number;
+  overall: {
+    budget_total: number;
+    cost_so_far: number;
+    budget_pct: number;
+    conv_target: number;
+    conv_so_far: number;
+    conv_pct: number;
+    proj_conv: number;
+    proj_pct: number;
+    target_cpa: number;
+    status: 'ok' | 'warn' | 'danger';
+  };
+  branches: BranchPace[];
+}
+
+export interface ActionProposal {
+  id: string;
+  priority: 'high' | 'medium' | 'low';
+  scope: 'branch' | 'creative' | 'age';
+  target: string;
+  action_type: string;
+  title: string;
+  reason: string;
+  recommended_value: Record<string, any>;
+  evidence: Record<string, any>;
+}
+
+export interface ProposalsData {
+  updated: string;
+  rule_version: string;
+  proposals: ActionProposal[];
+  summary: { total: number; high: number; medium: number; low: number };
+}
+
+async function listDataDirs(): Promise<string[]> {
+  const dir = path.join(OUTPUT_DIR, 'data');
+  try {
+    const entries = await fs.readdir(dir);
+    return entries.filter((e) => /^\d{8}$/.test(e)).sort().reverse();
+  } catch {
+    return [];
+  }
+}
+
+export interface SegmentRow {
+  [key: string]: any;
+  총비용: number;
+  총전환: number;
+  CPA: number | null;
+  CTR: number | null;
+  CVR: number | null;
+  비용비중: number;
+  전환비중: number;
+  예산효율점수: number | null;
+}
+
+export interface SegmentAnalysis {
+  weekday: SegmentRow[];
+  creative_type: SegmentRow[];
+  hour: SegmentRow[];
+}
+
+export async function loadLatestTracker(): Promise<{
+  date: string;
+  pace: BranchPaceData;
+  proposals: ProposalsData;
+  segments: SegmentAnalysis | null;
+} | null> {
+  for (const d of await listDataDirs()) {
+    const pacePath = path.join(OUTPUT_DIR, 'data', d, 'branch_pace.json');
+    const propPath = path.join(OUTPUT_DIR, 'data', d, 'action_proposals.json');
+    try {
+      const pace = JSON.parse(await fs.readFile(pacePath, 'utf-8'));
+      const proposals = JSON.parse(await fs.readFile(propPath, 'utf-8'));
+      let segments: SegmentAnalysis | null = null;
+      try {
+        const segPath = path.join(OUTPUT_DIR, 'data', d, 'segment_analysis.json');
+        segments = JSON.parse(await fs.readFile(segPath, 'utf-8'));
+      } catch {
+        // segment 데이터 없으면 null
+      }
+      return { date: d, pace, proposals, segments };
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}

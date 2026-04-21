@@ -4,9 +4,13 @@ TikTok 광고 분석 파이프라인 오케스트레이터
 Phase 0~5 순차 실행
 
 사용법:
-    python run_analysis.py
-    python run_analysis.py input/tiktok_raw.csv
+    python run_analysis.py                       # 기존 CSV로 분석
+    python run_analysis.py input/tiktok_raw.csv  # 특정 CSV 지정
+    python run_analysis.py --collect             # API로 수집 후 분석
+    python run_analysis.py --collect --days 30
+    python run_analysis.py --collect --include-age
 """
+import argparse
 import os
 import sys
 import time
@@ -37,8 +41,41 @@ def print_phase(phase_num: int, phase_name: str, status: str = "START"):
     print(f"{'='*60}")
 
 
+def run_collect(days: int, include_age: bool, include_hour: bool = False, start: str = None, end: str = None):
+    """Phase -1 (선택) - TikTok API로 raw CSV 수집"""
+    print_phase(-1, "API 수집")
+
+    from importlib.util import spec_from_file_location, module_from_spec
+
+    script_path = os.path.join(SKILLS_DIR, "tiktok-api", "scripts", "fetch_tiktok_raw.py")
+    if not os.path.exists(script_path):
+        print_phase(-1, "API 수집", "FAIL")
+        raise FileNotFoundError(f"{script_path} 없음 — tiktok-api 스킬 확인")
+
+    spec = spec_from_file_location("fetch_tiktok_raw", script_path)
+    module = module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    argv_backup = sys.argv[:]
+    try:
+        sys.argv = ['fetch_tiktok_raw.py', '--days', str(days)]
+        if start:
+            sys.argv += ['--start', start]
+        if end:
+            sys.argv += ['--end', end]
+        if include_age:
+            sys.argv += ['--include-age']
+        if include_hour:
+            sys.argv += ['--include-hour']
+        module.main()
+    finally:
+        sys.argv = argv_backup
+
+    print_phase(-1, "API 수집", "OK")
+
+
 def run_phase_0(input_csv: str) -> str:
-    """Phase 0 - 원본 정규화"""
+    """Phase 0 - 원본 정규화 (main + 나이대 CSV 있으면 함께 정규화)"""
     print_phase(0, "원본 정규화")
 
     from importlib.util import spec_from_file_location, module_from_spec
@@ -48,10 +85,23 @@ def run_phase_0(input_csv: str) -> str:
     module = module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    output_path = os.path.join(OUTPUT_DIR, "normalized.parquet")
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
+    output_path = os.path.join(OUTPUT_DIR, "normalized.parquet")
     module.normalize(input_csv, output_path)
+
+    # 나이대 CSV 있으면 함께 정규화
+    by_age_csv = os.path.join(PROJECT_ROOT, "input", "tiktok_raw_by_age.csv")
+    if os.path.exists(by_age_csv):
+        by_age_out = os.path.join(OUTPUT_DIR, "normalized_by_age.parquet")
+        module.normalize(by_age_csv, by_age_out)
+        print(f"[OK] 나이대 정규화: {by_age_out}")
+
+    # 시간대 CSV 있으면 함께 정규화
+    by_hour_csv = os.path.join(PROJECT_ROOT, "input", "tiktok_raw_by_hour.csv")
+    if os.path.exists(by_hour_csv):
+        by_hour_out = os.path.join(OUTPUT_DIR, "normalized_by_hour.parquet")
+        module.normalize(by_hour_csv, by_hour_out)
+        print(f"[OK] 시간대 정규화: {by_hour_out}")
 
     print_phase(0, "원본 정규화", "OK")
     return output_path
@@ -94,7 +144,10 @@ def run_phase_2(parsed_path: str) -> dict:
     spec.loader.exec_module(module)
 
     target_cpa_path = os.path.join(PROJECT_ROOT, "input", "target_cpa.csv")
-    result = module.score_creatives(parsed_path, OUTPUT_DIR, target_cpa_path)
+    age_input_path = os.path.join(OUTPUT_DIR, "normalized_by_age.parquet")
+    if not os.path.exists(age_input_path):
+        age_input_path = None
+    result = module.score_creatives(parsed_path, OUTPUT_DIR, target_cpa_path, age_input_path=age_input_path)
 
     # 2-B: 훅 비교 (hook_comparison)
     print("\n[2-B] 훅 비교 분석...")
@@ -134,6 +187,52 @@ def run_phase_3():
     else:
         print_phase(3, "인사이트 생성", "SKIP")
         print("  → generate_insights.py 없음")
+
+
+def run_phase_3_5():
+    """Phase 3.5 - 세그먼트 분석 + 트래커 데이터 + 액션 제안"""
+    print_phase(3.5, "세그먼트 분석 + 트래커 + 액션 제안")
+
+    from importlib.util import spec_from_file_location, module_from_spec
+
+    # 세그먼트 분석 (요일/소재유형/시간대)
+    seg_script = os.path.join(SKILLS_DIR, "creative-analyzer", "scripts", "analyze_segments.py")
+    if os.path.exists(seg_script):
+        spec = spec_from_file_location("analyze_segments", seg_script)
+        mod = module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        mod.main(DATA_DIR)
+
+    # branch_pace
+    pace_script = os.path.join(SKILLS_DIR, "action-advisor", "scripts", "build_branch_pace.py")
+    if os.path.exists(pace_script):
+        spec = spec_from_file_location("build_branch_pace", pace_script)
+        mod = module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        pace = mod.build_pace(DATA_DIR)
+        import json as _json
+        with open(os.path.join(DATA_DIR, 'branch_pace.json'), 'w', encoding='utf-8') as f:
+            _json.dump(pace, f, ensure_ascii=False, indent=2)
+        print(f"[OK] branch_pace.json ({len(pace['branches'])}지점)")
+    else:
+        print("  → build_branch_pace.py 없음 — 스킵")
+
+    # action_proposals
+    prop_script = os.path.join(SKILLS_DIR, "action-advisor", "scripts", "generate_proposals.py")
+    if os.path.exists(prop_script):
+        spec = spec_from_file_location("generate_proposals", prop_script)
+        mod = module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        result = mod.generate(DATA_DIR)
+        import json as _json
+        with open(os.path.join(DATA_DIR, 'action_proposals.json'), 'w', encoding='utf-8') as f:
+            _json.dump(result, f, ensure_ascii=False, indent=2)
+        s = result['summary']
+        print(f"[OK] action_proposals.json - total {s['total']} (high {s['high']} / medium {s['medium']})")
+    else:
+        print("  → generate_proposals.py 없음 — 스킵")
+
+    print_phase(3.5, "트래커 데이터 + 액션 제안", "OK")
 
 
 def run_phase_4():
@@ -223,8 +322,21 @@ def run_phase_5():
     print_phase(5, "리포트 생성", "OK")
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="TikTok 광고 분석 파이프라인")
+    parser.add_argument('input', nargs='?', default=None, help='입력 CSV (기본: input/tiktok_raw.csv)')
+    parser.add_argument('--collect', action='store_true', help='API로 raw CSV 자동 수집 후 분석')
+    parser.add_argument('--days', type=int, default=14, help='--collect 시 최근 N일 (기본 14)')
+    parser.add_argument('--start', default=None, help='--collect 시 시작일 YYYY-MM-DD')
+    parser.add_argument('--end', default=None, help='--collect 시 종료일 YYYY-MM-DD')
+    parser.add_argument('--include-age', action='store_true', help='나이대 breakdown 함께 수집')
+    parser.add_argument('--include-hour', action='store_true', help='시간대 breakdown 함께 수집')
+    return parser.parse_args()
+
+
 def main():
     """메인 실행"""
+    args = parse_args()
     start_time = time.time()
 
     print("\n" + "="*60)
@@ -233,12 +345,37 @@ def main():
     print(f"실행 시간: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"데이터 경로: {DATA_DIR}")
 
+    # API 수집 (선택)
+    if args.collect:
+        try:
+            run_collect(args.days, args.include_age, args.include_hour, args.start, args.end)
+        except Exception as e:
+            print(f"\n[ERROR] API 수집 실패: {e}")
+            print("기존 CSV로 계속 진행합니다.")
+
+        # ad_mapping 갱신 (수집 모드에서만 — API 크레딧 필요)
+        try:
+            from importlib.util import spec_from_file_location, module_from_spec
+            os.makedirs(DATA_DIR, exist_ok=True)
+            mapping_script = os.path.join(SKILLS_DIR, "action-advisor", "scripts", "build_ad_mapping.py")
+            if os.path.exists(mapping_script):
+                spec = spec_from_file_location("build_ad_mapping", mapping_script)
+                mod = module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                mapping = mod.build(mod.TIKTOK_ADVERTISER_ID, mod.TIKTOK_ACCESS_TOKEN)
+                import json as _json
+                with open(os.path.join(DATA_DIR, 'ad_mapping.json'), 'w', encoding='utf-8') as f:
+                    _json.dump(mapping, f, ensure_ascii=False, indent=2)
+                print(f"[OK] ad_mapping.json ({len(mapping['ads'])} ads)")
+        except Exception as e:
+            print(f"[WARNING] ad_mapping 생성 실패: {e}")
+
     # 입력 파일 확인
-    input_csv = sys.argv[1] if len(sys.argv) > 1 else os.path.join(PROJECT_ROOT, "input", "tiktok_raw.csv")
+    input_csv = args.input or os.path.join(PROJECT_ROOT, "input", "tiktok_raw.csv")
 
     if not os.path.exists(input_csv):
         print(f"\n[ERROR] Input file not found: {input_csv}")
-        print("사용법: python run_analysis.py input/tiktok_raw.csv")
+        print("사용법: python run_analysis.py [input/tiktok_raw.csv] [--collect]")
         sys.exit(1)
 
     print(f"입력 파일: {input_csv}")
@@ -255,6 +392,9 @@ def main():
 
         # Phase 3: 인사이트 생성
         run_phase_3()
+
+        # Phase 3.5: 트래커 데이터 + 액션 제안
+        run_phase_3_5()
 
         # Phase 4: QA 검증
         run_phase_4()

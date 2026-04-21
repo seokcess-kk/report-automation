@@ -328,7 +328,7 @@ def analyze_age_groups(df_valid: pd.DataFrame) -> pd.DataFrame:
     return age_summary
 
 
-def score_creatives(input_path: str, output_dir: str, target_cpa_path: str = "input/target_cpa.csv"):
+def score_creatives(input_path: str, output_dir: str, target_cpa_path: str = "input/target_cpa.csv", age_input_path: str = None):
     """
     메인 실행 함수
     """
@@ -359,8 +359,22 @@ def score_creatives(input_path: str, output_dir: str, target_cpa_path: str = "in
     # 지점별 상대 평가 추가
     creative_df = add_branch_relative_flag(creative_df, df_on)
 
-    # 나이대 분석
-    age_summary = analyze_age_groups(df_valid)
+    # 나이대 분석 — 별도 AUDIENCE parquet 우선, 없으면 parsed 내 age_group 사용
+    df_age_source = df_valid
+    if age_input_path and os.path.exists(age_input_path):
+        try:
+            df_age_source = pd.read_parquet(age_input_path)
+            # attribution_caution 누락 대비 (normalize가 생성하지만 방어적으로)
+            if 'attribution_caution' not in df_age_source.columns:
+                df_age_source['attribution_caution'] = (
+                    (df_age_source.get('clicks', 0) == 0) & (df_age_source.get('conversions', 0) > 0)
+                )
+            print(f"[나이대] AUDIENCE parquet 사용: {age_input_path} ({len(df_age_source)}행)")
+        except Exception as e:
+            print(f"[WARNING] 나이대 parquet 로드 실패 ({e}) — df_valid 사용")
+            df_age_source = df_valid
+
+    age_summary = analyze_age_groups(df_age_source)
 
     # 결과 저장
     os.makedirs(output_dir, exist_ok=True)

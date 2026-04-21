@@ -26,6 +26,7 @@ def normalize(input_path: str, output_path: str):
         '랜딩 페이지 조회(웹사이트)': 'landing_views',
         '일별': 'date',
         '나이': 'age_group',
+        '시간': 'hour',
         '광고 이름': 'ad_name',
         '광고 ID': 'ad_id',
         '도달': 'reach',
@@ -57,6 +58,20 @@ def normalize(input_path: str, output_path: str):
     for col in ['clicks', 'impressions', 'conversions', 'cost', 'landing_views']:
         if col not in df.columns:
             df[col] = 0
+
+    # 3-c. 나이대 값 정규화 (TikTok API: AGE_25_34 → 표준: 25-34)
+    if 'age_group' in df.columns:
+        AGE_MAP = {
+            'AGE_13_17': '13-17',
+            'AGE_18_24': '18-24',
+            'AGE_25_34': '25-34',
+            'AGE_35_44': '35-44',
+            'AGE_45_54': '45-54',
+            'AGE_55_100': '≥55',
+            'NONE': 'Unknown',
+            '': 'Unknown',
+        }
+        df['age_group'] = df['age_group'].astype(str).map(lambda v: AGE_MAP.get(v, v))
 
     # 4. KPI 재계산 (_calc 컬럼만 이후 분석에 사용)
     df['CTR_calc'] = (df['clicks'] / df['impressions'].replace(0, np.nan) * 100).round(4)

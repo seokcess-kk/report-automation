@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" className="font-bold text-brand-primary">다이트 리포트</Link>
             <Link href="/daily" className="text-slate-300 hover:text-white">데일리</Link>
             <Link href="/weekly" className="text-slate-300 hover:text-white">위클리</Link>
-            <span className="text-slate-500">먼슬리 (준비중)</span>
+            <Link href="/monthly" className="text-slate-300 hover:text-white">먼슬리</Link>
           </nav>
         </header>
         <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>

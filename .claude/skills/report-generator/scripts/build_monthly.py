@@ -908,6 +908,11 @@ def build_monthly(data_dir: str, target_month: str = None):
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
+    # UI용 구조화 JSON 동시 출력
+    json_path = monthly_dir / f"tiktok_monthly_dayt_{month}.json"
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(D, f, ensure_ascii=False, default=str, indent=2)
+
     print(f"[OK] Monthly report -> {output_path}")
     return output_path
 

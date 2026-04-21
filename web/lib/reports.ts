@@ -147,3 +147,45 @@ export async function loadLatestDaily(): Promise<{ date: string; data: DailyData
   }
   return null;
 }
+
+// ─────── Monthly ───────
+
+export interface MonthlyData {
+  period: any;
+  kpi: { cost: number; conv: number; cpa: number; ctr: number; cvr: number; lpv?: number };
+  target_cpa: number;
+  monthly_target_conv: number;
+  budget: Record<string, number>;
+  creative: any[];
+  creative_new: any[];
+  branch: any[];
+  by_branch: Record<string, any>;
+  cross_gap: any[];
+  lifetime: any[];
+  hook_compare: any[];
+  daily: any[];
+  next_budget: any[];
+  off_cumul: any[];
+  expansion: any[];
+  off_perf: any[];
+  before_after: any[];
+}
+
+export async function listMonthlyDates(): Promise<string[]> {
+  const dir = path.join(OUTPUT_DIR, 'monthly');
+  try {
+    const entries = await fs.readdir(dir);
+    return entries.filter((e) => /^\d{6}$/.test(e)).sort().reverse();
+  } catch {
+    return [];
+  }
+}
+
+export async function loadMonthly(month: string): Promise<MonthlyData | null> {
+  const fp = path.join(OUTPUT_DIR, 'monthly', month, `tiktok_monthly_dayt_${month}.json`);
+  try {
+    return JSON.parse(await fs.readFile(fp, 'utf-8'));
+  } catch {
+    return null;
+  }
+}

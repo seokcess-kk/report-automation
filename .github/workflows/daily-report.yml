@@ -1,0 +1,64 @@
+name: Daily TikTok Report
+
+on:
+  schedule:
+    # 06:30 KST = 21:30 UTC (전일)
+    - cron: '30 21 * * *'
+  workflow_dispatch:  # 수동 트리거 가능
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-report
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Fetch TikTok data (last 14 days)
+        env:
+          TIKTOK_APP_ID: ${{ secrets.TIKTOK_APP_ID }}
+          TIKTOK_APP_SECRET: ${{ secrets.TIKTOK_APP_SECRET }}
+          TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+          TIKTOK_ADVERTISER_ID: ${{ secrets.TIKTOK_ADVERTISER_ID }}
+        run: python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --days 14
+
+      - name: Run analysis pipeline (normalize + parse + TIER + monthly)
+        run: python run_analysis.py
+
+      - name: Build daily report
+        run: python .claude/skills/report-generator/scripts/build_daily.py input/tiktok_raw.csv output
+
+      - name: Build weekly report
+        run: python .claude/skills/report-generator/scripts/build_weekly.py input/tiktok_raw.csv output
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add input/tiktok_raw.csv output/
+          if git diff --staged --quiet; then
+            echo "no changes"
+          else
+            TODAY=$(TZ=Asia/Seoul date +%Y-%m-%d)
+            git commit -m "chore(auto): daily report ${TODAY} [skip ci]"
+            git push
+          fi

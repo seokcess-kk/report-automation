@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Temp artifacts
+nul
+*.bak
+*.bak_*
+
+# Pipeline 중간 산출물 (output/data/YYYYMMDD/ 는 커밋)
+/output/normalized.parquet
+/output/parsed.parquet
+
+# 감사/디버그 임시 파일
+/output/_weekly_D.json
+/output/off_audit_*.csv
+/output/off_audit_*.tsv

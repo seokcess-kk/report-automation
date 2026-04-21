@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { DecisionRecord } from './ActionDetailModal';
 import { ExecutePasswordModal } from './ExecutePasswordModal';
+import { Badge, Button } from './ui';
 
 export function ExecutionQueue({
   decisions,
@@ -19,72 +20,65 @@ export function ExecutionQueue({
 
   return (
     <>
-      <section className="card">
-        <h2 className="text-lg font-semibold mb-3">실행 관리</h2>
+      <div className="bg-surface border border-border rounded-xl p-5">
+        <h2 className="text-lg font-semibold text-fg tracking-tight mb-4">실행 관리</h2>
 
-        <div>
-          <h3 className="text-sm text-slate-300 font-semibold mb-2">
-            실행 대기 <span className="text-slate-500">({queued.length})</span>
-          </h3>
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <h3 className="text-sm font-semibold text-fg">실행 대기</h3>
+            <Badge tone={queued.length > 0 ? 'warn' : 'neutral'}>{queued.length}</Badge>
+          </div>
           {queued.length === 0 ? (
-            <p className="text-xs text-slate-500 mb-4">대기 중인 항목이 없습니다.</p>
+            <p className="text-xs text-muted mb-6">대기 중인 항목이 없습니다.</p>
           ) : (
-            <ul className="space-y-2 mb-4">
+            <ul className="space-y-2 mb-6">
               {queued.map((d) => (
-                <li key={d.id} className="flex items-center justify-between bg-brand-bg/40 rounded p-3">
+                <li key={d.id} className="flex items-center justify-between gap-3 bg-elevated/50 border border-border rounded-lg p-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] text-slate-500">#{d.proposal_id}</span>
-                      <span className="text-[10px] bg-amber-900/50 text-brand-warn px-1.5 py-0.5 rounded">⏳ 대기</span>
+                    <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                      <Badge tone="warn">⏳ 대기</Badge>
+                      <span className="text-2xs text-subtle">#{d.proposal_id}</span>
                     </div>
-                    <div className="text-sm font-medium truncate">{d.proposal_snapshot?.title || '(제목 없음)'}</div>
-                    {d.note && <div className="text-[10px] text-slate-500 truncate">메모: {d.note}</div>}
+                    <div className="text-sm font-medium text-fg truncate">{d.proposal_snapshot?.title || '(제목 없음)'}</div>
+                    {d.note && <div className="text-2xs text-subtle truncate mt-0.5">메모: {d.note}</div>}
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setPending(d)}
-                    className="shrink-0 text-xs px-3 py-1.5 rounded bg-brand-danger/80 hover:bg-brand-danger text-white font-semibold"
-                  >
+                  <Button variant="danger" size="sm" onClick={() => setPending(d)}>
                     실행
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
           )}
-        </div>
+        </section>
 
         {executed.length > 0 && (
-          <details>
-            <summary className="text-sm text-slate-400 cursor-pointer hover:text-slate-200">
-              실행 이력 ({executed.length})
+          <details className="mt-3 group">
+            <summary className="text-sm text-muted cursor-pointer hover:text-fg flex items-center gap-2 list-none">
+              <span className="transition-transform group-open:rotate-90">▸</span>
+              실행 이력 <Badge tone="info">{executed.length}</Badge>
             </summary>
-            <ul className="space-y-1 mt-2">
+            <ul className="space-y-1 mt-3">
               {executed.slice().reverse().map((d) => (
-                <li key={d.id} className="flex items-center gap-2 text-xs bg-brand-bg/40 rounded px-3 py-2">
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] ${
-                    d.execution_result?.status === 'success'
-                      ? 'bg-sky-900/50 text-sky-300'
-                      : 'bg-rose-900/50 text-brand-danger'
-                  }`}>
-                    {d.execution_result?.status === 'success' ? '✅' : '❌'}
+                <li key={d.id} className="flex items-center gap-2 text-xs bg-elevated/40 border border-border/60 rounded px-3 py-2">
+                  <Badge tone={d.execution_result?.status === 'success' ? 'info' : 'danger'}>
+                    {d.execution_result?.status === 'success' ? '✓' : '✗'}
+                  </Badge>
+                  <span className="text-subtle tabular-nums">
+                    {new Date(d.executed_at || '').toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </span>
-                  <span className="text-slate-500">{new Date(d.executed_at || '').toLocaleString('ko-KR')}</span>
-                  <span className="truncate">{d.proposal_snapshot?.title || d.proposal_id}</span>
+                  <span className="truncate text-muted">{d.proposal_snapshot?.title || d.proposal_id}</span>
                 </li>
               ))}
             </ul>
           </details>
         )}
-      </section>
+      </div>
 
       {pending && (
         <ExecutePasswordModal
           decision={pending}
           onClose={() => setPending(null)}
-          onExecuted={(updated) => {
-            onExecuted(updated);
-            setPending(null);
-          }}
+          onExecuted={(updated) => { onExecuted(updated); setPending(null); }}
         />
       )}
     </>

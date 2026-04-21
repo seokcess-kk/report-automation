@@ -1,27 +1,31 @@
-/** 간단한 hover tooltip — 용어/기준 설명용.
- *
- * Usage:
- *   <InfoTip text="효율점수 = 전환비중 / 비용비중" />
- *   <InfoTip text="..."><span>CPA</span></InfoTip>
- */
-export function InfoTip({ text, children }: { text: string; children?: React.ReactNode }) {
+import { cn } from './ui/cn';
+
+export function InfoTip({
+  text,
+  children,
+  className,
+}: {
+  text: string;
+  children?: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <span className="relative inline-flex group items-center gap-1 align-middle">
+    <span className={cn('relative inline-flex group items-center gap-1 align-middle', className)}>
       {children}
       <span
-        className="inline-flex w-3.5 h-3.5 text-[9px] items-center justify-center rounded-full bg-brand-bg border border-brand-border text-slate-400 cursor-help"
+        className="inline-flex w-3.5 h-3.5 text-[9px] items-center justify-center rounded-full bg-elevated border border-border-strong text-muted cursor-help hover:text-fg hover:border-muted"
         aria-label="정보"
       >
         ⓘ
       </span>
       <span
         role="tooltip"
-        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 z-40
+        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 z-40
                    hidden group-hover:block
-                   bg-brand-bg border border-brand-border rounded
-                   text-[11px] text-slate-200 font-normal
-                   px-2 py-1 whitespace-pre-line max-w-xs text-left
-                   shadow-lg pointer-events-none"
+                   bg-elevated border border-border-strong rounded-md
+                   text-2xs text-fg font-normal leading-relaxed
+                   px-2.5 py-1.5 whitespace-pre-line max-w-xs text-left
+                   shadow-card pointer-events-none"
       >
         {text}
       </span>

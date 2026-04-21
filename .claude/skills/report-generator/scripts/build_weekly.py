@@ -1105,22 +1105,26 @@ def generate_html(D: dict) -> str:
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>다이트한의원 TikTok 위클리 리포트 · {D['period_this']}</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root {{
-  --bg:#0d0f14; --surface:#13161e; --surface2:#191d28;
-  --border:#1f2535; --accent:#4ade80; --accent2:#60a5fa;
-  --danger:#f87171; --warn:#fb923c; --purple:#a78bfa;
-  --text:#dde4f0; --text2:#7a8499; --text3:#3d4559;
-  --t1:#4ade80; --t2:#60a5fa; --t3:#a78bfa; --t4:#f87171;
-  --lv:#6b7280; --uc:#8b5cf6;
+  --bg:#09090b; --surface:#18181b; --surface2:#27272a;
+  --border:#27272a; --accent:#818cf8; --accent2:#38bdf8;
+  --danger:#f87171; --warn:#fbbf24; --purple:#a78bfa;
+  --text:#f4f4f5; --text2:#a1a1aa; --text3:#52525b;
+  --t1:#34d399; --t2:#38bdf8; --t3:#a78bfa; --t4:#f87171;
+  --lv:#71717a; --uc:#8b5cf6;
 }}
 *{{box-sizing:border-box;margin:0;padding:0}}
-body{{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.6}}
-.mono{{font-family:'DM Mono',monospace}}
+body{{background:var(--bg);color:var(--text);
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Noto Sans KR',sans-serif;
+  font-size:14px;line-height:1.55;letter-spacing:-0.005em;
+  font-feature-settings:'cv11','ss01','ss03';-webkit-font-smoothing:antialiased}}
+h1,h2,h3{{letter-spacing:-0.015em}}
+.mono{{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}}
 
 .report-header{{
-  background:linear-gradient(135deg,#0d0f14 0%,#13161e 100%);
+  background:var(--bg);
   border-bottom:1px solid var(--border);
   padding:36px 32px 28px;
 }}

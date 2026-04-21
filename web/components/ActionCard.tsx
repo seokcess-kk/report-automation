@@ -1,10 +1,12 @@
 'use client';
 import { ActionProposal } from '@/lib/reports';
+import { Badge } from './ui';
+import { cn } from './ui/cn';
 
-const PRIORITY_META: Record<string, { label: string; badge: string; border: string }> = {
-  high: { label: '긴급', badge: 'bg-rose-900/50 text-brand-danger', border: 'border-brand-danger' },
-  medium: { label: '권장', badge: 'bg-amber-900/50 text-brand-warn', border: 'border-brand-warn' },
-  low: { label: '참고', badge: 'bg-slate-700 text-slate-300', border: 'border-slate-500' },
+const PRIORITY_META: Record<string, { label: string; tone: 'danger' | 'warn' | 'neutral'; accent: string }> = {
+  high: { label: '긴급', tone: 'danger', accent: 'before:bg-danger' },
+  medium: { label: '권장', tone: 'warn', accent: 'before:bg-warn' },
+  low: { label: '참고', tone: 'neutral', accent: 'before:bg-subtle' },
 };
 
 const ACTION_LABEL: Record<string, string> = {
@@ -22,6 +24,13 @@ const ACTION_LABEL: Record<string, string> = {
   type_scale: '유형 확대',
 };
 
+const STATUS_BADGE: Record<string, { label: string; tone: 'success' | 'warn' | 'info' | 'neutral' }> = {
+  approved: { label: '승인', tone: 'success' },
+  queued: { label: '대기', tone: 'warn' },
+  executed: { label: '실행완료', tone: 'info' },
+  rejected: { label: '거절', tone: 'neutral' },
+};
+
 type DecisionStatus = 'approved' | 'queued' | 'executed' | 'rejected' | null;
 
 export function ActionCard({
@@ -37,60 +46,43 @@ export function ActionCard({
   const actionLabel = ACTION_LABEL[p.action_type] || p.action_type;
   const rec = p.recommended_value;
   const hasDelta = rec?.current != null && rec?.proposed != null;
+  const status = decisionStatus ? STATUS_BADGE[decisionStatus] : null;
 
   return (
-    <li className={`card border-l-4 ${meta.border}`} title={`#${p.id}`}>
-      <div className="flex items-start justify-between gap-3 mb-2">
+    <li
+      onClick={onClick}
+      title={`#${p.id}`}
+      className={cn(
+        'group relative cursor-pointer transition-all duration-150 ease-swift',
+        'bg-surface border border-border hover:border-border-strong rounded-xl p-4',
+        'pl-5 before:absolute before:left-0 before:top-3 before:bottom-3 before:w-1 before:rounded-full',
+        meta.accent
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${meta.badge}`}>
-              {meta.label}
-            </span>
-            <span className="text-[10px] text-slate-500 uppercase tracking-wide">{actionLabel}</span>
-            {decisionStatus === 'approved' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-900/50 text-brand-success">
-                ✓ 승인
-              </span>
-            )}
-            {decisionStatus === 'queued' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-900/50 text-brand-warn">
-                ⏳ 대기
-              </span>
-            )}
-            {decisionStatus === 'executed' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-900/50 text-sky-300">
-                ✅ 실행 완료
-              </span>
-            )}
-            {decisionStatus === 'rejected' && (
-              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
-                ✕ 거절
-              </span>
-            )}
+          <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+            <Badge tone={meta.tone}>{meta.label}</Badge>
+            <span className="text-2xs text-subtle uppercase tracking-wider">{actionLabel}</span>
+            {status && <Badge tone={status.tone}>{status.label}</Badge>}
           </div>
-          <div className="font-semibold">{p.title}</div>
-          <div className="text-sm text-slate-400 mt-1">{p.reason}</div>
+          <div className="text-sm font-semibold text-fg leading-snug">{p.title}</div>
+          <div className="text-xs text-muted mt-1 leading-relaxed">{p.reason}</div>
         </div>
         {hasDelta && (
           <div className="shrink-0 text-right">
-            <div className="text-[10px] text-slate-500">현재 → 제안</div>
-            <div className="text-sm font-mono text-slate-300">
+            <div className="text-2xs text-subtle uppercase tracking-wider mb-0.5">현재 → 제안</div>
+            <div className="text-xs font-mono text-subtle line-through tabular-nums">
               {formatValue(rec.current, rec.unit)}
             </div>
-            <div className="text-sm font-mono text-brand-primary">
+            <div className="text-sm font-mono text-accent-strong font-semibold tabular-nums">
               {formatValue(rec.proposed, rec.unit)}
             </div>
           </div>
         )}
       </div>
-      <div className="flex items-center justify-end gap-2 mt-2">
-        <button
-          type="button"
-          onClick={onClick}
-          className="text-xs px-3 py-1 rounded bg-brand-primary/20 text-brand-primary hover:bg-brand-primary/30 border border-brand-primary/40"
-        >
-          상세 보기
-        </button>
+      <div className="flex items-center justify-end mt-3 text-2xs text-subtle group-hover:text-accent-strong transition-colors">
+        <span>상세 →</span>
       </div>
     </li>
   );

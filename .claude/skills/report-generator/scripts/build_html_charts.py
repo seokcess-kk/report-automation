@@ -536,117 +536,154 @@ def generate_html_template(charts, total_cost, total_conv, avg_cpa, avg_ctr, avg
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TikTok 광고 분석 차트</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
     <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background: #f5f7fa;
-            color: #333;
+        :root {{
+            --bg: #fafaf9;
+            --surface: #ffffff;
+            --border: #e4e4e7;
+            --border-strong: #d4d4d8;
+            --fg: #18181b;
+            --muted: #52525b;
+            --subtle: #71717a;
+            --accent: #4f46e5;
+            --accent-soft: #eef2ff;
+            --accent-strong: #3730a3;
         }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        html, body {{
+            font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+                         system-ui, 'Segoe UI', 'Noto Sans KR', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            font-feature-settings: 'cv11', 'ss01', 'ss03';
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+            letter-spacing: -0.005em;
+        }}
+        h1, h2, h3 {{ letter-spacing: -0.015em; }}
+        .tabular {{ font-variant-numeric: tabular-nums; }}
+
         .header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 32px 24px;
             text-align: center;
         }}
-        .header h1 {{ font-size: 28px; margin-bottom: 10px; }}
-        .header p {{ opacity: 0.9; }}
+        .header h1 {{ font-size: 24px; font-weight: 700; margin-bottom: 6px; }}
+        .header p {{ color: var(--muted); font-size: 14px; }}
 
         .kpi-container {{
-            display: flex;
-            justify-content: center;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
             padding: 20px;
-            flex-wrap: wrap;
-            margin-top: -40px;
+            max-width: 1200px;
+            margin: 0 auto;
         }}
         .kpi-card {{
-            background: white;
-            border-radius: 12px;
-            padding: 20px 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            min-width: 180px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: left;
         }}
         .kpi-card .value {{
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--fg);
+            font-variant-numeric: tabular-nums;
+            margin-top: 2px;
         }}
         .kpi-card .label {{
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-top: 5px;
+            font-size: 11px;
+            color: var(--subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }}
 
         nav {{
-            background: white;
-            padding: 15px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 16px;
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 4px;
             flex-wrap: wrap;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.92);
         }}
         nav button {{
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
+            padding: 6px 14px;
+            border: 1px solid transparent;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            background: #f0f0f0;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--muted);
+            background: transparent;
+            transition: all 150ms;
         }}
-        nav button:hover, nav button.active {{
-            background: #667eea;
-            color: white;
+        nav button:hover {{ color: var(--fg); background: var(--bg); }}
+        nav button.active {{
+            background: var(--accent);
+            color: #fff;
         }}
 
         .section {{
             display: none;
-            padding: 30px;
+            padding: 24px;
             max-width: 1400px;
             margin: 0 auto;
         }}
-        .section.active {{ display: block; }}
+        .section.active {{ display: block; animation: fadeIn 200ms ease; }}
+        @keyframes fadeIn {{ from {{ opacity: 0; transform: translateY(4px); }} to {{ opacity: 1; transform: translateY(0); }} }}
         .section h2 {{
-            font-size: 22px;
-            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 1px solid var(--border);
         }}
 
         .chart-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 20px;
+            gap: 16px;
         }}
         .chart-box {{
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px;
         }}
-        .chart-full {{
-            grid-column: 1 / -1;
-        }}
+        .chart-full {{ grid-column: 1 / -1; }}
 
         .info-box {{
-            background: #e8f4fd;
-            border-left: 4px solid #3b82f6;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
+            background: var(--accent-soft);
+            border-left: 3px solid var(--accent);
+            padding: 12px 14px;
+            margin: 16px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 13px;
+            color: var(--accent-strong);
         }}
 
         footer {{
             text-align: center;
-            padding: 20px;
-            color: #7f8c8d;
-            font-size: 12px;
+            padding: 24px;
+            color: var(--subtle);
+            font-size: 11px;
+        }}
+
+        @media print {{
+            nav {{ display: none; }}
+            .section {{ display: block !important; page-break-after: always; }}
         }}
     </style>
 </head>

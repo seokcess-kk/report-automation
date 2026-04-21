@@ -9,10 +9,10 @@ export default async function TrackerPage() {
 
   if (!tracker) {
     return (
-      <div className="card">
-        <h1 className="text-xl font-bold mb-2">목표 달성 트래커</h1>
-        <p className="text-slate-400 text-sm">
-          트래커 데이터가 아직 생성되지 않았습니다. <code>python run_analysis.py</code> 실행 후 이용하세요.
+      <div className="bg-surface border border-border rounded-xl p-8 text-center">
+        <h1 className="text-xl font-bold text-fg mb-2">목표 달성 트래커</h1>
+        <p className="text-muted text-sm">
+          트래커 데이터가 아직 생성되지 않았습니다. <code className="bg-elevated px-1.5 py-0.5 rounded text-xs">python run_analysis.py</code> 실행 후 이용하세요.
         </p>
       </div>
     );
@@ -21,7 +21,7 @@ export default async function TrackerPage() {
   const { pace, proposals, segments } = tracker;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-fade-in">
       <PaceHeader pace={pace} />
       <TrackerClient pace={pace} proposals={proposals} segments={segments} />
     </div>

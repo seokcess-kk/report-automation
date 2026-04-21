@@ -71,21 +71,19 @@ export function TrackerClient({
       <SectionNav sections={sections} />
 
       <section id="sec-pace">
-        <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
+        <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+          <h2 className="text-lg font-semibold text-fg tracking-tight flex items-center gap-2">
             지점 페이스
-            <span className="text-xs text-slate-500 font-normal">
+            <span className="text-2xs text-subtle font-normal">
               {paceView === 'cards' ? '카드 클릭 시 상세' : '행 클릭 시 상세'}
             </span>
           </h2>
-          <div className="flex gap-1 text-xs">
+          <div className="flex gap-0.5 p-0.5 bg-elevated rounded-lg">
             <button
               type="button"
               onClick={() => setPaceView('cards')}
-              className={`px-2 py-1 rounded ${
-                paceView === 'cards'
-                  ? 'bg-brand-primary text-brand-bg font-semibold'
-                  : 'text-slate-300 hover:bg-brand-card'
+              className={`px-2.5 py-1 text-xs font-medium rounded transition-all duration-150 ease-swift ${
+                paceView === 'cards' ? 'bg-surface text-fg shadow-subtle' : 'text-muted hover:text-fg'
               }`}
             >
               카드
@@ -93,10 +91,8 @@ export function TrackerClient({
             <button
               type="button"
               onClick={() => setPaceView('table')}
-              className={`px-2 py-1 rounded ${
-                paceView === 'table'
-                  ? 'bg-brand-primary text-brand-bg font-semibold'
-                  : 'text-slate-300 hover:bg-brand-card'
+              className={`px-2.5 py-1 text-xs font-medium rounded transition-all duration-150 ease-swift ${
+                paceView === 'table' ? 'bg-surface text-fg shadow-subtle' : 'text-muted hover:text-fg'
               }`}
             >
               테이블

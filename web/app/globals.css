@@ -1,17 +1,96 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   color-scheme: dark;
+
+  /* Surface (zinc 기반) */
+  --bg:              9 9 11;         /* zinc-950 */
+  --surface:        24 24 27;        /* zinc-900 */
+  --elevated:       39 39 42;        /* zinc-800 */
+  --border:         39 39 42;        /* zinc-800 — 미묘 */
+  --border-strong:  63 63 70;        /* zinc-700 */
+
+  /* Text */
+  --fg:            244 244 245;      /* zinc-100 */
+  --muted:         161 161 170;      /* zinc-400 */
+  --subtle:        113 113 122;      /* zinc-500 */
+
+  /* Accent (indigo) */
+  --accent:        129 140 248;      /* indigo-400 */
+  --accent-soft:    30  27  75;      /* indigo-950 */
+  --accent-strong: 165 180 252;      /* indigo-300 */
+
+  /* Semantic */
+  --success:        52 211 153;      /* emerald-400 */
+  --success-soft:    6  78  59;      /* emerald-900 */
+  --warn:          251 191  36;      /* amber-400 */
+  --warn-soft:     120  53  15;      /* amber-900 */
+  --danger:        248 113 113;      /* rose-400 */
+  --danger-soft:   127  29  29;      /* rose-900 */
+  --info:           56 189 248;      /* sky-400 */
+  --info-soft:      12  74 110;      /* sky-900 */
 }
 
-html, body {
-  background: #0f172a;
-  color: #e2e8f0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Noto Sans KR', sans-serif;
+@layer base {
+  html, body {
+    background: rgb(var(--bg));
+    color: rgb(var(--fg));
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+                 system-ui, 'Segoe UI', 'Noto Sans KR', sans-serif;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.015em;
+  }
+
+  /* Focus ring - 통일 */
+  *:focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* 스크롤바 */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--border-strong));
+    border-radius: 10px;
+    border: 2px solid rgb(var(--bg));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--muted) / 0.5);
+  }
 }
 
-.card {
-  @apply bg-brand-card border border-brand-border rounded-lg p-4;
+@layer components {
+  /* 하위 호환: 기존 .card 는 새 토큰 사용 */
+  .card {
+    background: rgb(var(--surface));
+    border: 1px solid rgb(var(--border));
+    border-radius: 12px;
+    padding: 1rem;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 }

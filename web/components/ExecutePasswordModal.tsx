@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { DecisionRecord } from './ActionDetailModal';
 import { Button } from './ui';
+import { useFocusTrap } from './ui/useFocusTrap';
 
 type Adgroup = { adgroup_id: string; adgroup_name: string; budget: number; budget_mode: string; operation_status: string };
 type Ad = { ad_id: string; ad_name: string; status: string };
@@ -20,6 +21,7 @@ export function ExecutePasswordModal({
   const [ads, setAds] = useState<Ad[]>([]);
   const [budgetOverrides, setBudgetOverrides] = useState<Record<string, number>>({});
   const [loadingPreview, setLoadingPreview] = useState(true);
+  const trapRef = useFocusTrap<HTMLDivElement>(true);
 
   const p = decision.proposal_snapshot || {};
   const actionType = p.action_type as string;
@@ -82,11 +84,21 @@ export function ExecutePasswordModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
-      <div className="bg-surface border border-border-strong rounded-xl shadow-raised w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="실행 확인"
+    >
+      <div
+        ref={trapRef}
+        className="bg-surface border border-border-strong rounded-xl shadow-raised w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="sticky top-0 bg-surface/95 backdrop-blur border-b border-border px-5 py-4 flex items-center justify-between">
           <h3 className="text-base font-semibold text-fg">실행 확인</h3>
-          <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-fg hover:bg-elevated">✕</button>
+          <button type="button" onClick={onClose} aria-label="닫기" className="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-fg hover:bg-elevated">✕</button>
         </div>
 
         <div className="p-5 space-y-4">

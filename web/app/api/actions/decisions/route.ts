@@ -1,46 +1,7 @@
 import { NextResponse } from 'next/server';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import { Decision, loadDecisions, updateDecisions } from '@/lib/decisions-store';
 
-const OUTPUT_DIR = path.join(process.cwd(), '..', 'output');
-const DECISIONS_PATH = path.join(OUTPUT_DIR, 'action_decisions.json');
-
-export interface Decision {
-  id: string;
-  proposal_id: string;
-  proposal_snapshot: any;
-  decision: 'approve' | 'reject';
-  queued: boolean;
-  decided_at: string;
-  decided_by: string;
-  note: string;
-  executed: boolean;
-  executed_at: string | null;
-  execution_result: {
-    status: 'success' | 'failed';
-    message: string;
-    dry_run: boolean;
-  } | null;
-}
-
-async function loadDecisions(): Promise<Decision[]> {
-  try {
-    const raw = await fs.readFile(DECISIONS_PATH, 'utf-8');
-    const parsed = JSON.parse(raw);
-    return parsed.decisions || [];
-  } catch {
-    return [];
-  }
-}
-
-async function saveDecisions(decisions: Decision[]) {
-  await fs.mkdir(path.dirname(DECISIONS_PATH), { recursive: true });
-  await fs.writeFile(
-    DECISIONS_PATH,
-    JSON.stringify({ decisions }, null, 2),
-    'utf-8'
-  );
-}
+export type { Decision };
 
 function nextId(decisions: Decision[]): string {
   const max = decisions.reduce((m, d) => {
@@ -69,25 +30,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'invalid payload' }, { status: 400 });
     }
 
-    const decisions = await loadDecisions();
-    const filtered = decisions.filter((d) => d.proposal_id !== proposal.id);
-
-    const newDecision: Decision = {
-      id: nextId(filtered),
-      proposal_id: proposal.id,
-      proposal_snapshot: proposal,
-      decision,
-      queued: decision === 'approve' && !!queued,
-      decided_at: new Date().toISOString(),
-      decided_by: 'local',
-      note: note || '',
-      executed: false,
-      executed_at: null,
-      execution_result: null,
-    };
-
-    filtered.push(newDecision);
-    await saveDecisions(filtered);
+    const newDecision = await updateDecisions(async (current) => {
+      const filtered = current.filter((d) => d.proposal_id !== proposal.id);
+      const created: Decision = {
+        id: nextId(filtered),
+        proposal_id: proposal.id,
+        proposal_snapshot: proposal,
+        decision,
+        queued: decision === 'approve' && !!queued,
+        decided_at: new Date().toISOString(),
+        decided_by: 'local',
+        note: typeof note === 'string' ? note : '',
+        executed: false,
+        executed_at: null,
+        execution_result: null,
+      };
+      filtered.push(created);
+      return { next: filtered, value: created };
+    });
 
     return NextResponse.json({ ok: true, decision: newDecision });
   } catch (e: any) {

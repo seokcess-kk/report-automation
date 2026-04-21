@@ -10,26 +10,49 @@ function getCreds() {
   return { token, advertiser_id };
 }
 
+const DEFAULT_TIMEOUT_MS = 15_000;
+
+// 토큰 만료/무효 코드 — 즉시 실패, 재시도 금지
+const TOKEN_ERROR_CODES = new Set([40100, 40104, 40105, 40107, 40109, 40113, 40114]);
+
 async function callApi<T = any>(
   method: 'GET' | 'POST',
   endpoint: string,
-  body: Record<string, any>
+  body: Record<string, any>,
+  timeoutMs = DEFAULT_TIMEOUT_MS
 ): Promise<T> {
   const { token } = getCreds();
   const url = `${HOST}${endpoint}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   const init: RequestInit = {
     method,
     headers: { 'Access-Token': token, 'Content-Type': 'application/json' },
+    signal: controller.signal,
   };
-  if (method === 'POST') {
-    init.body = JSON.stringify(body);
+  if (method === 'POST') init.body = JSON.stringify(body);
+
+  try {
+    const res = await fetch(url, init);
+    if (res.status === 401 || res.status === 403) {
+      throw new Error(`[TikTok API] ${endpoint} HTTP ${res.status} - 토큰 만료/권한 없음. TIKTOK_ACCESS_TOKEN 갱신 필요.`);
+    }
+    const json = await res.json();
+    if (json.code !== 0) {
+      if (TOKEN_ERROR_CODES.has(json.code)) {
+        throw new Error(`[TikTok API] 토큰 만료/무효 (code=${json.code}). TIKTOK_ACCESS_TOKEN 갱신 필요.`);
+      }
+      throw new Error(`[TikTok API] ${endpoint} code=${json.code} msg=${json.message}`);
+    }
+    return json as T;
+  } catch (e: any) {
+    if (e.name === 'AbortError') {
+      throw new Error(`[TikTok API] ${endpoint} timeout (${timeoutMs}ms)`);
+    }
+    throw e;
+  } finally {
+    clearTimeout(timer);
   }
-  const res = await fetch(url, init);
-  const json = await res.json();
-  if (json.code !== 0) {
-    throw new Error(`[TikTok API] ${endpoint} code=${json.code} msg=${json.message}`);
-  }
-  return json as T;
 }
 
 /** ad/status/update/ — 광고 상태 변경 (ENABLE / DISABLE) */

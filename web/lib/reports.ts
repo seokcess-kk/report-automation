@@ -281,12 +281,28 @@ export interface SegmentAnalysis {
   hour: SegmentRow[];
 }
 
-export async function loadLatestTracker(): Promise<{
+export type TrackerBundle = {
   date: string;
   pace: BranchPaceData;
   proposals: ProposalsData;
   segments: SegmentAnalysis | null;
-} | null> {
+};
+
+// 메모리 캐시 60초 (데이터는 일 1회만 갱신되므로 충분히 안전, 수동 갱신은 dev restart)
+const TRACKER_TTL_MS = 60_000;
+let trackerCache: { data: TrackerBundle | null; fetchedAt: number } | null = null;
+
+export async function loadLatestTracker(): Promise<TrackerBundle | null> {
+  const now = Date.now();
+  if (trackerCache && now - trackerCache.fetchedAt < TRACKER_TTL_MS) {
+    return trackerCache.data;
+  }
+  const fresh = await _loadLatestTrackerFresh();
+  trackerCache = { data: fresh, fetchedAt: now };
+  return fresh;
+}
+
+async function _loadLatestTrackerFresh(): Promise<TrackerBundle | null> {
   for (const d of await listDataDirs()) {
     const pacePath = path.join(OUTPUT_DIR, 'data', d, 'branch_pace.json');
     const propPath = path.join(OUTPUT_DIR, 'data', d, 'action_proposals.json');

@@ -40,21 +40,34 @@ RETRY_BACKOFF = 5
 
 
 def _fetch_paged(endpoint: str, params: dict, token: str) -> list:
-    """페이지네이션 공통 처리."""
+    """페이지네이션 공통 처리 — total_page 와 수신 행 수 양쪽 기준으로 종료."""
     url = f'{HOST}{endpoint}'
     headers = {'Access-Token': token}
+    PAGE_SIZE = 500  # TikTok API 안전선 (1000 한계 대비 여유)
+    TOKEN_ERROR_CODES = {40100, 40104, 40105, 40107, 40109, 40113, 40114}
     all_rows = []
     page = 1
-    while True:
-        p = {**params, 'page': page, 'page_size': 1000}
+    MAX_PAGES = 200  # 안전 상한 (10만건까지)
+    while page <= MAX_PAGES:
+        p = {**params, 'page': page, 'page_size': PAGE_SIZE}
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 resp = requests.get(url, headers=headers, params=p, timeout=60)
+                if resp.status_code in (401, 403):
+                    raise SystemExit(
+                        f"[FATAL] {endpoint} HTTP {resp.status_code} — "
+                        f"TIKTOK_ACCESS_TOKEN 만료/권한 없음. 재발급 필요."
+                    )
                 resp.raise_for_status()
                 payload = resp.json()
-                if payload.get('code') != 0:
-                    raise RuntimeError(f"{endpoint} code={payload.get('code')} msg={payload.get('message')}")
+                code = payload.get('code')
+                if code != 0:
+                    if code in TOKEN_ERROR_CODES:
+                        raise SystemExit(f"[FATAL] 토큰 만료/무효 (code={code}). 갱신 필요.")
+                    raise RuntimeError(f"{endpoint} code={code} msg={payload.get('message')}")
                 break
+            except SystemExit:
+                raise
             except (requests.RequestException, RuntimeError) as e:
                 if attempt == MAX_RETRIES:
                     raise
@@ -64,11 +77,23 @@ def _fetch_paged(endpoint: str, params: dict, token: str) -> list:
         data = payload.get('data') or {}
         rows = data.get('list') or []
         all_rows.extend(rows)
+
         page_info = data.get('page_info') or {}
-        total_page = page_info.get('total_page', 0)
-        if page >= total_page or total_page == 0:
+        total_page = page_info.get('total_page') or 0
+        total_number = page_info.get('total_number') or 0
+
+        # 종료 조건: (1) 수신 rows < page_size 이거나 (2) 누적 >= total_number 이거나 (3) page >= total_page
+        if not rows or len(rows) < PAGE_SIZE:
+            break
+        if total_number and len(all_rows) >= total_number:
+            break
+        if total_page and page >= total_page:
             break
         page += 1
+
+    if page >= MAX_PAGES:
+        print(f"[WARNING] {endpoint}: 페이지 상한({MAX_PAGES}) 도달. 일부 데이터 누락 가능.")
+
     return all_rows
 
 

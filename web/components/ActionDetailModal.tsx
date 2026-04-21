@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActionProposal } from '@/lib/reports';
 import { Badge, Button } from './ui';
 import { cn } from './ui/cn';
+import { useFocusTrap } from './ui/useFocusTrap';
 
 const ACTION_LABEL: Record<string, string> = {
   budget_decrease: '예산 감액', budget_increase: '예산 증액', budget_reallocate: '예산 재분배',
@@ -35,6 +36,7 @@ export function ActionDetailModal({
   const [note, setNote] = useState(existingDecision?.note || '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const trapRef = useFocusTrap<HTMLDivElement>(true);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -63,8 +65,15 @@ export function ActionDetailModal({
   const priorityLabel = proposal.priority === 'high' ? '긴급' : proposal.priority === 'medium' ? '권장' : '참고';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={proposal.title}
+    >
       <div
+        ref={trapRef}
         className="bg-surface border border-border-strong rounded-xl shadow-raised w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
@@ -80,6 +89,7 @@ export function ActionDetailModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label="닫기"
             className="w-8 h-8 flex items-center justify-center rounded-md text-muted hover:text-fg hover:bg-elevated shrink-0"
           >✕</button>
         </div>

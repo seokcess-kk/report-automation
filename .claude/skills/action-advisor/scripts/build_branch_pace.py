@@ -63,7 +63,22 @@ def _tier_distribution_by_branch(data_dir: str) -> dict:
     if '지점' in df.columns:
         exploded = df[['지점', 'TIER']].rename(columns={'지점': 'branch'})
     elif '집행지점목록' in df.columns:
-        exploded = df[['집행지점목록', 'TIER']].explode('집행지점목록').rename(columns={'집행지점목록': 'branch'})
+        # 문자열·None 이 섞여 있을 수 있어 list로 강제 변환 후 explode
+        def _to_list(v):
+            if v is None:
+                return []
+            if isinstance(v, list):
+                return v
+            if isinstance(v, str):
+                return [v]
+            try:
+                # numpy array 등 iterable
+                return list(v)
+            except TypeError:
+                return [v]
+        tmp = df[['집행지점목록', 'TIER']].copy()
+        tmp['집행지점목록'] = tmp['집행지점목록'].apply(_to_list)
+        exploded = tmp.explode('집행지점목록').rename(columns={'집행지점목록': 'branch'})
     else:
         return {}
 

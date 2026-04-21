@@ -66,17 +66,22 @@ async function loadLatestMapping(): Promise<AdMapping | null> {
   return null;
 }
 
-/** 소재구분/매칭키로 ad_ids 검색 */
+/** 소재구분/매칭키로 ad_ids 엄격 검색.
+ *  target 은 소재 파싱의 매칭키/소재구분 (예: "신규", "재가공").
+ *  ad_name 내에서 token 단위 정확히 일치하는 경우만 매칭. */
 function findAdIdsByCreative(mapping: AdMapping, target: string): string[] {
+  if (!target || typeof target !== 'string') return [];
+  const t = target.trim().toLowerCase();
+  if (!t) return [];
   const ids: string[] = [];
   for (const [adid, ad] of Object.entries(mapping.ads)) {
-    const name = ad.ad_name || '';
-    // ad_name이 target으로 시작하거나 포함하면 매칭
-    if (name.includes(target) || target.includes(name.split('_')[0])) {
-      // ON 상태만 (중단/재활성화 대상)
-      if (ad.operation_status === 'ENABLE' || ad.operation_status === 'DISABLE') {
-        ids.push(adid);
-      }
+    const name = (ad.ad_name || '').toLowerCase();
+    if (!name) continue;
+    // 토큰 경계 기반 정확 매칭 ('_', ' ', '-', '(', ')')
+    const tokens = name.split(/[_\s\-()]+/).filter(Boolean);
+    if (!tokens.includes(t)) continue;
+    if (ad.operation_status === 'ENABLE' || ad.operation_status === 'DISABLE') {
+      ids.push(adid);
     }
   }
   return ids;
@@ -166,30 +171,46 @@ export async function executeAction(
       };
     }
 
+    // 변경 필요한 adgroup만 필터 + INFINITE 모드 사전 걸러내기
+    const targets = adgroups
+      .map((ag) => ({ ag, newBudget: overrides[ag.adgroup_id] }))
+      .filter(({ ag, newBudget }) => newBudget != null && newBudget !== ag.budget);
+
+    const infinites = targets.filter(({ ag }) => ag.budget_mode === 'BUDGET_MODE_INFINITE');
+    const mutable = targets.filter(({ ag }) => ag.budget_mode !== 'BUDGET_MODE_INFINITE');
+
+    // 병렬 실행 (allSettled — 일부 실패해도 나머지는 완료)
+    const settled = await Promise.allSettled(
+      mutable.map(({ ag, newBudget }) =>
+        updateAdgroupBudget(ag.adgroup_id, Math.round(newBudget)).then((resp) => ({
+          ag, newBudget, resp,
+        }))
+      )
+    );
+
     const results: any[] = [];
     let successCount = 0;
     let failCount = 0;
-    for (const ag of adgroups) {
-      const newBudget = overrides[ag.adgroup_id];
-      if (newBudget == null || newBudget === ag.budget) {
-        continue; // 변경 없음 skip
-      }
-      try {
-        const resp = await updateAdgroupBudget(ag.adgroup_id, Math.round(newBudget));
-        results.push({ adgroup_id: ag.adgroup_id, new_budget: newBudget, ok: true, api_response: resp });
+    settled.forEach((r, i) => {
+      const { ag, newBudget } = mutable[i];
+      if (r.status === 'fulfilled') {
+        results.push({ adgroup_id: ag.adgroup_id, new_budget: newBudget, ok: true, api_response: r.value.resp });
         successCount += 1;
-      } catch (e: any) {
-        results.push({ adgroup_id: ag.adgroup_id, new_budget: newBudget, ok: false, error: String(e.message || e) });
+      } else {
+        results.push({ adgroup_id: ag.adgroup_id, new_budget: newBudget, ok: false, error: String(r.reason?.message || r.reason) });
         failCount += 1;
       }
+    });
+    for (const { ag, newBudget } of infinites) {
+      results.push({
+        adgroup_id: ag.adgroup_id, new_budget: newBudget, ok: false,
+        error: 'BUDGET_MODE_INFINITE — 예산 모드 변경 후 수동 조정 필요',
+      });
+      failCount += 1;
     }
 
     if (successCount === 0 && failCount === 0) {
-      return {
-        status: 'skipped',
-        message: '변경 사항 없음 (모든 adgroup 예산 동일)',
-        dry_run: false,
-      };
+      return { status: 'skipped', message: '변경 사항 없음 (모든 adgroup 예산 동일)', dry_run: false };
     }
     return {
       status: failCount === 0 ? 'success' : successCount > 0 ? 'partial' : 'failed',

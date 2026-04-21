@@ -134,15 +134,27 @@ def fetch_report(
             'page_size': page_size,
         }
 
+        # 토큰 만료 코드 — 재시도 불필요 (즉시 실패)
+        TOKEN_ERROR_CODES = {40100, 40104, 40105, 40107, 40109, 40113, 40114}
+
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 resp = requests.get(url, headers=headers, params=params, timeout=60)
+                if resp.status_code in (401, 403):
+                    raise SystemExit(
+                        f"[FATAL] HTTP {resp.status_code} — TIKTOK_ACCESS_TOKEN 만료 또는 권한 없음. "
+                        f"oauth_bootstrap.py 로 재발급 필요."
+                    )
                 resp.raise_for_status()
                 payload = resp.json()
                 code = payload.get('code')
                 if code != 0:
                     msg = payload.get('message', '')
-                    # 메트릭 유효성 에러 힌트
+                    if code in TOKEN_ERROR_CODES:
+                        raise SystemExit(
+                            f"[FATAL] TikTok 토큰 만료/무효 (code={code} msg={msg}). "
+                            f"TIKTOK_ACCESS_TOKEN 갱신 필요."
+                        )
                     if 'metric' in msg.lower() or code == 40002:
                         raise RuntimeError(
                             f"API error code={code} msg={msg}\n"
@@ -151,6 +163,8 @@ def fetch_report(
                         )
                     raise RuntimeError(f"API error code={code} msg={msg}")
                 break
+            except SystemExit:
+                raise
             except (requests.RequestException, RuntimeError) as e:
                 if attempt == MAX_RETRIES:
                     raise

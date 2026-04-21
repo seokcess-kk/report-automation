@@ -6,6 +6,7 @@ import { fmtMan } from '@/lib/format';
 import { DecisionRecord } from './ActionDetailModal';
 import { Badge, Stat, StatusDot } from './ui';
 import { cn } from './ui/cn';
+import { useFocusTrap } from './ui/useFocusTrap';
 
 const TIER_COLOR: Record<string, string> = {
   TIER1: 'bg-success',
@@ -32,6 +33,7 @@ export function BranchDetailDrawer({
   onClose: () => void;
   onActionClick: (p: ActionProposal) => void;
 }) {
+  const trapRef = useFocusTrap<HTMLElement>(true);
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
@@ -71,9 +73,10 @@ export function BranchDetailDrawer({
   const tierEntries = tierOrder.filter((k) => tierDist[k] > 0).map((k) => [k, tierDist[k]] as const);
 
   return (
-    <div className="fixed inset-0 z-40 animate-fade-in" onClick={onClose}>
+    <div className="fixed inset-0 z-40 animate-fade-in" onClick={onClose} role="dialog" aria-modal="true" aria-label={`${branch.branch} 상세`}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <aside
+        ref={trapRef as React.RefObject<HTMLElement>}
         className="absolute right-0 top-0 bottom-0 w-full sm:w-[480px] bg-surface border-l border-border shadow-drawer overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >

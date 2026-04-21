@@ -50,6 +50,11 @@
     letter-spacing: -0.015em;
   }
 
+  ::selection {
+    background-color: rgb(var(--accent) / 0.25);
+    color: rgb(var(--fg));
+  }
+
   /* Focus ring - 통일 */
   *:focus-visible {
     outline: 2px solid rgb(var(--accent));

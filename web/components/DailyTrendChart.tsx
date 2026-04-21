@@ -2,18 +2,20 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 interface DailyPoint {
-  date: string;
+  date_str?: string;
+  date?: string;
   cost: number;
   conv: number;
-  cpa: number | null;
+  cpa?: number | null;
+  ctr?: number | null;
 }
 
 export function DailyTrendChart({ data }: { data: DailyPoint[] }) {
+  if (!data?.length) return null;
   const chartData = data.map((d) => ({
-    date: d.date.slice(5), // MM-DD
-    비용: d.cost,
-    전환: d.conv,
-    CPA: d.cpa ?? 0,
+    date: d.date_str ?? (d.date ? d.date.slice(5) : ''),
+    비용: d.cost ?? 0,
+    전환: d.conv ?? 0,
   }));
   return (
     <div className="card">

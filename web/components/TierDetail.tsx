@@ -53,7 +53,7 @@ export function TierDetail({ items }: { items: TierItem[] }) {
               <span className="font-medium text-sm">{it.creative_name}</span>
               <span className="text-xs text-slate-400 whitespace-nowrap">{it.TIER}</span>
             </div>
-            <div className="text-xs text-slate-400 mb-2">{it.소재유형} · 집행 {it.집행일수}일 · 지점 {it.지점목록.length}개</div>
+            <div className="text-xs text-slate-400 mb-2">{it.소재유형} · 집행 {it.집행일수}일 · 지점 {it.지점목록?.length ?? 0}개</div>
             <div className="grid grid-cols-4 gap-2 text-xs">
               <Metric label="비용" value={`${(it.총비용 / 10000).toFixed(1)}만`} />
               <Metric label="전환" value={`${it.총전환}`} />

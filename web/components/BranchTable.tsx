@@ -57,7 +57,7 @@ export function BranchTable({ rows }: { rows: BranchRow[] }) {
               <td className="px-3 py-2 text-right">{fmtPct(r.CTR)}</td>
               <td className="px-3 py-2 text-right">{fmtPct(r.CVR)}</td>
               <td className={`px-3 py-2 text-right ${diffColor(r.CPA_diff, true)}`}>{fmtDiff(r.CPA_diff)}</td>
-              <td className="px-3 py-2 text-right font-semibold">{r.효율점수.toFixed(2)}</td>
+              <td className="px-3 py-2 text-right font-semibold">{typeof r.효율점수 === 'number' ? r.효율점수.toFixed(2) : '-'}</td>
             </tr>
           ))}
         </tbody>

@@ -65,8 +65,8 @@ export function BranchTableView({
             <Th onClick={() => toggleSort('branch')}>지점 {arrow('branch')}</Th>
             <Th onClick={() => toggleSort('budget_pct')} align="right">예산% {arrow('budget_pct')}</Th>
             <Th onClick={() => toggleSort('conv_pct')} align="right">전환% {arrow('conv_pct')}</Th>
-            <Th onClick={() => toggleSort('cpa')} align="right">CPA {arrow('cpa')}</Th>
-            <Th onClick={() => toggleSort('proj_pct')} align="right">월말예상 {arrow('proj_pct')}</Th>
+            <Th onClick={() => toggleSort('cpa')} align="right" hideOnMobile>CPA {arrow('cpa')}</Th>
+            <Th onClick={() => toggleSort('proj_pct')} align="right" hideOnMobile>월말예상 {arrow('proj_pct')}</Th>
           </tr>
         </thead>
         <tbody>
@@ -105,7 +105,7 @@ export function BranchTableView({
                   </span>
                   <div className="text-[10px] text-slate-500">{b.conv_so_far} / {b.conv_target}건</div>
                 </td>
-                <td className="py-2 px-3 text-right font-mono">
+                <td className="py-2 px-3 text-right font-mono hidden sm:table-cell">
                   <span className={cpaColor}>
                     {b.cpa != null ? b.cpa.toLocaleString() : '-'}
                   </span>
@@ -113,7 +113,7 @@ export function BranchTableView({
                     <div className="text-[10px] text-slate-500">목표 {b.cpa_vs_target_pct}%</div>
                   )}
                 </td>
-                <td className="py-2 px-3 text-right font-mono">
+                <td className="py-2 px-3 text-right font-mono hidden sm:table-cell">
                   {b.proj_conv}건
                   <div className="text-[10px] text-slate-500">{b.proj_pct}%</div>
                 </td>
@@ -126,11 +126,23 @@ export function BranchTableView({
   );
 }
 
-function Th({ children, onClick, align }: { children: React.ReactNode; onClick: () => void; align?: 'right' }) {
+function Th({
+  children,
+  onClick,
+  align,
+  hideOnMobile,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  align?: 'right';
+  hideOnMobile?: boolean;
+}) {
   return (
     <th
       onClick={onClick}
-      className={`py-2 px-3 cursor-pointer select-none hover:text-white ${align === 'right' ? 'text-right' : 'text-left'}`}
+      className={`py-2 px-3 cursor-pointer select-none hover:text-white ${
+        align === 'right' ? 'text-right' : 'text-left'
+      } ${hideOnMobile ? 'hidden sm:table-cell' : ''}`}
     >
       {children}
     </th>

@@ -1,0 +1,35 @@
+# 자동 생성 산출물은 merge 충돌 시 로컬 버전 유지
+# (GitHub Actions가 매일 커밋하므로 개인 로컬 작업과 자주 충돌)
+#
+# 최초 1회 설정 필요 (로컬 저장소별):
+#   git config merge.ours.driver true
+
+output/data/**/*.parquet  merge=ours
+output/data/**/*.json     merge=ours
+output/data/**/*.csv      merge=ours
+output/monthly/**/*.html  merge=ours
+output/monthly/**/*.json  merge=ours
+output/weekly/**/*.html   merge=ours
+output/weekly/**/*.json   merge=ours
+output/weekly/**/*.md     merge=ours
+output/daily/**/*.txt     merge=ours
+output/daily/**/*.json    merge=ours
+output/daily/**/*.html    merge=ours
+
+# 입력 원본 CSV (API 수집 갱신됨)
+input/tiktok_raw.csv         merge=ours
+input/tiktok_raw_by_age.csv  merge=ours
+input/tiktok_raw_by_hour.csv merge=ours
+
+# 감사 로그 (웹에서 write)
+output/action_decisions.json merge=ours
+
+# 라인 엔딩 통일
+*.py       text eol=lf
+*.ts       text eol=lf
+*.tsx      text eol=lf
+*.md       text eol=lf
+*.json     text eol=lf
+*.yml      text eol=lf
+*.yaml     text eol=lf
+*.parquet  binary

@@ -105,9 +105,9 @@ export function AnalysisTabs({ segments }: { segments: SegmentAnalysis }) {
                   <th className="text-left py-2 px-2">{active.label}</th>
                   <th className="text-right px-2">비용</th>
                   <th className="text-right px-2">전환</th>
-                  <th className="text-right px-2">CPA</th>
-                  <th className="text-right px-2">비용비중</th>
-                  <th className="text-right px-2">전환비중</th>
+                  <th className="text-right px-2 hidden sm:table-cell">CPA</th>
+                  <th className="text-right px-2 hidden md:table-cell">비용비중</th>
+                  <th className="text-right px-2 hidden md:table-cell">전환비중</th>
                   <th className="text-right px-2">효율점수</th>
                 </tr>
               </thead>
@@ -119,11 +119,11 @@ export function AnalysisTabs({ segments }: { segments: SegmentAnalysis }) {
                     </td>
                     <td className="text-right px-2 text-slate-300">{fmtMan(r.총비용)}</td>
                     <td className="text-right px-2">{r.총전환}건</td>
-                    <td className="text-right px-2 text-slate-300">
+                    <td className="text-right px-2 text-slate-300 hidden sm:table-cell">
                       {r.CPA != null ? Number(r.CPA).toLocaleString() : '-'}
                     </td>
-                    <td className="text-right px-2 text-slate-400">{r.비용비중}%</td>
-                    <td className="text-right px-2 text-slate-400">{r.전환비중}%</td>
+                    <td className="text-right px-2 text-slate-400 hidden md:table-cell">{r.비용비중}%</td>
+                    <td className="text-right px-2 text-slate-400 hidden md:table-cell">{r.전환비중}%</td>
                     <td className="text-right px-2 font-bold" style={{ color: scoreColor(r.예산효율점수) }}>
                       {r.예산효율점수 != null ? Number(r.예산효율점수).toFixed(2) : '-'}
                     </td>

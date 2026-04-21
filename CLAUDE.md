@@ -103,6 +103,17 @@ output/daily/daily_snapshot.json
 
 ---
 
+## 최초 로컬 세팅 (1회)
+
+```bash
+# 자동 생성 산출물 merge 충돌 방지 (GitHub Actions가 매일 커밋하므로 필수)
+git config merge.ours.driver true
+```
+
+이후 `git pull` 시 output/ 파일 충돌은 로컬 버전으로 자동 유지됨.
+
+---
+
 ## 실행 방법
 
 ```bash

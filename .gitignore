@@ -7,6 +7,11 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Next.js (web/)
+web/node_modules/
+web/.next/
+web/out/
+
 # Temp artifacts
 nul
 *.bak

@@ -1084,6 +1084,11 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
+    # UI용 구조화 JSON 동시 출력
+    json_path = os.path.join(weekly_dir, f"tiktok_weekly_dayt_{date_folder}.json")
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, default=str, indent=2)
+
     print(f"[OK] Weekly report -> {output_path}")
     return output_path
 

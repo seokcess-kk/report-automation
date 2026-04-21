@@ -87,3 +87,63 @@ export async function loadDailySnapshot(): Promise<any | null> {
     return null;
   }
 }
+
+// ─────── Daily ───────
+
+export interface DailyBranch {
+  branch: string;
+  daily_conv: number;
+  cum_cvr: number;
+  cum_cpa: number | null;
+  target: number;
+  tag: 'best' | 'focus';
+  ratio: number | null;
+}
+
+export interface DailyData {
+  date: string;
+  date_label: string;
+  goal: {
+    conv_current: number;
+    conv_target: number;
+    conv_pct: number;
+    remaining_days: number;
+    budget_pct: number;
+    budget_total: number;
+  };
+  kpi_daily: { cost: number; conv: number; cpa: number | null; ctr: number; cvr: number };
+  kpi_cum: { cost: number; conv: number; cpa: number | null; ctr: number; cvr: number };
+  kpi_prev: { cost?: number; conv?: number; cpa?: number | null; ctr?: number; cvr?: number };
+  branches: DailyBranch[];
+  zero_conv_lines: string[];
+  anomaly_lines: string[];
+  notable_lines: string[];
+  checkpoints: string[];
+}
+
+export async function listDailyDates(): Promise<string[]> {
+  const dir = path.join(OUTPUT_DIR, 'daily');
+  try {
+    const entries = await fs.readdir(dir);
+    return entries.filter((e) => /^\d{8}$/.test(e)).sort().reverse();
+  } catch {
+    return [];
+  }
+}
+
+export async function loadDaily(date: string): Promise<DailyData | null> {
+  const fp = path.join(OUTPUT_DIR, 'daily', date, `tiktok_daily_${date}.json`);
+  try {
+    return JSON.parse(await fs.readFile(fp, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+export async function loadLatestDaily(): Promise<{ date: string; data: DailyData } | null> {
+  for (const d of await listDailyDates()) {
+    const data = await loadDaily(d);
+    if (data) return { date: d, data };
+  }
+  return null;
+}

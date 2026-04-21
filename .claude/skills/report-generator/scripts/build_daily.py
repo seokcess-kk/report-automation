@@ -978,6 +978,53 @@ def build_daily_txt(
     }
     save_snapshot(snapshot_path, snapshot, yesterday_str, today_snapshot)
 
+    # UI용 구조화 JSON
+    daily_data = {
+        'date': yesterday_str,
+        'date_label': yesterday.strftime('%m/%d'),
+        'goal': {
+            'conv_current': int(kpi_cum['conv']),
+            'conv_target': MONTHLY_TARGET_CONV,
+            'conv_pct': conv_pct,
+            'remaining_days': max(remaining_days, 0),
+            'budget_pct': budget_pct,
+            'budget_total': TOTAL_MONTHLY_BUDGET,
+        },
+        'kpi_daily': kpi_daily,
+        'kpi_cum': kpi_cum,
+        'kpi_prev': prev_daily,
+        'branches': [
+            {
+                'branch': b['name'],
+                'daily_conv': b['conv'],
+                'cum_cvr': b['cvr'],
+                'cum_cpa': b['cpa'],
+                'target': b['target'],
+                'tag': 'best',
+                'ratio': round(b['cpa'] / b['target'], 2) if b.get('cpa') and b.get('target') else None,
+            }
+            for b in best_branches
+        ] + [
+            {
+                'branch': b['name'],
+                'daily_conv': b['conv'],
+                'cum_cvr': b['cvr'],
+                'cum_cpa': b['cpa'],
+                'target': b['target'],
+                'tag': 'focus',
+                'ratio': round(b['cpa'] / b['target'], 2) if b.get('cpa') and b.get('target') else None,
+            }
+            for b in focus_branches
+        ],
+        'zero_conv_lines': zero_conv_lines,
+        'anomaly_lines': anomaly_lines,
+        'notable_lines': notable_lines,
+        'checkpoints': checkpoints,
+    }
+    json_path = os.path.join(output_folder, f"tiktok_daily_{date_folder}.json")
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(daily_data, f, ensure_ascii=False, default=str, indent=2)
+
     print(f"[OK] Daily report -> {txt_path}")
     print(f"[OK] Snapshot updated -> {snapshot_path}")
 

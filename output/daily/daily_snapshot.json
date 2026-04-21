@@ -1849,122 +1849,122 @@
   },
   "2026-04-21": {
     "daily": {
-      "cost": 389675,
-      "conv": 13,
-      "cpa": 29975,
-      "ctr": 0.66,
-      "cvr": 7.3
+      "cost": 580556,
+      "conv": 16,
+      "cpa": 36284,
+      "ctr": 0.58,
+      "cvr": 6.35
     },
     "cumulative": {
-      "cost": 12208613,
-      "conv": 443,
-      "cpa": 27558,
+      "cost": 12399494,
+      "conv": 446,
+      "cpa": 27801,
       "ctr": 0.58,
-      "cvr": 6.69
+      "cvr": 6.66
     },
     "branch": {
       "서울": {
         "daily": {
-          "cost": 31722,
-          "conv": 5,
-          "cvr": 25.0
+          "cost": 47085,
+          "conv": 7,
+          "cvr": 24.14
         },
         "cumulative": {
-          "cost": 1215668,
-          "conv": 73,
-          "cpa": 16652,
-          "cvr": 8.63
+          "cost": 1231031,
+          "conv": 75,
+          "cpa": 16413,
+          "cvr": 8.77
         }
       },
       "부평": {
         "daily": {
-          "cost": 92949,
-          "conv": 3,
-          "cvr": 12.0
+          "cost": 147176,
+          "conv": 4,
+          "cvr": 8.7
         },
         "cumulative": {
-          "cost": 1928762,
-          "conv": 68,
-          "cpa": 28364,
-          "cvr": 6.78
+          "cost": 1982989,
+          "conv": 69,
+          "cpa": 28738,
+          "cvr": 6.74
         }
       },
       "수원": {
         "daily": {
-          "cost": 49956,
+          "cost": 75045,
           "conv": 0,
           "cvr": 0.0
         },
         "cumulative": {
-          "cost": 2430907,
+          "cost": 2455996,
           "conv": 43,
-          "cpa": 56532,
-          "cvr": 3.82
+          "cpa": 57116,
+          "cvr": 3.8
         }
       },
       "일산": {
         "daily": {
-          "cost": 27569,
+          "cost": 39072,
           "conv": 0,
           "cvr": 0.0
         },
         "cumulative": {
-          "cost": 1210575,
+          "cost": 1222078,
           "conv": 57,
-          "cpa": 21238,
-          "cvr": 7.26
+          "cpa": 21439,
+          "cvr": 7.21
         }
       },
       "대구": {
         "daily": {
-          "cost": 37846,
+          "cost": 62048,
           "conv": 4,
-          "cvr": 15.38
+          "cvr": 10.26
         },
         "cumulative": {
-          "cost": 1793429,
+          "cost": 1817631,
           "conv": 90,
-          "cpa": 19926,
-          "cvr": 9.05
+          "cpa": 20195,
+          "cvr": 8.93
         }
       },
       "창원": {
         "daily": {
-          "cost": 83635,
+          "cost": 114583,
           "conv": 0,
           "cvr": 0.0
         },
         "cumulative": {
-          "cost": 1327123,
+          "cost": 1358071,
           "conv": 32,
-          "cpa": 41472,
-          "cvr": 4.83
+          "cpa": 42439,
+          "cvr": 4.73
         }
       },
       "천안": {
         "daily": {
-          "cost": 31835,
+          "cost": 43833,
           "conv": 0,
           "cvr": 0.0
         },
         "cumulative": {
-          "cost": 1196231,
+          "cost": 1208229,
           "conv": 28,
-          "cpa": 42722,
-          "cvr": 4.44
+          "cpa": 43151,
+          "cvr": 4.42
         }
       },
       "대전": {
         "daily": {
-          "cost": 34163,
+          "cost": 51714,
           "conv": 1,
-          "cvr": 6.67
+          "cvr": 5.56
         },
         "cumulative": {
-          "cost": 1105918,
+          "cost": 1123469,
           "conv": 52,
-          "cpa": 21267,
-          "cvr": 9.0
+          "cpa": 21605,
+          "cvr": 8.95
         }
       }
     }

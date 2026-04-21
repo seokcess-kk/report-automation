@@ -139,7 +139,13 @@
           "cost": 46707.0,
           "conv": 7.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER1": 3,
+        "TIER3": 2,
+        "UNCLASSIFIED": 2,
+        "LOW_VOLUME": 1
+      }
     },
     {
       "branch": "부평",
@@ -263,7 +269,13 @@
           "cost": 145889.0,
           "conv": 4.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 3,
+        "TIER1": 2,
+        "TIER4": 1,
+        "TIER3": 1
+      }
     },
     {
       "branch": "수원",
@@ -387,7 +399,13 @@
           "cost": 74225.0,
           "conv": 0.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER1": 2,
+        "UNCLASSIFIED": 2,
+        "TIER3": 1,
+        "LOW_VOLUME": 1
+      }
     },
     {
       "branch": "일산",
@@ -511,7 +529,12 @@
           "cost": 38578.0,
           "conv": 0.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER1": 4,
+        "UNCLASSIFIED": 2,
+        "TIER3": 1
+      }
     },
     {
       "branch": "대구",
@@ -635,7 +658,12 @@
           "cost": 61157.0,
           "conv": 4.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER1": 4,
+        "TIER3": 2,
+        "UNCLASSIFIED": 2
+      }
     },
     {
       "branch": "창원",
@@ -759,7 +787,12 @@
           "cost": 114125.0,
           "conv": 0.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER3": 2,
+        "TIER1": 2,
+        "UNCLASSIFIED": 2
+      }
     },
     {
       "branch": "천안",
@@ -883,7 +916,13 @@
           "cost": 43546.0,
           "conv": 0.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER3": 3,
+        "TIER4": 2,
+        "UNCLASSIFIED": 2,
+        "TIER1": 1
+      }
     },
     {
       "branch": "대전",
@@ -982,7 +1021,12 @@
           "cost": 49776.0,
           "conv": 1.0
         }
-      ]
+      ],
+      "tier_distribution": {
+        "TIER1": 3,
+        "UNCLASSIFIED": 2,
+        "TIER3": 1
+      }
     }
   ]
 }

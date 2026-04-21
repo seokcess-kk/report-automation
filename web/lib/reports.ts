@@ -209,6 +209,7 @@ export interface BranchPace {
   cpa_vs_target_pct: number | null;
   status: 'ok' | 'warn' | 'danger';
   sparkline: { date: string; cost: number; conv: number }[];
+  tier_distribution?: Record<string, number>;
 }
 
 export interface BranchPaceData {
@@ -230,6 +231,7 @@ export interface BranchPaceData {
     status: 'ok' | 'warn' | 'danger';
   };
   branches: BranchPace[];
+  days_total_remaining?: number;
 }
 
 export interface ActionProposal {

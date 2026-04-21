@@ -46,6 +46,35 @@ def _status_overall(budget_pct: float, conv_pct: float, date_progress: float) ->
     return 'ok'
 
 
+def _tier_distribution_by_branch(data_dir: str) -> dict:
+    """creative_tier.parquet에서 지점별 TIER 분포 집계.
+    소재가 여러 지점에 배포된 경우 각 지점별로 카운트 (explode)."""
+    tier_path = os.path.join(data_dir, 'creative_tier.parquet')
+    if not os.path.exists(tier_path):
+        return {}
+    try:
+        df = pd.read_parquet(tier_path)
+    except Exception:
+        return {}
+    if 'TIER' not in df.columns:
+        return {}
+
+    # 지점 컬럼 결정 (단일 지점 혹은 집행지점목록)
+    if '지점' in df.columns:
+        exploded = df[['지점', 'TIER']].rename(columns={'지점': 'branch'})
+    elif '집행지점목록' in df.columns:
+        exploded = df[['집행지점목록', 'TIER']].explode('집행지점목록').rename(columns={'집행지점목록': 'branch'})
+    else:
+        return {}
+
+    exploded = exploded.dropna(subset=['branch'])
+    result = {}
+    for b in VALID_BRANCHES:
+        sub = exploded[exploded['branch'] == b]
+        result[b] = sub['TIER'].value_counts().to_dict() if len(sub) else {}
+    return result
+
+
 def build_pace(data_dir: str) -> dict:
     parsed_path = os.path.join(data_dir, 'parsed.parquet')
     if not os.path.exists(parsed_path):
@@ -53,6 +82,7 @@ def build_pace(data_dir: str) -> dict:
 
     df = pd.read_parquet(parsed_path)
     df['date'] = pd.to_datetime(df['date'])
+    tier_dist = _tier_distribution_by_branch(data_dir)
 
     # 데이터 최신일 기준으로 "이번 달" 결정
     last_date = df['date'].max().date()
@@ -132,6 +162,7 @@ def build_pace(data_dir: str) -> dict:
             'cpa_vs_target_pct': cpa_vs_target,
             'status': status,
             'sparkline': sparkline,
+            'tier_distribution': tier_dist.get(b, {}),
         })
 
     return {

@@ -2,12 +2,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ActionProposal, BranchPaceData, ProposalsData, SegmentAnalysis } from '@/lib/reports';
 import { BranchPaceCard } from './BranchPaceCard';
-import { ActionCard } from './ActionCard';
+import { BranchTableView } from './BranchTableView';
+import { ActionList } from './ActionList';
 import { ActionDetailModal, DecisionRecord } from './ActionDetailModal';
 import { ExecutionQueue } from './ExecutionQueue';
 import { BranchDetailDrawer } from './BranchDetailDrawer';
 import { AnalysisTabs } from './AnalysisTabs';
 import { SectionNav, SectionDef } from './SectionNav';
+
+type PaceView = 'cards' | 'table';
 
 export function TrackerClient({
   pace,
@@ -21,6 +24,7 @@ export function TrackerClient({
   const [selected, setSelected] = useState<string | null>(null);
   const [modalProposal, setModalProposal] = useState<ActionProposal | null>(null);
   const [decisions, setDecisions] = useState<DecisionRecord[]>([]);
+  const [paceView, setPaceView] = useState<PaceView>('cards');
 
   useEffect(() => {
     fetch('/api/actions/decisions')
@@ -34,15 +38,6 @@ export function TrackerClient({
     for (const d of decisions) m.set(d.proposal_id, d);
     return m;
   }, [decisions]);
-
-  function statusOf(p: ActionProposal): 'approved' | 'queued' | 'executed' | 'rejected' | null {
-    const d = decisionMap.get(p.id);
-    if (!d) return null;
-    if (d.decision === 'reject') return 'rejected';
-    if (d.executed) return 'executed';
-    if (d.queued) return 'queued';
-    return 'approved';
-  }
 
   function handleDecided(newDecision: DecisionRecord) {
     setDecisions((prev) => {
@@ -61,8 +56,8 @@ export function TrackerClient({
     ? proposals.proposals.filter((p) => p.target === selected || p.target.startsWith(`${selected}→`))
     : [];
 
-  const top5 = proposals.proposals.slice(0, 5);
   const queuedCount = decisions.filter((d) => d.queued && !d.executed).length;
+  const daysRemaining = pace.days_total - pace.days_elapsed;
 
   const sections: SectionDef[] = [
     { id: 'sec-pace', label: '페이스' },
@@ -76,47 +71,66 @@ export function TrackerClient({
       <SectionNav sections={sections} />
 
       <section id="sec-pace">
-        <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-          지점 페이스
-          <span className="text-xs text-slate-500 font-normal">카드 클릭 시 상세</span>
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {pace.branches.map((b) => (
-            <BranchPaceCard
-              key={b.branch}
-              b={b}
-              dateProgress={pace.date_progress}
-              selected={selected === b.branch}
-              onClick={() => setSelected(selected === b.branch ? null : b.branch)}
-            />
-          ))}
+        <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            지점 페이스
+            <span className="text-xs text-slate-500 font-normal">
+              {paceView === 'cards' ? '카드 클릭 시 상세' : '행 클릭 시 상세'}
+            </span>
+          </h2>
+          <div className="flex gap-1 text-xs">
+            <button
+              type="button"
+              onClick={() => setPaceView('cards')}
+              className={`px-2 py-1 rounded ${
+                paceView === 'cards'
+                  ? 'bg-brand-primary text-brand-bg font-semibold'
+                  : 'text-slate-300 hover:bg-brand-card'
+              }`}
+            >
+              카드
+            </button>
+            <button
+              type="button"
+              onClick={() => setPaceView('table')}
+              className={`px-2 py-1 rounded ${
+                paceView === 'table'
+                  ? 'bg-brand-primary text-brand-bg font-semibold'
+                  : 'text-slate-300 hover:bg-brand-card'
+              }`}
+            >
+              테이블
+            </button>
+          </div>
         </div>
+        {paceView === 'cards' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {pace.branches.map((b) => (
+              <BranchPaceCard
+                key={b.branch}
+                b={b}
+                dateProgress={pace.date_progress}
+                selected={selected === b.branch}
+                onClick={() => setSelected(selected === b.branch ? null : b.branch)}
+              />
+            ))}
+          </div>
+        ) : (
+          <BranchTableView
+            branches={pace.branches}
+            dateProgress={pace.date_progress}
+            onSelect={(b) => setSelected(b)}
+            selected={selected}
+          />
+        )}
       </section>
 
       <section id="sec-actions">
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-lg font-semibold">오늘의 액션 Top 5</h2>
-          <span className="text-xs text-slate-500">
-            총 {proposals.summary.total}건 · 긴급 {proposals.summary.high} · 권장 {proposals.summary.medium}
-            {decisions.length > 0 && ` · 결정 ${decisions.length}건`}
-          </span>
-        </div>
-        {top5.length > 0 ? (
-          <ul className="space-y-2">
-            {top5.map((p) => (
-              <ActionCard
-                key={p.id}
-                p={p}
-                decisionStatus={statusOf(p)}
-                onClick={() => setModalProposal(p)}
-              />
-            ))}
-          </ul>
-        ) : (
-          <div className="card text-sm text-slate-400 text-center py-6">
-            현재 규칙 기준으로 제안 가능한 액션이 없습니다.
-          </div>
-        )}
+        <ActionList
+          proposals={proposals.proposals}
+          decisionMap={decisionMap}
+          onClick={(p) => setModalProposal(p)}
+        />
       </section>
 
       <section id="sec-queue">
@@ -134,6 +148,7 @@ export function TrackerClient({
           branch={focused}
           proposals={focusedProposals}
           decisions={decisions}
+          daysRemaining={daysRemaining}
           onClose={() => setSelected(null)}
           onActionClick={(p) => setModalProposal(p)}
         />

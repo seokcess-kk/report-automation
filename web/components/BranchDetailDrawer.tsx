@@ -5,16 +5,27 @@ import { ActionCard } from './ActionCard';
 import { fmtMan } from '@/lib/format';
 import { DecisionRecord } from './ActionDetailModal';
 
+const TIER_COLOR: Record<string, string> = {
+  TIER1: 'bg-brand-success',
+  TIER2: 'bg-sky-500',
+  TIER3: 'bg-brand-warn',
+  TIER4: 'bg-brand-danger',
+  LOW_VOLUME: 'bg-slate-600',
+  UNCLASSIFIED: 'bg-slate-500',
+};
+
 export function BranchDetailDrawer({
   branch,
   proposals,
   decisions,
+  daysRemaining,
   onClose,
   onActionClick,
 }: {
   branch: BranchPace;
   proposals: ActionProposal[];
   decisions: DecisionRecord[];
+  daysRemaining: number;
   onClose: () => void;
   onActionClick: (p: ActionProposal) => void;
 }) {
@@ -34,6 +45,26 @@ export function BranchDetailDrawer({
   }
 
   const ctr = branch.impressions > 0 ? ((branch.clicks / branch.impressions) * 100).toFixed(2) + '%' : '-';
+
+  // 시뮬레이터: 남은 전환 / 남은 일수
+  const convRemaining = Math.max(branch.conv_target - branch.conv_so_far, 0);
+  const dailyNeeded = daysRemaining > 0 ? convRemaining / daysRemaining : 0;
+  const costNeeded = branch.cpa != null ? dailyNeeded * branch.cpa : null;
+  const budgetRemaining = Math.max(branch.budget - branch.cost_so_far, 0);
+  const budgetCanSupport = branch.cpa && branch.cpa > 0 ? budgetRemaining / branch.cpa : Infinity;
+  const simulationStatus: 'ok' | 'tight' | 'impossible' =
+    convRemaining === 0
+      ? 'ok'
+      : budgetCanSupport >= convRemaining
+      ? 'ok'
+      : budgetCanSupport >= convRemaining * 0.8
+      ? 'tight'
+      : 'impossible';
+
+  const tierDist = branch.tier_distribution || {};
+  const tierTotal = Object.values(tierDist).reduce((a, b) => a + b, 0);
+  const tierOrder = ['TIER1', 'TIER2', 'TIER3', 'TIER4', 'LOW_VOLUME', 'UNCLASSIFIED'];
+  const tierEntries = tierOrder.filter((k) => tierDist[k] > 0).map((k) => [k, tierDist[k]] as const);
 
   return (
     <div className="fixed inset-0 z-40" onClick={onClose}>
@@ -70,6 +101,68 @@ export function BranchDetailDrawer({
             <InfoBox label="클릭" value={branch.clicks.toLocaleString()} />
             <InfoBox label="CTR" value={ctr} />
           </div>
+
+          {convRemaining > 0 && (
+            <div className="border-t border-brand-border pt-3">
+              <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                목표 달성 시뮬레이터
+                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                  simulationStatus === 'ok'
+                    ? 'bg-emerald-900/50 text-brand-success'
+                    : simulationStatus === 'tight'
+                    ? 'bg-amber-900/50 text-brand-warn'
+                    : 'bg-rose-900/50 text-brand-danger'
+                }`}>
+                  {simulationStatus === 'ok' ? '달성 가능' : simulationStatus === 'tight' ? '빠듯함' : '예산 부족'}
+                </span>
+              </h3>
+              <div className="text-xs text-slate-300 space-y-1 bg-brand-bg/40 rounded p-3">
+                <div>
+                  남은 <span className="font-bold text-slate-100">{daysRemaining}일</span>간{' '}
+                  <span className="font-bold text-slate-100">{convRemaining}건</span> 전환 필요
+                </div>
+                <div>
+                  → 일평균 <span className="font-bold text-brand-primary">{dailyNeeded.toFixed(1)}건</span> 필요
+                </div>
+                {costNeeded != null && (
+                  <div className="text-slate-400">
+                    (현재 CPA 유지 시 일일 {fmtMan(costNeeded)}원 지출 예상)
+                  </div>
+                )}
+                <div className="text-slate-400 pt-1 border-t border-brand-border/50 mt-1">
+                  잔여 예산 <span className="font-mono">{fmtMan(budgetRemaining)}원</span>
+                  {branch.cpa && ` · 현재 CPA로 최대 ${Math.floor(budgetCanSupport)}건 가능`}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {tierTotal > 0 && (
+            <div className="border-t border-brand-border pt-3">
+              <h3 className="text-sm font-semibold mb-2">소재 TIER 분포 <span className="text-xs text-slate-500 font-normal">({tierTotal}개)</span></h3>
+              <div className="flex w-full h-2 rounded overflow-hidden mb-2">
+                {tierEntries.map(([tier, cnt]) => (
+                  <div
+                    key={tier}
+                    className={`${TIER_COLOR[tier] || 'bg-slate-500'}`}
+                    style={{ width: `${(cnt / tierTotal) * 100}%` }}
+                    title={`${tier}: ${cnt}개`}
+                  />
+                ))}
+              </div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+                {tierEntries.map(([tier, cnt]) => (
+                  <div key={tier} className="flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <span className={`w-2 h-2 rounded-full ${TIER_COLOR[tier] || 'bg-slate-500'}`} />
+                      <span className="text-slate-300">{tier}</span>
+                    </span>
+                    <span className="font-mono text-slate-400">{cnt}개 · {((cnt / tierTotal) * 100).toFixed(0)}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="border-t border-brand-border pt-3">
             <h3 className="text-sm font-semibold mb-2">

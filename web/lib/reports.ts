@@ -61,7 +61,7 @@ export async function listWeeklyDates(): Promise<string[]> {
 }
 
 export async function loadWeekly(date: string): Promise<WeeklyData | null> {
-  const fp = path.join(OUTPUT_DIR, 'weekly', date, `tiktok_weekly_dayt_${date}.json`);
+  const fp = path.join(OUTPUT_DIR, 'weekly', date, `tiktok_weekly_daeat_${date}.json`);
   try {
     const raw = await fs.readFile(fp, 'utf-8');
     return JSON.parse(raw);
@@ -182,7 +182,7 @@ export async function listMonthlyDates(): Promise<string[]> {
 }
 
 export async function loadMonthly(month: string): Promise<MonthlyData | null> {
-  const fp = path.join(OUTPUT_DIR, 'monthly', month, `tiktok_monthly_dayt_${month}.json`);
+  const fp = path.join(OUTPUT_DIR, 'monthly', month, `tiktok_monthly_daeat_${month}.json`);
   try {
     return JSON.parse(await fs.readFile(fp, 'utf-8'));
   } catch {

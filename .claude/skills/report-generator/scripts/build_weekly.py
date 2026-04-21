@@ -3,7 +3,7 @@
 클라이언트용 - 매주 월요일 발행
 
 레퍼런스: output/_ref/weekly_ref.html
-출력: output/weekly/YYYYMMDD/tiktok_weekly_dayt_YYYYMMDD.html
+출력: output/weekly/YYYYMMDD/tiktok_weekly_daeat_YYYYMMDD.html
 - JS 클라이언트 사이드 렌더링
 - TIER 전주 비교 + 변동 표시
 - 지점별 차트 2개 (CPA, CTR/CVR)
@@ -1078,14 +1078,14 @@ def build_weekly_html(output_dir: str, csv_path: str, target_date: str = None, c
     date_folder = this_end.strftime('%Y%m%d')
     weekly_dir = os.path.join(output_dir, "weekly", date_folder)
     os.makedirs(weekly_dir, exist_ok=True)
-    filename = f"tiktok_weekly_dayt_{date_folder}.html"
+    filename = f"tiktok_weekly_daeat_{date_folder}.html"
     output_path = os.path.join(weekly_dir, filename)
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
     # UI용 구조화 JSON 동시 출력
-    json_path = os.path.join(weekly_dir, f"tiktok_weekly_dayt_{date_folder}.json")
+    json_path = os.path.join(weekly_dir, f"tiktok_weekly_daeat_{date_folder}.json")
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, default=str, indent=2)
 

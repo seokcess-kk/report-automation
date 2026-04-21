@@ -3,8 +3,8 @@
 | 리포트 | 파일 | 발행 주기 | 수신자 |
 |--------|------|----------|--------|
 | 데일리 | `tiktok_daily_YYYYMMDD.md` | 매일 아침 | 내부 (쏭) |
-| 위클리 | `tiktok_weekly_dayt_YYYYMMDD.html` | 매주 월요일 | 클라이언트 |
-| 먼슬리 | `tiktok_monthly_dayt_YYYYMM.html` | 익월 1~3일 | 클라이언트 + 의사결정자 |
+| 위클리 | `tiktok_weekly_daeat_YYYYMMDD.html` | 매주 월요일 | 클라이언트 |
+| 먼슬리 | `tiktok_monthly_daeat_YYYYMM.html` | 익월 1~3일 | 클라이언트 + 의사결정자 |
 
 ---
 

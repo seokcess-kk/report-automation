@@ -33,7 +33,7 @@ function LoginForm() {
     <form onSubmit={submit} className="bg-surface border border-border-strong rounded-xl shadow-card w-full max-w-sm p-6 space-y-4 animate-fade-in">
       <div>
         <div className="flex items-baseline gap-1.5 mb-2">
-          <span className="text-2xl font-bold text-accent tracking-tight">dayt</span>
+          <span className="text-2xl font-bold text-accent tracking-tight">daeat</span>
           <span className="text-subtle text-xs font-medium uppercase tracking-widest">report</span>
         </div>
         <p className="text-sm text-muted">접근 비밀번호를 입력하세요.</p>

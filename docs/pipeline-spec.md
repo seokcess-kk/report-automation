@@ -90,7 +90,7 @@ report-generator 스킬:
   - PDF (2페이지) -> output/data/YYYYMMDD/tiktok_summary_YYYYMMDD.pdf
   - HTML 3종:
     - 데일리 -> output/daily/YYYYMMDD/tiktok_daily_YYYYMMDD.md
-    - 위클리 -> output/weekly/YYYYMMDD/tiktok_weekly_dayt_YYYYMMDD.html
-    - 먼슬리 -> output/monthly/YYYYMM/tiktok_monthly_dayt_YYYYMM.html
+    - 위클리 -> output/weekly/YYYYMMDD/tiktok_weekly_daeat_YYYYMMDD.html
+    - 먼슬리 -> output/monthly/YYYYMM/tiktok_monthly_daeat_YYYYMM.html
   - improvement_suggestions.md -> output/data/YYYYMMDD/
 ```

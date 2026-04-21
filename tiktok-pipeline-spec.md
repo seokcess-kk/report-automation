@@ -32,8 +32,8 @@ project/
 │   ├── weekly_data.json          ← 위클리 파이프라인 출력 JSON
 │   └── daily_snapshot.json       ← 데일리용 전일 스냅샷 (누적)
 └── reports/
-    ├── tiktok_monthly_dayt_YYYYMM.html
-    ├── tiktok_weekly_dayt_YYYYMMDD.html
+    ├── tiktok_monthly_daeat_YYYYMM.html
+    ├── tiktok_weekly_daeat_YYYYMMDD.html
     └── tiktok_daily_YYYYMMDD.md
 ```
 
@@ -393,8 +393,8 @@ const tt = { backgroundColor: '#11141c', titleColor: '#dde4f0', bodyColor: '#7a8
 ## 파일 명명 규칙
 
 ```
-tiktok_monthly_dayt_YYYYMM.html      # 먼슬리 (예: tiktok_monthly_dayt_202602.html)
-tiktok_weekly_dayt_YYYYMMDD.html     # 위클리 (발행일 기준, 예: tiktok_weekly_dayt_20260302.html)
+tiktok_monthly_daeat_YYYYMM.html      # 먼슬리 (예: tiktok_monthly_daeat_202602.html)
+tiktok_weekly_daeat_YYYYMMDD.html     # 위클리 (발행일 기준, 예: tiktok_weekly_daeat_20260302.html)
 tiktok_daily_YYYYMMDD.md             # 데일리 (전일 기준, 예: tiktok_daily_20260302.md)
 ```
 

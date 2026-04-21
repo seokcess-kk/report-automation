@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="sticky top-0 z-30 bg-bg/80 backdrop-blur-md border-b border-border">
           <nav className="max-w-7xl mx-auto px-4 h-12 flex items-center gap-1 text-sm">
             <Link href="/" className="font-bold tracking-tight text-fg mr-4 flex items-baseline gap-1.5">
-              <span className="text-accent">dayt</span>
+              <span className="text-accent">daeat</span>
               <span className="text-subtle text-xs font-medium uppercase tracking-wider">report</span>
             </Link>
             <NavLink href="/tracker">목표</NavLink>

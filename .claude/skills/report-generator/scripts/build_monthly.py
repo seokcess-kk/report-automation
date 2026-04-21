@@ -3,7 +3,7 @@
 클라이언트 + 의사결정자용 - 익월 1~3일 발행
 
 입력: output/data/YYYYMMDD/ (파싱된 parquet 파일들)
-출력: output/monthly/YYYYMM/tiktok_monthly_dayt_YYYYMM.html
+출력: output/monthly/YYYYMM/tiktok_monthly_daeat_YYYYMM.html
 레퍼런스: output/_ref/monthly_ref.html
 
 탭 구조: 요약 | 소재 TIER | 지점 분석 | 나이대 | 소재 수명 | 일별 트렌드 | 다음 달 전략
@@ -904,12 +904,12 @@ def build_monthly(data_dir: str, target_month: str = None):
     monthly_dir = project_root / "output" / "monthly" / month
     monthly_dir.mkdir(parents=True, exist_ok=True)
 
-    output_path = monthly_dir / f"tiktok_monthly_dayt_{month}.html"
+    output_path = monthly_dir / f"tiktok_monthly_daeat_{month}.html"
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
 
     # UI용 구조화 JSON 동시 출력
-    json_path = monthly_dir / f"tiktok_monthly_dayt_{month}.json"
+    json_path = monthly_dir / f"tiktok_monthly_daeat_{month}.json"
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(D, f, ensure_ascii=False, default=str, indent=2)
 

@@ -1,5 +1,11 @@
 import { BranchPaceData } from '@/lib/reports';
 import { fmtMan } from '@/lib/format';
+import { InfoTip } from './InfoTip';
+
+const STATUS_EXPLAIN = `신호등 기준
+🟢 정상: 전환 페이스 ≥ 일자 진행률, 예산 여유
+🟡 주의: 전환 5%p 지연 또는 예산 10%p 초과
+🔴 경고: 전환 15%p+ 지연 또는 예산 20%p+ 초과`;
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
   ok: { label: '정상', color: 'text-brand-success', bg: 'bg-emerald-900/30' },
@@ -20,6 +26,9 @@ export function PaceHeader({ pace }: { pace: BranchPaceData }) {
             목표 달성 트래커
             <span className={`ml-3 text-sm font-medium px-2 py-0.5 rounded ${meta.color} ${meta.bg}`}>
               {meta.label}
+            </span>
+            <span className="ml-2 align-middle">
+              <InfoTip text={STATUS_EXPLAIN} />
             </span>
           </h1>
         </div>
@@ -48,6 +57,7 @@ export function PaceHeader({ pace }: { pace: BranchPaceData }) {
           pct={overall.proj_pct}
           target={100}
           sub={`${overall.proj_conv}건 예상 (목표 대비 ${overall.proj_pct}%)`}
+          tip="현재 일평균을 남은 일수에 곱한 단순 외삽 예측. 월초엔 노이즈 크므로 참고용."
         />
       </div>
     </section>
@@ -60,12 +70,14 @@ function PaceBar({
   target,
   sub,
   invert = false,
+  tip,
 }: {
   label: string;
   pct: number;
   target: number;
   sub: string;
   invert?: boolean;
+  tip?: string;
 }) {
   const gap = pct - target;
   const good = invert ? gap <= 5 : gap >= -5;
@@ -75,7 +87,10 @@ function PaceBar({
   return (
     <div>
       <div className="flex items-baseline justify-between text-sm mb-1">
-        <span className="text-slate-300">{label}</span>
+        <span className="text-slate-300 flex items-center gap-1">
+          {label}
+          {tip && <InfoTip text={tip} />}
+        </span>
         <span className="font-bold text-slate-100">{pct.toFixed(1)}%</span>
       </div>
       <div className="h-2 bg-brand-bg rounded overflow-hidden relative">

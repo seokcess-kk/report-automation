@@ -188,19 +188,11 @@ export function ActionDetailModal({
           </button>
           <button
             type="button"
-            onClick={() => submit('approve', false)}
-            disabled={disabled}
-            className="px-3 py-1.5 text-sm rounded border border-brand-success text-brand-success hover:bg-emerald-900/30 disabled:opacity-50"
-          >
-            승인만
-          </button>
-          <button
-            type="button"
             onClick={() => submit('approve', true)}
             disabled={disabled}
             className="px-3 py-1.5 text-sm rounded bg-brand-primary text-brand-bg font-semibold hover:opacity-90 disabled:opacity-50"
           >
-            {submitting ? '저장 중…' : '승인 + 대기열 추가'}
+            {submitting ? '저장 중…' : '실행 예정'}
           </button>
         </div>
         {existingDecision?.executed && (

@@ -67,7 +67,6 @@ export function ExecutionQueue({
                       : 'bg-rose-900/50 text-brand-danger'
                   }`}>
                     {d.execution_result?.status === 'success' ? '✅' : '❌'}
-                    {d.execution_result?.dry_run && ' DRY'}
                   </span>
                   <span className="text-slate-500">{new Date(d.executed_at || '').toLocaleString('ko-KR')}</span>
                   <span className="truncate">{d.proposal_snapshot?.title || d.proposal_id}</span>

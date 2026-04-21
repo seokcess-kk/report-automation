@@ -39,7 +39,7 @@ export function ActionCard({
   const hasDelta = rec?.current != null && rec?.proposed != null;
 
   return (
-    <li className={`card border-l-4 ${meta.border}`}>
+    <li className={`card border-l-4 ${meta.border}`} title={`#${p.id}`}>
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -47,7 +47,6 @@ export function ActionCard({
               {meta.label}
             </span>
             <span className="text-[10px] text-slate-500 uppercase tracking-wide">{actionLabel}</span>
-            <span className="text-[10px] text-slate-500">#{p.id}</span>
             {decisionStatus === 'approved' && (
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-900/50 text-brand-success">
                 ✓ 승인

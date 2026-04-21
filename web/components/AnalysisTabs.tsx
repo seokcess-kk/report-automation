@@ -3,6 +3,12 @@ import { useState } from 'react';
 import { SegmentAnalysis, SegmentRow } from '@/lib/reports';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Cell, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { fmtMan } from '@/lib/format';
+import { InfoTip } from './InfoTip';
+
+const EFF_SCORE_EXPLAIN = `효율점수 = 전환비중 / 비용비중
+1.0 = 비용만큼 전환 (비례)
+1.1+ = 고효율 (비중 대비 전환 높음)
+0.7 미만 = 비효율`;
 
 type TabKey = 'weekday' | 'hour' | 'creative_type';
 
@@ -29,7 +35,10 @@ export function AnalysisTabs({ segments }: { segments: SegmentAnalysis }) {
   return (
     <section className="card">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">세그먼트 분석</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2">
+          세그먼트 분석
+          <InfoTip text={EFF_SCORE_EXPLAIN} />
+        </h2>
         <div className="flex gap-1">
           {TABS.map((t) => (
             <button
@@ -123,9 +132,6 @@ export function AnalysisTabs({ segments }: { segments: SegmentAnalysis }) {
               </tbody>
             </table>
           </div>
-          <p className="text-[10px] text-slate-500 mt-3">
-            효율점수 = 전환비중 / 비용비중. 1.0 = 비례, 1.1+ = 고효율(녹색), 0.7 미만 = 비효율(빨강)
-          </p>
         </>
       )}
     </section>

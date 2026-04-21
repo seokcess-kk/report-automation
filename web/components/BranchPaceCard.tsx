@@ -30,13 +30,10 @@ export function BranchPaceCard({
       onClick={onClick}
       className={`card text-left w-full transition-all ring-2 ${selected ? 'ring-brand-primary' : meta.ring} hover:ring-brand-primary`}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className={`w-2.5 h-2.5 rounded-full ${meta.dot}`} />
-          <span className="font-bold text-lg">{b.branch}</span>
-          <span className="text-xs text-slate-500">{meta.label}</span>
-        </div>
-        <span className="text-xs text-slate-500">{b.sparkline.length}일</span>
+      <div className="flex items-center gap-2 mb-3">
+        <span className={`w-2.5 h-2.5 rounded-full ${meta.dot}`} />
+        <span className="font-bold text-lg">{b.branch}</span>
+        <span className="text-xs text-slate-500">{meta.label}</span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 text-sm mb-3">

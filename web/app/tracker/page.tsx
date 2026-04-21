@@ -1,7 +1,6 @@
 import { loadLatestTracker } from '@/lib/reports';
 import { PaceHeader } from '@/components/PaceHeader';
 import { TrackerClient } from '@/components/TrackerClient';
-import { AnalysisTabs } from '@/components/AnalysisTabs';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +23,7 @@ export default async function TrackerPage() {
   return (
     <div className="space-y-6">
       <PaceHeader pace={pace} />
-      <TrackerClient pace={pace} proposals={proposals} />
-      {segments && <AnalysisTabs segments={segments} />}
+      <TrackerClient pace={pace} proposals={proposals} segments={segments} />
     </div>
   );
 }

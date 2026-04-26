@@ -1,113 +1,4 @@
 {
-  "2026-03-26": {
-    "daily": {
-      "cost": 503077,
-      "conv": 17,
-      "cpa": 29592,
-      "ctr": 0.67,
-      "cvr": 6.64
-    },
-    "cumulative": {
-      "cost": 13378474,
-      "conv": 460,
-      "cpa": 29083,
-      "ctr": 0.49,
-      "cvr": 7.04
-    },
-    "branch": {
-      "서울": {
-        "daily": {
-          "cost": 59477,
-          "conv": 3,
-          "cvr": 9.09
-        },
-        "cumulative": {
-          "cost": 1700299,
-          "conv": 102,
-          "cpa": 16669,
-          "cvr": 10.42
-        }
-      },
-      "부평": {
-        "daily": {
-          "cost": 95384,
-          "conv": 3,
-          "cvr": 6.25
-        },
-        "cumulative": {
-          "cost": 2533982,
-          "conv": 87,
-          "cpa": 29126,
-          "cvr": 6.5
-        }
-      },
-      "수원": {
-        "daily": {
-          "cost": 98405,
-          "conv": 3,
-          "cvr": 6.82
-        },
-        "cumulative": {
-          "cost": 2506240,
-          "conv": 48,
-          "cpa": 52213,
-          "cvr": 5.23
-        }
-      },
-      "일산": {
-        "daily": {
-          "cost": 30614,
-          "conv": 1,
-          "cvr": 7.14
-        },
-        "cumulative": {
-          "cost": 837220,
-          "conv": 50,
-          "cpa": 16744,
-          "cvr": 9.49
-        }
-      },
-      "대구": {
-        "daily": {
-          "cost": 88850,
-          "conv": 3,
-          "cvr": 5.26
-        },
-        "cumulative": {
-          "cost": 2466214,
-          "conv": 97,
-          "cpa": 25424,
-          "cvr": 7.81
-        }
-      },
-      "창원": {
-        "daily": {
-          "cost": 57263,
-          "conv": 2,
-          "cvr": 5.88
-        },
-        "cumulative": {
-          "cost": 1659238,
-          "conv": 35,
-          "cpa": 47406,
-          "cvr": 4.56
-        }
-      },
-      "천안": {
-        "daily": {
-          "cost": 73084,
-          "conv": 2,
-          "cvr": 7.69
-        },
-        "cumulative": {
-          "cost": 1675281,
-          "conv": 41,
-          "cpa": 40860,
-          "cvr": 5.42
-        }
-      }
-    }
-  },
   "2026-03-30": {
     "daily": {
       "cost": 547094,
@@ -2017,6 +1908,128 @@
           "conv": 59,
           "cpa": 24976,
           "cvr": 7.63
+        }
+      }
+    }
+  },
+  "2026-04-26": {
+    "daily": {
+      "cost": 414107,
+      "conv": 12,
+      "cpa": 34508,
+      "ctr": 0.81,
+      "cvr": 5.69
+    },
+    "cumulative": {
+      "cost": 17330438,
+      "conv": 594,
+      "cpa": 29175,
+      "ctr": 0.57,
+      "cvr": 6.42
+    },
+    "branch": {
+      "서울": {
+        "daily": {
+          "cost": 32044,
+          "conv": 0,
+          "cvr": 0.0
+        },
+        "cumulative": {
+          "cost": 1621482,
+          "conv": 85,
+          "cpa": 19076,
+          "cvr": 7.64
+        }
+      },
+      "부평": {
+        "daily": {
+          "cost": 90978,
+          "conv": 2,
+          "cvr": 4.08
+        },
+        "cumulative": {
+          "cost": 2989951,
+          "conv": 108,
+          "cpa": 27684,
+          "cvr": 7.02
+        }
+      },
+      "수원": {
+        "daily": {
+          "cost": 66389,
+          "conv": 2,
+          "cvr": 7.41
+        },
+        "cumulative": {
+          "cost": 3249416,
+          "conv": 56,
+          "cpa": 58025,
+          "cvr": 3.83
+        }
+      },
+      "일산": {
+        "daily": {
+          "cost": 35855,
+          "conv": 1,
+          "cvr": 4.0
+        },
+        "cumulative": {
+          "cost": 1631621,
+          "conv": 80,
+          "cpa": 20395,
+          "cvr": 7.75
+        }
+      },
+      "대구": {
+        "daily": {
+          "cost": 48859,
+          "conv": 1,
+          "cvr": 3.45
+        },
+        "cumulative": {
+          "cost": 2437621,
+          "conv": 108,
+          "cpa": 22570,
+          "cvr": 8.05
+        }
+      },
+      "창원": {
+        "daily": {
+          "cost": 73158,
+          "conv": 2,
+          "cvr": 5.71
+        },
+        "cumulative": {
+          "cost": 2208602,
+          "conv": 53,
+          "cpa": 41671,
+          "cvr": 4.98
+        }
+      },
+      "천안": {
+        "daily": {
+          "cost": 35470,
+          "conv": 4,
+          "cvr": 25.0
+        },
+        "cumulative": {
+          "cost": 1625736,
+          "conv": 44,
+          "cpa": 36948,
+          "cvr": 4.93
+        }
+      },
+      "대전": {
+        "daily": {
+          "cost": 31354,
+          "conv": 0,
+          "cvr": 0.0
+        },
+        "cumulative": {
+          "cost": 1566009,
+          "conv": 60,
+          "cpa": 26100,
+          "cvr": 7.38
         }
       }
     }

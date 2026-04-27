@@ -1,0 +1,269 @@
+{
+  "updated": "2026-04-22 09:44:14",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "high",
+      "scope": "branch",
+      "target": "수원",
+      "action_type": "creative_review",
+      "title": "수원 소재 전면 재검토 권고",
+      "reason": "전환 21.4% vs 일자진행 70.0% (-49%p), CPA 59,122원 (목표 24,397원 대비 242%) — 예산/소재 조정만으로 회복 어려움",
+      "recommended_value": {
+        "action": "review_all_creatives",
+        "branch": "수원"
+      },
+      "evidence": {
+        "conv_pct": 21.4,
+        "date_progress": 70.0,
+        "cpa": 59122,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "high",
+      "scope": "branch",
+      "target": "창원",
+      "action_type": "creative_review",
+      "title": "창원 소재 전면 재검토 권고",
+      "reason": "전환 35.0% vs 일자진행 70.0% (-35%p), CPA 41,413원 (목표 24,397원 대비 170%) — 예산/소재 조정만으로 회복 어려움",
+      "recommended_value": {
+        "action": "review_all_creatives",
+        "branch": "창원"
+      },
+      "evidence": {
+        "conv_pct": 35.0,
+        "date_progress": 70.0,
+        "cpa": 41413,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p003",
+      "priority": "high",
+      "scope": "branch",
+      "target": "천안",
+      "action_type": "creative_review",
+      "title": "천안 소재 전면 재검토 권고",
+      "reason": "전환 22.7% vs 일자진행 70.0% (-47%p), CPA 37,190원 (목표 24,397원 대비 152%) — 예산/소재 조정만으로 회복 어려움",
+      "recommended_value": {
+        "action": "review_all_creatives",
+        "branch": "천안"
+      },
+      "evidence": {
+        "conv_pct": 22.7,
+        "date_progress": 70.0,
+        "cpa": 37190,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p004",
+      "priority": "high",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "pause_creative",
+      "title": "[신규] 중단 검토 (TIER4 69일 지속)",
+      "reason": "CPA 43,434원, 전환 12건, 비용 521,207원",
+      "recommended_value": {
+        "action": "disable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "TIER": "TIER4",
+        "집행일수": 69,
+        "CPA": 43434
+      }
+    },
+    {
+      "id": "p005",
+      "priority": "high",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "pause_creative",
+      "title": "[신규] 중단 검토 (TIER4 29일 지속)",
+      "reason": "CPA 45,778원, 전환 9건, 비용 411,998원",
+      "recommended_value": {
+        "action": "disable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "TIER": "TIER4",
+        "집행일수": 29,
+        "CPA": 45778
+      }
+    },
+    {
+      "id": "p006",
+      "priority": "high",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "pause_creative",
+      "title": "[재가공] 중단 검토 (TIER4 28일 지속)",
+      "reason": "CPA 46,696원, 전환 7건, 비용 326,872원",
+      "recommended_value": {
+        "action": "disable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "TIER": "TIER4",
+        "집행일수": 28,
+        "CPA": 46696
+      }
+    },
+    {
+      "id": "p007",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "대전→일산",
+      "action_type": "budget_reallocate",
+      "title": "예산 재분배: 대전 → 일산 (200,000원)",
+      "reason": "대전 여유(전환 65.0%, 예산 57.7%) → 일산 부족(전환 39.3%, 일자진행 70.0%)",
+      "recommended_value": {
+        "from": "대전",
+        "to": "일산",
+        "amount": 200000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "src_status": "ok",
+        "dst_status": "danger",
+        "dst_conv_gap": -30.700000000000003
+      }
+    },
+    {
+      "id": "p008",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 15,844원, 전환 16건 (목표 24,397원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 15844,
+        "off_conv": 16,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p009",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,462원, 전환 15건 (목표 24,397원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17462,
+        "off_conv": 15,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p010",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,923원, 전환 65건 (목표 24,397원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17923,
+        "off_conv": 65,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p011",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 20,364원, 전환 14건 (목표 24,397원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 20364,
+        "off_conv": 14,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p012",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 21,585원, 전환 96건 (목표 24,397원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 21585,
+        "off_conv": 96,
+        "target_cpa": 24397
+      }
+    },
+    {
+      "id": "p013",
+      "priority": "medium",
+      "scope": "hour",
+      "target": "7시",
+      "action_type": "dayparting",
+      "title": "07시 시간대 송출 축소 검토",
+      "reason": "CPA 49,984원 (평균 28,490원의 1.8배), 비용비중 5.8%",
+      "recommended_value": {
+        "action": "reduce_hour_dayparting",
+        "hour": 7
+      },
+      "evidence": {
+        "hour_cpa": 49984,
+        "avg_cpa": 28490,
+        "cost_share": 5.8
+      }
+    },
+    {
+      "id": "p014",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "토",
+      "action_type": "weekday_boost",
+      "title": "토요일 예산 가중 검토",
+      "reason": "토요일 효율점수 1.18 (편차 0.31) — CPA 25,072원, 전환비중 16.1%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "토"
+      },
+      "evidence": {
+        "weekday": "토",
+        "eff_score": 1.18,
+        "variance": 0.31
+      }
+    }
+  ],
+  "summary": {
+    "total": 14,
+    "high": 6,
+    "medium": 8,
+    "low": 0
+  }
+}

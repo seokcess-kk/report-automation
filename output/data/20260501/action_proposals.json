@@ -1,0 +1,156 @@
+{
+  "updated": "2026-05-01 02:35:04",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "high",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "pause_creative",
+      "title": "[신규] 중단 검토 (TIER4 79일 지속)",
+      "reason": "CPA 43,712원, 전환 13건, 비용 568,252원",
+      "recommended_value": {
+        "action": "disable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "TIER": "TIER4",
+        "집행일수": 79,
+        "CPA": 43712
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "high",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "pause_creative",
+      "title": "[재가공] 중단 검토 (TIER4 21일 지속)",
+      "reason": "CPA 40,354원, 전환 3건, 비용 121,062원",
+      "recommended_value": {
+        "action": "disable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "TIER": "TIER4",
+        "집행일수": 21,
+        "CPA": 40354
+      }
+    },
+    {
+      "id": "p003",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,462원, 전환 15건 (목표 28,485원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17462,
+        "off_conv": 15,
+        "target_cpa": 28485
+      }
+    },
+    {
+      "id": "p004",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,923원, 전환 65건 (목표 28,485원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17923,
+        "off_conv": 65,
+        "target_cpa": 28485
+      }
+    },
+    {
+      "id": "p005",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 20,364원, 전환 14건 (목표 28,485원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 20364,
+        "off_conv": 14,
+        "target_cpa": 28485
+      }
+    },
+    {
+      "id": "p006",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 21,108원, 전환 17건 (목표 28,485원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 21108,
+        "off_conv": 17,
+        "target_cpa": 28485
+      }
+    },
+    {
+      "id": "p007",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 21,585원, 전환 96건 (목표 28,485원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 21585,
+        "off_conv": 96,
+        "target_cpa": 28485
+      }
+    },
+    {
+      "id": "p008",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "수",
+      "action_type": "weekday_boost",
+      "title": "수요일 예산 가중 검토",
+      "reason": "수요일 효율점수 1.15 (편차 0.31) — CPA 26,383원, 전환비중 17.2%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "수"
+      },
+      "evidence": {
+        "weekday": "수",
+        "eff_score": 1.15,
+        "variance": 0.31
+      }
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "high": 2,
+    "medium": 6,
+    "low": 0
+  }
+}

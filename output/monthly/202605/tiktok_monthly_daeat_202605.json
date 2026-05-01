@@ -1,0 +1,1696 @@
+{
+  "period": "2026.05.01 ~ 05.01",
+  "kpi": {
+    "cost": 170912,
+    "conv": 6,
+    "cpa": 28485,
+    "ctr": 0.81,
+    "cvr": 5.41,
+    "lpv": 100.0
+  },
+  "target_cpa": 33183,
+  "monthly_target_conv": 1131,
+  "budget": {
+    "서울": 2000000,
+    "부평": 4000000,
+    "수원": 4000000,
+    "일산": 2000000,
+    "대구": 3000000,
+    "창원": 3000000,
+    "천안": 2000000,
+    "대전": 2000000
+  },
+  "creative": [
+    {
+      "creative_name": "주사형비만치료제 10년은",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 1,
+      "지점목록": [
+        "천안"
+      ],
+      "소재유형": "의료진정보",
+      "훅유형": "신규",
+      "ad_name_sample": "주사형비만치료제 10년은",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER4"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)",
+      "총비용": 10393,
+      "총전환": 0,
+      "총클릭": 3,
+      "총노출": 1064,
+      "총랜딩": 3,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "소재유형": "인플방문후기",
+      "훅유형": "신규",
+      "ad_name_sample": "주사형비만치료제(the.hyunniverse)",
+      "CPA": null,
+      "CTR": 0.28,
+      "CVR": 0.0,
+      "LPV": 100.0,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "4050나잇살 이유는 여기에",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 0,
+      "지점목록": [],
+      "소재유형": "의료진정보",
+      "훅유형": "재가공",
+      "ad_name_sample": "4050나잇살 이유는 여기에",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER4"
+    },
+    {
+      "creative_name": "맘껏먹는 다이어트 한달후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 1,
+      "지점목록": [
+        "일산"
+      ],
+      "소재유형": "인플방문후기",
+      "훅유형": "재가공",
+      "ad_name_sample": "맘껏먹는 다이어트 한달후기",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 0,
+      "지점목록": [],
+      "소재유형": "인플방문후기",
+      "훅유형": "재가공",
+      "ad_name_sample": "먹고싶은거다먹는(수원잇츠)",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 0,
+      "지점목록": [],
+      "소재유형": "인플방문후기",
+      "훅유형": "재가공",
+      "ad_name_sample": "연예인다이어트(플랜비)",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER3"
+    },
+    {
+      "creative_name": "50대다이어트대사",
+      "총비용": 174,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 36,
+      "총랜딩": 0,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "수원",
+        "일산",
+        "대구",
+        "창원"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "50대다이어트대사",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER3"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면",
+      "총비용": 102650,
+      "총전환": 5,
+      "총클릭": 65,
+      "총노출": 4341,
+      "총랜딩": 63,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "다이어트의적 밥빵면",
+      "CPA": 20530,
+      "CTR": 1.5,
+      "CVR": 7.69,
+      "LPV": 96.9,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "비만주사가놓친것",
+      "총비용": 31,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 9,
+      "총랜딩": 0,
+      "집행일수": 1,
+      "지점목록": [
+        "서울"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "비만주사가놓친것",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 1,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "비만주사는입만막을뿐",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 2,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "식욕억제주사실패 마지막",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "운동안해도되는",
+      "총비용": 1124,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 72,
+      "총랜딩": 1,
+      "집행일수": 1,
+      "지점목록": [
+        "부평",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "운동안해도되는",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "TIER3"
+    },
+    {
+      "creative_name": "의사가권하지않는4050",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 0,
+      "지점목록": [],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "의사가권하지않는4050",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "총비용": 23543,
+      "총전환": 1,
+      "총클릭": 13,
+      "총노출": 1460,
+      "총랜딩": 13,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "CPA": 23543,
+      "CTR": 0.89,
+      "CVR": 7.69,
+      "LPV": 100.0,
+      "TIER": "TIER1"
+    }
+  ],
+  "creative_new": [
+    {
+      "creative_name": "굶지않는다이어트(창원잇츠)",
+      "총비용": 1282,
+      "총전환": 0,
+      "총클릭": 2,
+      "총노출": 456,
+      "총랜딩": 2,
+      "집행일수": 1,
+      "지점목록": [
+        "창원"
+      ],
+      "소재유형": "인플방문후기",
+      "훅유형": "재가공",
+      "ad_name_sample": "굶지않는다이어트(창원잇츠)",
+      "CPA": null,
+      "CTR": 0.44,
+      "CVR": 0.0,
+      "LPV": 100.0,
+      "TIER": "UNCLASSIFIED"
+    },
+    {
+      "creative_name": "10kg성공공식",
+      "총비용": 20500,
+      "총전환": 0,
+      "총클릭": 16,
+      "총노출": 3169,
+      "총랜딩": 13,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "10kg성공공식",
+      "CPA": null,
+      "CTR": 0.5,
+      "CVR": 0.0,
+      "LPV": 81.2,
+      "TIER": "UNCLASSIFIED"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는",
+      "총비용": 11215,
+      "총전환": 0,
+      "총클릭": 12,
+      "총노출": 3176,
+      "총랜딩": 13,
+      "집행일수": 1,
+      "지점목록": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "훅유형": "재가공",
+      "ad_name_sample": "식욕억제주사이길수없는",
+      "CPA": null,
+      "CTR": 0.38,
+      "CVR": 0.0,
+      "LPV": 108.3,
+      "TIER": "UNCLASSIFIED"
+    }
+  ],
+  "branch": [
+    {
+      "branch": "서울",
+      "총비용": 22538,
+      "총전환": 2,
+      "총클릭": 23,
+      "총노출": 1549,
+      "총랜딩": 23,
+      "CPA": 11269,
+      "CTR": 1.48,
+      "CVR": 8.7,
+      "LPV": 100.0,
+      "비용비중": 13.2,
+      "전환비중": 33.3,
+      "효율점수": 2.52
+    },
+    {
+      "branch": "부평",
+      "총비용": 20702,
+      "총전환": 0,
+      "총클릭": 12,
+      "총노출": 1353,
+      "총랜딩": 11,
+      "CPA": null,
+      "CTR": 0.89,
+      "CVR": 0.0,
+      "LPV": 91.7,
+      "비용비중": 12.1,
+      "전환비중": 0.0,
+      "효율점수": 0.0
+    },
+    {
+      "branch": "수원",
+      "총비용": 20957,
+      "총전환": 2,
+      "총클릭": 12,
+      "총노출": 2410,
+      "총랜딩": 14,
+      "CPA": 10478,
+      "CTR": 0.5,
+      "CVR": 16.67,
+      "LPV": 116.7,
+      "비용비중": 12.3,
+      "전환비중": 33.3,
+      "효율점수": 2.71
+    },
+    {
+      "branch": "일산",
+      "총비용": 22450,
+      "총전환": 1,
+      "총클릭": 14,
+      "총노출": 1484,
+      "총랜딩": 14,
+      "CPA": 22450,
+      "CTR": 0.94,
+      "CVR": 7.14,
+      "LPV": 100.0,
+      "비용비중": 13.1,
+      "전환비중": 16.7,
+      "효율점수": 1.27
+    },
+    {
+      "branch": "대구",
+      "총비용": 21222,
+      "총전환": 0,
+      "총클릭": 14,
+      "총노출": 1945,
+      "총랜딩": 8,
+      "CPA": null,
+      "CTR": 0.72,
+      "CVR": 0.0,
+      "LPV": 57.1,
+      "비용비중": 12.4,
+      "전환비중": 0.0,
+      "효율점수": 0.0
+    },
+    {
+      "branch": "창원",
+      "총비용": 21758,
+      "총전환": 0,
+      "총클릭": 17,
+      "총노출": 1940,
+      "총랜딩": 21,
+      "CPA": null,
+      "CTR": 0.88,
+      "CVR": 0.0,
+      "LPV": 123.5,
+      "비용비중": 12.7,
+      "전환비중": 0.0,
+      "효율점수": 0.0
+    },
+    {
+      "branch": "천안",
+      "총비용": 21339,
+      "총전환": 1,
+      "총클릭": 12,
+      "총노출": 1394,
+      "총랜딩": 14,
+      "CPA": 21339,
+      "CTR": 0.86,
+      "CVR": 8.33,
+      "LPV": 116.7,
+      "비용비중": 12.5,
+      "전환비중": 16.7,
+      "효율점수": 1.34
+    },
+    {
+      "branch": "대전",
+      "총비용": 19946,
+      "총전환": 0,
+      "총클릭": 7,
+      "총노출": 1708,
+      "총랜딩": 6,
+      "CPA": null,
+      "CTR": 0.41,
+      "CVR": 0.0,
+      "LPV": 85.7,
+      "비용비중": 11.7,
+      "전환비중": 0.0,
+      "효율점수": 0.0
+    }
+  ],
+  "by_branch": {
+    "서울": [
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": 7953,
+        "CVR": 11.11,
+        "CTR": 3.05,
+        "conv": 2,
+        "cost": 15906,
+        "clicks": 18,
+        "impr": 590,
+        "tier": "TIER1",
+        "is_best": true
+      },
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.36,
+        "conv": 0,
+        "cost": 972,
+        "clicks": 1,
+        "impr": 278,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "50대다이어트대사",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사가놓친것",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 31,
+        "clicks": 0,
+        "impr": 9,
+        "tier": "LOW_VOLUME",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사는입만막을뿐",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.48,
+        "conv": 0,
+        "cost": 2226,
+        "clicks": 2,
+        "impr": 421,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.65,
+        "conv": 0,
+        "cost": 2579,
+        "clicks": 1,
+        "impr": 153,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.02,
+        "conv": 0,
+        "cost": 824,
+        "clicks": 1,
+        "impr": 98,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "부평": [
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 1054,
+        "clicks": 0,
+        "impr": 132,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.66,
+        "conv": 0,
+        "cost": 12249,
+        "clicks": 9,
+        "impr": 542,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사는입만막을뿐",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 1273,
+        "clicks": 0,
+        "impr": 246,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "운동안해도되는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 570,
+        "clicks": 0,
+        "impr": 29,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.87,
+        "conv": 0,
+        "cost": 5195,
+        "clicks": 3,
+        "impr": 344,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 361,
+        "clicks": 0,
+        "impr": 60,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "수원": [
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": 6912,
+        "CVR": 33.33,
+        "CTR": 0.95,
+        "conv": 2,
+        "cost": 13825,
+        "clicks": 6,
+        "impr": 632,
+        "tier": "TIER1",
+        "is_best": true
+      },
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.38,
+        "conv": 0,
+        "cost": 3156,
+        "clicks": 3,
+        "impr": 782,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "50대다이어트대사",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 170,
+        "clicks": 0,
+        "impr": 32,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사는입만막을뿐",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.4,
+        "conv": 0,
+        "cost": 1754,
+        "clicks": 3,
+        "impr": 750,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "운동안해도되는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 2052,
+        "clicks": 0,
+        "impr": 214,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "일산": [
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": 13864,
+        "CVR": 14.29,
+        "CTR": 1.2,
+        "conv": 1,
+        "cost": 13864,
+        "clicks": 7,
+        "impr": 584,
+        "tier": "TIER1",
+        "is_best": true
+      },
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.97,
+        "conv": 0,
+        "cost": 5473,
+        "clicks": 5,
+        "impr": 513,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "50대다이어트대사",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 4,
+        "clicks": 0,
+        "impr": 4,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "맘껏먹는 다이어트 한달후기",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사는입만막을뿐",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.37,
+        "conv": 0,
+        "cost": 1612,
+        "clicks": 1,
+        "impr": 267,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "운동안해도되는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 554,
+        "clicks": 0,
+        "impr": 43,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.37,
+        "conv": 0,
+        "cost": 943,
+        "clicks": 1,
+        "impr": 73,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "대구": [
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.02,
+        "conv": 0,
+        "cost": 5100,
+        "clicks": 6,
+        "impr": 588,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "50대다이어트대사",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.01,
+        "conv": 0,
+        "cost": 11094,
+        "clicks": 5,
+        "impr": 495,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사는입만막을뿐",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.63,
+        "conv": 0,
+        "cost": 1226,
+        "clicks": 3,
+        "impr": 476,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 311,
+        "clicks": 0,
+        "impr": 41,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 3491,
+        "clicks": 0,
+        "impr": 345,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "창원": [
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.5,
+        "conv": 0,
+        "cost": 1395,
+        "clicks": 1,
+        "impr": 202,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "50대다이어트대사",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "굶지않는다이어트(창원잇츠)",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.44,
+        "conv": 0,
+        "cost": 1282,
+        "clicks": 2,
+        "impr": 456,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.73,
+        "conv": 0,
+        "cost": 12714,
+        "clicks": 9,
+        "impr": 521,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "비만주사는입만막을뿐",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.29,
+        "conv": 0,
+        "cost": 500,
+        "clicks": 1,
+        "impr": 350,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "운동안해도되는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.21,
+        "conv": 0,
+        "cost": 5332,
+        "clicks": 4,
+        "impr": 331,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 535,
+        "clicks": 0,
+        "impr": 80,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "천안": [
+      {
+        "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "CPA": 5913,
+        "CVR": 25.0,
+        "CTR": 1.23,
+        "conv": 1,
+        "cost": 5913,
+        "clicks": 4,
+        "impr": 324,
+        "tier": "TIER1",
+        "is_best": true
+      },
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 901,
+        "clicks": 0,
+        "impr": 232,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 1.48,
+        "conv": 0,
+        "cost": 12754,
+        "clicks": 8,
+        "impr": 540,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 767,
+        "clicks": 0,
+        "impr": 238,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "운동안해도되는",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER3",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제 10년은",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER4",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 1004,
+        "clicks": 0,
+        "impr": 60,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ],
+    "대전": [
+      {
+        "creative_name": "10kg성공공식",
+        "CPA": null,
+        "CVR": null,
+        "CTR": 0.0,
+        "conv": 0,
+        "cost": 2449,
+        "clicks": 0,
+        "impr": 442,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "다이어트의적 밥빵면",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.69,
+        "conv": 0,
+        "cost": 10244,
+        "clicks": 3,
+        "impr": 437,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사실패 마지막",
+        "CPA": null,
+        "CVR": null,
+        "CTR": null,
+        "conv": 0,
+        "cost": 0,
+        "clicks": 0,
+        "impr": 0,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "식욕억제주사이길수없는",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.47,
+        "conv": 0,
+        "cost": 1857,
+        "clicks": 2,
+        "impr": 428,
+        "tier": "UNCLASSIFIED",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.37,
+        "conv": 0,
+        "cost": 4213,
+        "clicks": 1,
+        "impr": 267,
+        "tier": "TIER1",
+        "is_best": false
+      },
+      {
+        "creative_name": "주사형비만치료제(the.hyunniverse)",
+        "CPA": null,
+        "CVR": 0.0,
+        "CTR": 0.75,
+        "conv": 0,
+        "cost": 1183,
+        "clicks": 1,
+        "impr": 134,
+        "tier": "TIER1",
+        "is_best": false
+      }
+    ]
+  },
+  "cross_gap": [
+    {
+      "소재명": "다이어트의적 밥빵면",
+      "TIER": "TIER1",
+      "ratio": 2.0,
+      "최우수": "수원",
+      "최우수CPA": 6912,
+      "최저": "일산",
+      "최저CPA": 13864
+    }
+  ],
+  "age": [],
+  "hm_ctr": [],
+  "hm_cvr": [],
+  "hm_br_age": [],
+  "lifetime": [
+    {
+      "name": "주사형비만치료제 10년은",
+      "tier": "TIER4",
+      "days": [
+        1
+      ],
+      "ctr": [],
+      "total_days": 1
+    },
+    {
+      "name": "주사형비만치료제(the.hyunniverse)",
+      "tier": "TIER1",
+      "days": [
+        1
+      ],
+      "ctr": [
+        0.26
+      ],
+      "total_days": 1
+    },
+    {
+      "name": "4050나잇살 이유는 여기에",
+      "tier": "TIER4",
+      "days": [],
+      "ctr": [],
+      "total_days": 0
+    },
+    {
+      "name": "굶지않는다이어트(창원잇츠)",
+      "tier": "UNCLASSIFIED",
+      "days": [
+        1
+      ],
+      "ctr": [
+        0.41
+      ],
+      "total_days": 1
+    },
+    {
+      "name": "맘껏먹는 다이어트 한달후기",
+      "tier": "TIER1",
+      "days": [
+        1
+      ],
+      "ctr": [],
+      "total_days": 1
+    },
+    {
+      "name": "먹고싶은거다먹는(수원잇츠)",
+      "tier": "TIER1",
+      "days": [],
+      "ctr": [],
+      "total_days": 0
+    },
+    {
+      "name": "연예인다이어트(플랜비)",
+      "tier": "TIER3",
+      "days": [],
+      "ctr": [],
+      "total_days": 0
+    },
+    {
+      "name": "10kg성공공식",
+      "tier": "UNCLASSIFIED",
+      "days": [
+        1
+      ],
+      "ctr": [
+        0.47
+      ],
+      "total_days": 1
+    },
+    {
+      "name": "50대다이어트대사",
+      "tier": "TIER3",
+      "days": [
+        1
+      ],
+      "ctr": [],
+      "total_days": 1
+    },
+    {
+      "name": "다이어트의적 밥빵면",
+      "tier": "TIER1",
+      "days": [
+        1
+      ],
+      "ctr": [
+        1.41
+      ],
+      "total_days": 1
+    }
+  ],
+  "hook_compare": [
+    {
+      "hook_type": "신규",
+      "총비용": 10393,
+      "총전환": 0,
+      "총클릭": 3,
+      "총노출": 1064,
+      "총랜딩": 3,
+      "소재수": 2,
+      "CPA": 0,
+      "CTR": 0.28,
+      "CVR": 0.0
+    },
+    {
+      "hook_type": "재가공",
+      "총비용": 160519,
+      "총전환": 6,
+      "총클릭": 108,
+      "총노출": 12719,
+      "총랜딩": 108,
+      "소재수": 11,
+      "CPA": 26753,
+      "CTR": 0.85,
+      "CVR": 5.56
+    }
+  ],
+  "daily": [
+    {
+      "date_str": "05/01",
+      "cost": 170912,
+      "conv": 6,
+      "cpa": 28485,
+      "ctr": 0.81,
+      "cvr": 5.41
+    }
+  ],
+  "next_budget": [
+    {
+      "branch": "서울",
+      "cur_budget": 2000000,
+      "cur_ratio": 9.1,
+      "효율점수": 2.52,
+      "color": "#4ade80",
+      "reason": "효율점수 2.52 (상위) · CPA 11천원 · CVR 8.7%",
+      "suggested": 2300000,
+      "direction": "증액 권고",
+      "cpa": 11269,
+      "cvr": 8.7
+    },
+    {
+      "branch": "부평",
+      "cur_budget": 4000000,
+      "cur_ratio": 18.2,
+      "효율점수": 1.0,
+      "color": "#60a5fa",
+      "reason": "효율점수 1.0 (평균) · CPA 0천원 · CVR 0%",
+      "suggested": 4000000,
+      "direction": "유지",
+      "cpa": 0,
+      "cvr": 0
+    },
+    {
+      "branch": "수원",
+      "cur_budget": 4000000,
+      "cur_ratio": 18.2,
+      "효율점수": 2.71,
+      "color": "#4ade80",
+      "reason": "효율점수 2.71 (상위) · CPA 10천원 · CVR 16.67%",
+      "suggested": 4600000,
+      "direction": "증액 권고",
+      "cpa": 10478,
+      "cvr": 16.67
+    },
+    {
+      "branch": "일산",
+      "cur_budget": 2000000,
+      "cur_ratio": 9.1,
+      "효율점수": 1.27,
+      "color": "#4ade80",
+      "reason": "효율점수 1.27 (상위) · CPA 22천원 · CVR 7.14%",
+      "suggested": 2300000,
+      "direction": "증액 권고",
+      "cpa": 22450,
+      "cvr": 7.14
+    },
+    {
+      "branch": "대구",
+      "cur_budget": 3000000,
+      "cur_ratio": 13.6,
+      "효율점수": 1.0,
+      "color": "#60a5fa",
+      "reason": "효율점수 1.0 (평균) · CPA 0천원 · CVR 0%",
+      "suggested": 3000000,
+      "direction": "유지",
+      "cpa": 0,
+      "cvr": 0
+    },
+    {
+      "branch": "창원",
+      "cur_budget": 3000000,
+      "cur_ratio": 13.6,
+      "효율점수": 1.0,
+      "color": "#60a5fa",
+      "reason": "효율점수 1.0 (평균) · CPA 0천원 · CVR 0%",
+      "suggested": 3000000,
+      "direction": "유지",
+      "cpa": 0,
+      "cvr": 0
+    },
+    {
+      "branch": "천안",
+      "cur_budget": 2000000,
+      "cur_ratio": 9.1,
+      "효율점수": 1.34,
+      "color": "#4ade80",
+      "reason": "효율점수 1.34 (상위) · CPA 21천원 · CVR 8.33%",
+      "suggested": 2300000,
+      "direction": "증액 권고",
+      "cpa": 21339,
+      "cvr": 8.33
+    },
+    {
+      "branch": "대전",
+      "cur_budget": 2000000,
+      "cur_ratio": 9.1,
+      "효율점수": 1.0,
+      "color": "#60a5fa",
+      "reason": "효율점수 1.0 (평균) · CPA 0천원 · CVR 0%",
+      "suggested": 2000000,
+      "direction": "유지",
+      "cpa": 0,
+      "cvr": 0
+    }
+  ],
+  "off_cumul": [
+    {
+      "branch": "천안",
+      "creative_name": "주사형비만치료제 10년은",
+      "CPA": 0,
+      "ratio": 0,
+      "CVR": 0,
+      "cost": 0
+    },
+    {
+      "branch": "",
+      "creative_name": "4050나잇살 이유는 여기에",
+      "CPA": 0,
+      "ratio": 0,
+      "CVR": 0,
+      "cost": 0
+    }
+  ],
+  "expansion": [
+    {
+      "creative_name": "맘껏먹는 다이어트 한달후기",
+      "missing": [
+        "서울",
+        "부평",
+        "수원",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "CPA": null,
+      "current": [
+        "일산"
+      ]
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)",
+      "missing": [
+        "서울",
+        "부평",
+        "수원",
+        "일산",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ],
+      "CPA": null,
+      "current": []
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "missing": [
+        "수원",
+        "일산"
+      ],
+      "CPA": 23543,
+      "current": [
+        "서울",
+        "부평",
+        "대구",
+        "창원",
+        "천안",
+        "대전"
+      ]
+    }
+  ],
+  "off_perf": [
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "대전",
+      "branches": [
+        "대전"
+      ],
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 1,
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "is_low_conv": true
+    }
+  ],
+  "before_after": [
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "대전",
+      "off_date": "05/01",
+      "before_cpa": 24149,
+      "after_cpa": null,
+      "before_days": 7,
+      "after_days": 0,
+      "cpa_change": null,
+      "cpa_change_pct": null,
+      "share_pct": 0.0,
+      "reliability": "no_after",
+      "impact_level": "low",
+      "impact_label": "낮음",
+      "effect": null,
+      "off_cpa": null,
+      "off_ctr": 0,
+      "off_cvr": 0,
+      "off_cost": 0,
+      "off_conv": 0
+    }
+  ]
+}

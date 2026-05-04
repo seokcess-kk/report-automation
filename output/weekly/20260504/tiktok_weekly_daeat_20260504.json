@@ -1,0 +1,3138 @@
+{
+  "period_this": "04/28~05/04",
+  "period_this_full": "2026.04.28(화) ~ 05.04(월)",
+  "period_prev": "04/21(화) ~ 04/27(월)",
+  "issue_date": "2026.05.04(월)",
+  "kpi_this": {
+    "cost": 4873921,
+    "conv": 172,
+    "clicks": 2455,
+    "cpa": 28336,
+    "ctr": 0.62,
+    "cvr": 7.01
+  },
+  "kpi_prev": {
+    "cost": 7569828,
+    "conv": 231,
+    "clicks": 3780,
+    "cpa": 32769,
+    "ctr": 0.56,
+    "cvr": 6.11
+  },
+  "target_cpa": 30050,
+  "tier_list": [
+    {
+      "creative_name": "10kg성공공식",
+      "tier_this": "TIER1",
+      "tier_prev": null,
+      "change": "신규"
+    },
+    {
+      "creative_name": "4050나잇살 이유는 여기에",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "4050다이어트비밀",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "50대다이어트대사",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "TIER3",
+      "change": "TIER3→저볼륨 ↓"
+    },
+    {
+      "creative_name": "건강한다이어트(대구,박고경)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "TIER4",
+      "change": "TIER4→저볼륨 ↓"
+    },
+    {
+      "creative_name": "건강한다이어트(박고경)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "건강한다이어트(천안, 박고경)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "굶지않는다이어트(창원잇츠)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": null,
+      "change": "신규"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면 (대구 외 6개)",
+      "tier_this": "TIER1",
+      "tier_prev": "TIER3",
+      "change": "TIER3→TIER1 ↑"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면 (부평)",
+      "tier_this": "TIER4",
+      "tier_prev": null,
+      "change": "신규"
+    },
+    {
+      "creative_name": "맘껏먹는 다이어트 한달후기",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "TIER3",
+      "change": "TIER3→저볼륨 ↓"
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "tier_this": "TIER4",
+      "tier_prev": "TIER4",
+      "change": "—"
+    },
+    {
+      "creative_name": "비만주사가놓친것",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐",
+      "tier_this": "TIER4",
+      "tier_prev": "TIER1",
+      "change": "TIER1→TIER4 ↓"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막 (대전)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막 (대구 외 5개)",
+      "tier_this": "TIER3",
+      "tier_prev": "TIER3",
+      "change": "—"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는",
+      "tier_this": "TIER1",
+      "tier_prev": null,
+      "change": "신규"
+    },
+    {
+      "creative_name": "연예인다이어트(일산 플랜비)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "TIER1",
+      "change": "TIER1→저볼륨 ↓"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "TIER3",
+      "change": "TIER3→저볼륨 ↓"
+    },
+    {
+      "creative_name": "운동안해도되는",
+      "tier_this": "TIER4",
+      "tier_prev": "TIER4",
+      "change": "—"
+    },
+    {
+      "creative_name": "의사가권하지않는4050",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "주사형 비만치료제보다 더중요한이것",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "TIER1",
+      "change": "TIER1→저볼륨 ↓"
+    },
+    {
+      "creative_name": "주사형비만치료제 10년은",
+      "tier_this": "LOW_VOLUME",
+      "tier_prev": "LOW_VOLUME",
+      "change": "—"
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "tier_this": "TIER1",
+      "tier_prev": "TIER1",
+      "change": "—"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)",
+      "tier_this": "TIER1",
+      "tier_prev": "TIER3",
+      "change": "TIER3→TIER1 ↑"
+    }
+  ],
+  "tier_this": [
+    {
+      "creative_name": "10kg성공공식",
+      "총비용": 59470,
+      "총전환": 3,
+      "총클릭": 48,
+      "총노출": 10039,
+      "총랜딩": 55,
+      "집행일수": 4,
+      "지점목록": [
+        "대구",
+        "대전",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 19823.0,
+      "CTR": 0.48,
+      "CVR": 6.25,
+      "LPV": 114.6,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "4050나잇살 이유는 여기에",
+      "총비용": 7508,
+      "총전환": 0,
+      "총클릭": 2,
+      "총노출": 1384,
+      "총랜딩": 3,
+      "집행일수": 5,
+      "지점목록": [
+        "수원"
+      ],
+      "소재유형": "의료진정보",
+      "CPA": null,
+      "CTR": 0.14,
+      "CVR": 0.0,
+      "LPV": 150.0,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "4050다이어트비밀",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 3,
+      "지점목록": [
+        "부평"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사",
+      "총비용": 42084,
+      "총전환": 0,
+      "총클릭": 26,
+      "총노출": 5821,
+      "총랜딩": 39,
+      "집행일수": 7,
+      "지점목록": [
+        "대구",
+        "대전",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": null,
+      "CTR": 0.45,
+      "CVR": 0.0,
+      "LPV": 150.0,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "건강한다이어트(대구,박고경)",
+      "총비용": 7173,
+      "총전환": 0,
+      "총클릭": 4,
+      "총노출": 725,
+      "총랜딩": 4,
+      "집행일수": 6,
+      "지점목록": [
+        "대구"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": 0.55,
+      "CVR": 0.0,
+      "LPV": 100.0,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "건강한다이어트(박고경)",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 6,
+      "지점목록": [
+        "부평"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "건강한다이어트(천안, 박고경)",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 4,
+      "지점목록": [
+        "천안"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "굶지않는다이어트(창원잇츠)",
+      "총비용": 11780,
+      "총전환": 2,
+      "총클릭": 17,
+      "총노출": 2187,
+      "총랜딩": 19,
+      "집행일수": 4,
+      "지점목록": [
+        "창원"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": 5890.0,
+      "CTR": 0.78,
+      "CVR": 11.76,
+      "LPV": 111.8,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면 (대구 외 6개)",
+      "총비용": 703275,
+      "총전환": 39,
+      "총클릭": 425,
+      "총노출": 37356,
+      "총랜딩": 453,
+      "집행일수": 7,
+      "지점목록": [
+        "대구",
+        "대전",
+        "서울",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 18033.0,
+      "CTR": 1.14,
+      "CVR": 9.18,
+      "LPV": 106.6,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면 (부평)",
+      "총비용": 67764,
+      "총전환": 1,
+      "총클릭": 39,
+      "총노출": 3474,
+      "총랜딩": 41,
+      "집행일수": 4,
+      "지점목록": [
+        "부평"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 67764.0,
+      "CTR": 1.12,
+      "CVR": 2.56,
+      "LPV": 105.1,
+      "TIER": "TIER4"
+    },
+    {
+      "creative_name": "맘껏먹는 다이어트 한달후기",
+      "총비용": 23030,
+      "총전환": 1,
+      "총클릭": 24,
+      "총노출": 1830,
+      "총랜딩": 26,
+      "집행일수": 5,
+      "지점목록": [
+        "일산"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": 23030.0,
+      "CTR": 1.31,
+      "CVR": 4.17,
+      "LPV": 108.3,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)",
+      "총비용": 2896,
+      "총전환": 0,
+      "총클릭": 1,
+      "총노출": 244,
+      "총랜딩": 1,
+      "집행일수": 5,
+      "지점목록": [
+        "일산",
+        "창원"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": 0.41,
+      "CVR": 0.0,
+      "LPV": 100.0,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "총비용": 221160,
+      "총전환": 0,
+      "총클릭": 87,
+      "총노출": 11165,
+      "총랜딩": 85,
+      "집행일수": 6,
+      "지점목록": [
+        "대구",
+        "대전",
+        "부평",
+        "서울",
+        "창원",
+        "천안",
+        "수원"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": 0.78,
+      "CVR": 0.0,
+      "LPV": 97.7,
+      "TIER": "TIER4"
+    },
+    {
+      "creative_name": "비만주사가놓친것",
+      "총비용": 890,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 257,
+      "총랜딩": 0,
+      "집행일수": 7,
+      "지점목록": [
+        "서울",
+        "일산",
+        "창원",
+        "천안",
+        "대구"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐",
+      "총비용": 213185,
+      "총전환": 3,
+      "총클릭": 84,
+      "총노출": 31970,
+      "총랜딩": 134,
+      "집행일수": 7,
+      "지점목록": [
+        "대구",
+        "대전",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 71062.0,
+      "CTR": 0.26,
+      "CVR": 3.57,
+      "LPV": 159.5,
+      "TIER": "TIER4"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막 (대전)",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 5,
+      "지점목록": [
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막 (대구 외 5개)",
+      "총비용": 1798137,
+      "총전환": 53,
+      "총클릭": 756,
+      "총노출": 110050,
+      "총랜딩": 835,
+      "집행일수": 7,
+      "지점목록": [
+        "대구",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "창원"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 33927.0,
+      "CTR": 0.69,
+      "CVR": 7.01,
+      "LPV": 110.4,
+      "TIER": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는",
+      "총비용": 65741,
+      "총전환": 3,
+      "총클릭": 52,
+      "총노출": 12687,
+      "총랜딩": 65,
+      "집행일수": 4,
+      "지점목록": [
+        "대구",
+        "대전",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 21914.0,
+      "CTR": 0.41,
+      "CVR": 5.77,
+      "LPV": 125.0,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "연예인다이어트(일산 플랜비)",
+      "총비용": 360,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 55,
+      "총랜딩": 0,
+      "집행일수": 5,
+      "지점목록": [
+        "일산"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)",
+      "총비용": 30241,
+      "총전환": 0,
+      "총클릭": 7,
+      "총노출": 3487,
+      "총랜딩": 8,
+      "집행일수": 7,
+      "지점목록": [
+        "대전",
+        "부평",
+        "서울",
+        "수원",
+        "창원",
+        "천안",
+        "대구"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": null,
+      "CTR": 0.2,
+      "CVR": 0.0,
+      "LPV": 114.3,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "운동안해도되는",
+      "총비용": 357170,
+      "총전환": 7,
+      "총클릭": 145,
+      "총노출": 33509,
+      "총랜딩": 160,
+      "집행일수": 7,
+      "지점목록": [
+        "대구",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "창원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 51024.0,
+      "CTR": 0.43,
+      "CVR": 4.83,
+      "LPV": 110.3,
+      "TIER": "TIER4"
+    },
+    {
+      "creative_name": "의사가권하지않는4050",
+      "총비용": 1364,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 287,
+      "총랜딩": 1,
+      "집행일수": 6,
+      "지점목록": [
+        "서울"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형 비만치료제보다 더중요한이것",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "총랜딩": 0,
+      "집행일수": 5,
+      "지점목록": [
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "LPV": null,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형비만치료제 10년은",
+      "총비용": 16963,
+      "총전환": 0,
+      "총클릭": 7,
+      "총노출": 2293,
+      "총랜딩": 11,
+      "집행일수": 6,
+      "지점목록": [
+        "천안"
+      ],
+      "소재유형": "의료진정보",
+      "CPA": null,
+      "CTR": 0.31,
+      "CVR": 0.0,
+      "LPV": 157.1,
+      "TIER": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "총비용": 332898,
+      "총전환": 19,
+      "총클릭": 246,
+      "총노출": 33726,
+      "총랜딩": 273,
+      "집행일수": 7,
+      "지점목록": [
+        "대구",
+        "대전",
+        "서울"
+      ],
+      "소재유형": "진료셀프캠",
+      "CPA": 17521.0,
+      "CTR": 0.73,
+      "CVR": 7.72,
+      "LPV": 111.0,
+      "TIER": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)",
+      "총비용": 394248,
+      "총전환": 14,
+      "총클릭": 177,
+      "총노출": 43195,
+      "총랜딩": 186,
+      "집행일수": 7,
+      "지점목록": [
+        "대전",
+        "부평",
+        "서울",
+        "수원",
+        "일산",
+        "천안"
+      ],
+      "소재유형": "인플방문후기",
+      "CPA": 28161.0,
+      "CTR": 0.41,
+      "CVR": 7.91,
+      "LPV": 105.1,
+      "TIER": "TIER1"
+    }
+  ],
+  "new_creatives": [],
+  "branch": [
+    {
+      "branch": "서울",
+      "총비용": 459219,
+      "총전환": 42,
+      "총클릭": 403,
+      "총노출": 37240,
+      "CPA": 10934,
+      "CTR": 1.08,
+      "CVR": 10.42,
+      "CPA_prev": 20520,
+      "CTR_prev": 0.98,
+      "CVR_prev": 7.14,
+      "CPA_diff": -9586,
+      "CTR_diff": 0.1,
+      "CVR_diff": 3.28,
+      "효율점수": 2.6
+    },
+    {
+      "branch": "부평",
+      "총비용": 1542495,
+      "총전환": 28,
+      "총클릭": 546,
+      "총노출": 114901,
+      "CPA": 55089,
+      "CTR": 0.48,
+      "CVR": 5.13,
+      "CPA_prev": 33369,
+      "CTR_prev": 0.49,
+      "CVR_prev": 6.86,
+      "CPA_diff": 21720,
+      "CTR_diff": -0.01,
+      "CVR_diff": -1.73,
+      "효율점수": 0.52
+    },
+    {
+      "branch": "수원",
+      "총비용": 592468,
+      "총전환": 15,
+      "총클릭": 226,
+      "총노출": 54866,
+      "CPA": 39498,
+      "CTR": 0.41,
+      "CVR": 6.64,
+      "CPA_prev": 57549,
+      "CTR_prev": 0.41,
+      "CVR_prev": 4.07,
+      "CPA_diff": -18051,
+      "CTR_diff": 0.0,
+      "CVR_diff": 2.57,
+      "효율점수": 0.71
+    },
+    {
+      "branch": "일산",
+      "총비용": 425130,
+      "총전환": 23,
+      "총클릭": 331,
+      "총노출": 31833,
+      "CPA": 18484,
+      "CTR": 1.04,
+      "CVR": 6.95,
+      "CPA_prev": 17091,
+      "CTR_prev": 0.5,
+      "CVR_prev": 9.85,
+      "CPA_diff": 1393,
+      "CTR_diff": 0.54,
+      "CVR_diff": -2.9,
+      "효율점수": 1.54
+    },
+    {
+      "branch": "대구",
+      "총비용": 490978,
+      "총전환": 26,
+      "총클릭": 284,
+      "총노출": 40474,
+      "CPA": 18884,
+      "CTR": 0.7,
+      "CVR": 9.15,
+      "CPA_prev": 32896,
+      "CTR_prev": 0.66,
+      "CVR_prev": 5.45,
+      "CPA_diff": -14012,
+      "CTR_diff": 0.04,
+      "CVR_diff": 3.7,
+      "효율점수": 1.5
+    },
+    {
+      "branch": "창원",
+      "총비용": 578280,
+      "총전환": 12,
+      "총클릭": 262,
+      "총노출": 49886,
+      "CPA": 48190,
+      "CTR": 0.53,
+      "CVR": 4.58,
+      "CPA_prev": 50849,
+      "CTR_prev": 0.53,
+      "CVR_prev": 4.64,
+      "CPA_diff": -2659,
+      "CTR_diff": 0.0,
+      "CVR_diff": -0.06,
+      "효율점수": 0.59
+    },
+    {
+      "branch": "천안",
+      "총비용": 405622,
+      "총전환": 13,
+      "총클릭": 223,
+      "총노출": 34580,
+      "CPA": 31202,
+      "CTR": 0.64,
+      "CVR": 5.83,
+      "CPA_prev": 26157,
+      "CTR_prev": 0.67,
+      "CVR_prev": 6.23,
+      "CPA_diff": 5045,
+      "CTR_diff": -0.03,
+      "CVR_diff": -0.4,
+      "효율점수": 0.92
+    },
+    {
+      "branch": "대전",
+      "총비용": 379729,
+      "총전환": 13,
+      "총클릭": 180,
+      "총노출": 29315,
+      "CPA": 29210,
+      "CTR": 0.61,
+      "CVR": 7.22,
+      "CPA_prev": 34241,
+      "CTR_prev": 0.73,
+      "CVR_prev": 5.54,
+      "CPA_diff": -5031,
+      "CTR_diff": -0.12,
+      "CVR_diff": 1.68,
+      "효율점수": 0.97
+    }
+  ],
+  "off_list": [],
+  "on_list": [],
+  "off_creative_analysis": [
+    {
+      "creative_name": "식욕억제주사실패 마지막",
+      "지점목록": [
+        "대전",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 254406,
+      "총전환": 9,
+      "총클릭": 137,
+      "총노출": 16916,
+      "집행일수": 6,
+      "CPA": 28267,
+      "CTR": 0.81,
+      "CVR": 6.57
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "지점목록": [
+        "창원",
+        "천안",
+        "부평"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 206077,
+      "총전환": 14,
+      "총클릭": 135,
+      "총노출": 23305,
+      "집행일수": 7,
+      "CPA": 14720,
+      "CTR": 0.58,
+      "CVR": 10.37
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)",
+      "지점목록": [
+        "대구",
+        "창원"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 56101,
+      "총전환": 4,
+      "총클릭": 36,
+      "총노출": 7133,
+      "집행일수": 7,
+      "CPA": 14025,
+      "CTR": 0.5,
+      "CVR": 11.11
+    },
+    {
+      "creative_name": "4050나잇살 이유는 여기에",
+      "지점목록": [
+        "창원"
+      ],
+      "소재유형": "의료진정보",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 3,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "건강한다이어트(대전, 박고경)",
+      "지점목록": [
+        "대전"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 2,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "건강한다이어트(수원,박고경)",
+      "지점목록": [
+        "수원"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 5,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "건강한다이어트(일산, 박고경)",
+      "지점목록": [
+        "일산"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 2,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "건강한다이어트(창원,박고경)",
+      "지점목록": [
+        "창원"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 2,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "맘껏먹는 다이어트 한달후기",
+      "지점목록": [
+        "서울"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 4,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)",
+      "지점목록": [
+        "서울",
+        "대구",
+        "수원",
+        "천안"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 5,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "먹으면서 다이어트(대읽남)",
+      "지점목록": [
+        "대구"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 5,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "무작정운동으로 팩폭",
+      "지점목록": [
+        "대구",
+        "수원",
+        "서울",
+        "일산"
+      ],
+      "소재유형": "의료진정보",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 6,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "지점목록": [
+        "일산"
+      ],
+      "소재유형": "인플방문후기",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 3,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "비만주사 10년은 늙어보인대요",
+      "지점목록": [
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 1,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "비만주사가놓친것",
+      "지점목록": [
+        "부평",
+        "수원"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 6,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "비만주사없이 체질",
+      "지점목록": [
+        "수원"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 1,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "의사가권하지않는4050",
+      "지점목록": [
+        "일산",
+        "수원",
+        "천안"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 4,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "주사형 비만치료제보다 더중요한이것",
+      "지점목록": [
+        "대전"
+      ],
+      "소재유형": "진료셀프캠",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 1,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    },
+    {
+      "creative_name": "주사형비만치료제 10년은",
+      "지점목록": [
+        "부평",
+        "대구"
+      ],
+      "소재유형": "의료진정보",
+      "총비용": 0,
+      "총전환": 0,
+      "총클릭": 0,
+      "총노출": 0,
+      "집행일수": 2,
+      "CPA": null,
+      "CTR": null,
+      "CVR": null
+    }
+  ],
+  "branch_creative": [
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "부평",
+      "CPA": 4702,
+      "CTR": 0.24,
+      "CVR": 50.0,
+      "총전환": 1,
+      "총비용": 4702,
+      "집행일수": 4,
+      "cpa_color": "good",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "서울",
+      "CPA": 5800,
+      "CTR": 0.46,
+      "CVR": 12.5,
+      "총전환": 1,
+      "총비용": 5800,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "대구",
+      "CPA": 16131,
+      "CTR": 0.69,
+      "CVR": 8.33,
+      "총전환": 1,
+      "총비용": 16131,
+      "집행일수": 4,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "대전",
+      "CPA": null,
+      "CTR": 0.43,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 7689,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": 0.29,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 4660,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": 0.6,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 14238,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": 0.55,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 2220,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "10kg성공공식_260501",
+      "display_name": "10kg성공공식",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.31,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 4030,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "4050나잇살 이유는 여기에_260410",
+      "display_name": "4050나잇살 이유는 여기에",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": 0.14,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 7508,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "4050다이어트비밀_260414",
+      "display_name": "4050다이어트비밀",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 3,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 2492,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "대전",
+      "CPA": null,
+      "CTR": 1.04,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 594,
+      "집행일수": 3,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": 0.24,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 10724,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 1.29,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 5731,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": 0.43,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 10703,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": 1.63,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 720,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": 0.34,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 10335,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "50대다이어트대사_260422",
+      "display_name": "50대다이어트대사",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.63,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 785,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "건강한다이어트(대구,박고경)_260325",
+      "display_name": "건강한다이어트(대구,박고경)",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": 0.55,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 7173,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "건강한다이어트(박고경)_260324",
+      "display_name": "건강한다이어트(박고경)",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "건강한다이어트(천안, 박고경)_260325",
+      "display_name": "건강한다이어트(천안, 박고경)",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "굶지않는다이어트(창원잇츠)_260501",
+      "display_name": "굶지않는다이어트(창원잇츠)",
+      "branch": "창원",
+      "CPA": 5890,
+      "CTR": 0.78,
+      "CVR": 11.76,
+      "총전환": 2,
+      "총비용": 11780,
+      "집행일수": 4,
+      "cpa_color": "good",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "서울",
+      "CPA": 6927,
+      "CTR": 1.96,
+      "CVR": 16.67,
+      "총전환": 14,
+      "총비용": 96979,
+      "집행일수": 4,
+      "cpa_color": "good",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "수원",
+      "CPA": 13695,
+      "CTR": 0.84,
+      "CVR": 15.38,
+      "총전환": 6,
+      "총비용": 82171,
+      "집행일수": 4,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "일산",
+      "CPA": 16079,
+      "CTR": 1.84,
+      "CVR": 6.59,
+      "총전환": 6,
+      "총비용": 96475,
+      "집행일수": 4,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "대구",
+      "CPA": 23976,
+      "CTR": 0.83,
+      "CVR": 8.75,
+      "총전환": 7,
+      "총비용": 167830,
+      "집행일수": 7,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "천안",
+      "CPA": 25677,
+      "CTR": 1.04,
+      "CVR": 7.14,
+      "총전환": 3,
+      "총비용": 77030,
+      "집행일수": 4,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "대전",
+      "CPA": 47817,
+      "CTR": 0.79,
+      "CVR": 4.84,
+      "총전환": 3,
+      "총비용": 143452,
+      "집행일수": 7,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_260407",
+      "display_name": "다이어트의적 밥빵면 (서울 외 6개)",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": 1.45,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 39338,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "다이어트의적 밥빵면_26407",
+      "display_name": "다이어트의적 밥빵면 (부평)",
+      "branch": "부평",
+      "CPA": 67764,
+      "CTR": 1.12,
+      "CVR": 2.56,
+      "총전환": 1,
+      "총비용": 67764,
+      "집행일수": 4,
+      "cpa_color": "good",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "맘껏먹는 다이어트 한달후기_260306",
+      "display_name": "맘껏먹는 다이어트 한달후기",
+      "branch": "일산",
+      "CPA": 23030,
+      "CTR": 1.31,
+      "CVR": 4.17,
+      "총전환": 1,
+      "총비용": 23030,
+      "집행일수": 5,
+      "cpa_color": "good",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)_260403",
+      "display_name": "먹고싶은거다먹는(수원잇츠)",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": 0.41,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 2896,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "먹고싶은거다먹는(수원잇츠)_260403",
+      "display_name": "먹고싶은거다먹는(수원잇츠)",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": 1.08,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 6110,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "대전",
+      "CPA": null,
+      "CTR": 0.67,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 5121,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": 0.77,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 176178,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 2.4,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 4708,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": 0.68,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 24052,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "밥빵면안당기는원장님(itsmeyuriwon)_260407",
+      "display_name": "밥빵면안당기는원장님(itsmeyuriwon)",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.46,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 4991,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사가놓친것_260414",
+      "display_name": "비만주사가놓친것",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 2,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사가놓친것_260414",
+      "display_name": "비만주사가놓친것",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 890,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사가놓친것_260414",
+      "display_name": "비만주사가놓친것",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 3,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사가놓친것_260414",
+      "display_name": "비만주사가놓친것",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 2,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사가놓친것_260414",
+      "display_name": "비만주사가놓친것",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "대전",
+      "CPA": 1454,
+      "CTR": 0.16,
+      "CVR": 200.0,
+      "총전환": 2,
+      "총비용": 2907,
+      "집행일수": 4,
+      "cpa_color": "good",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "창원",
+      "CPA": 23851,
+      "CTR": 0.2,
+      "CVR": 12.5,
+      "총전환": 1,
+      "총비용": 23851,
+      "집행일수": 5,
+      "cpa_color": "danger",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": 0.18,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 7766,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": 0.25,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 97748,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 0.25,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 2905,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": 0.33,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 62730,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": 0.61,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 12109,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "비만주사는입만막을뿐_260423",
+      "display_name": "비만주사는입만막을뿐",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 3169,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260406",
+      "display_name": "식욕억제주사실패 마지막 (대전)",
+      "branch": "대전",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260407",
+      "display_name": "식욕억제주사실패 마지막 (서울 외 5개)",
+      "branch": "서울",
+      "CPA": 9849,
+      "CTR": 1.6,
+      "CVR": 11.57,
+      "총전환": 14,
+      "총비용": 137886,
+      "집행일수": 6,
+      "cpa_color": "good",
+      "tier": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260407",
+      "display_name": "식욕억제주사실패 마지막 (서울 외 5개)",
+      "branch": "대구",
+      "CPA": 13389,
+      "CTR": 0.87,
+      "CVR": 12.09,
+      "총전환": 11,
+      "총비용": 147284,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260407",
+      "display_name": "식욕억제주사실패 마지막 (서울 외 5개)",
+      "branch": "일산",
+      "CPA": 19039,
+      "CTR": 1.03,
+      "CVR": 7.87,
+      "총전환": 10,
+      "총비용": 190387,
+      "집행일수": 7,
+      "cpa_color": "danger",
+      "tier": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260407",
+      "display_name": "식욕억제주사실패 마지막 (서울 외 5개)",
+      "branch": "창원",
+      "CPA": 55174,
+      "CTR": 0.56,
+      "CVR": 4.69,
+      "총전환": 6,
+      "총비용": 331046,
+      "집행일수": 6,
+      "cpa_color": "danger",
+      "tier": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260407",
+      "display_name": "식욕억제주사실패 마지막 (서울 외 5개)",
+      "branch": "부평",
+      "CPA": 75796,
+      "CTR": 0.53,
+      "CVR": 4.59,
+      "총전환": 10,
+      "총비용": 757956,
+      "집행일수": 6,
+      "cpa_color": "danger",
+      "tier": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사실패 마지막_260407",
+      "display_name": "식욕억제주사실패 마지막 (서울 외 5개)",
+      "branch": "수원",
+      "CPA": 116789,
+      "CTR": 0.46,
+      "CVR": 2.82,
+      "총전환": 2,
+      "총비용": 233578,
+      "집행일수": 5,
+      "cpa_color": "danger",
+      "tier": "TIER3"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "부평",
+      "CPA": 2464,
+      "CTR": 0.31,
+      "CVR": 75.0,
+      "총전환": 3,
+      "총비용": 7393,
+      "집행일수": 4,
+      "cpa_color": "good",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": 0.66,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 10772,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "대전",
+      "CPA": null,
+      "CTR": 0.31,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 4563,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 0.28,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 9746,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": 0.22,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 11768,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": 0.67,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 12275,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": 0.21,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 3316,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "식욕억제주사이길수없는_260501",
+      "display_name": "식욕억제주사이길수없는",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.57,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 5908,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "연예인다이어트(일산 플랜비)_260416",
+      "display_name": "연예인다이어트(일산 플랜비)",
+      "branch": "일산",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 360,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "대전",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 3,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": 0.2,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 30241,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "창원",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "연예인다이어트(플랜비)_260416",
+      "display_name": "연예인다이어트(플랜비)",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 2,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "일산",
+      "CPA": 24870,
+      "CTR": 1.19,
+      "CVR": 5.26,
+      "총전환": 1,
+      "총비용": 24870,
+      "집행일수": 7,
+      "cpa_color": "good",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "부평",
+      "CPA": 29865,
+      "CTR": 0.41,
+      "CVR": 8.7,
+      "총전환": 4,
+      "총비용": 119459,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "창원",
+      "CPA": 45388,
+      "CTR": 0.36,
+      "CVR": 6.06,
+      "총전환": 2,
+      "총비용": 90775,
+      "집행일수": 6,
+      "cpa_color": "danger",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "대구",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 4,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "수원",
+      "CPA": null,
+      "CTR": 0.35,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 96852,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "운동안해도되는_260416",
+      "display_name": "운동안해도되는",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.67,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 25214,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "TIER4"
+    },
+    {
+      "creative_name": "의사가권하지않는4050_260414",
+      "display_name": "의사가권하지않는4050",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 0.0,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 1364,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형 비만치료제보다 더중요한이것_260120",
+      "display_name": "주사형 비만치료제보다 더중요한이것",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": null,
+      "CVR": null,
+      "총전환": 0,
+      "총비용": 0,
+      "집행일수": 5,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형비만치료제 10년은_260116",
+      "display_name": "주사형비만치료제 10년은",
+      "branch": "천안",
+      "CPA": null,
+      "CTR": 0.31,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 16963,
+      "집행일수": 6,
+      "cpa_color": "normal",
+      "tier": "LOW_VOLUME"
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225",
+      "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "branch": "서울",
+      "CPA": 12469,
+      "CTR": 0.92,
+      "CVR": 8.5,
+      "총전환": 13,
+      "총비용": 162096,
+      "집행일수": 7,
+      "cpa_color": "good",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225",
+      "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "branch": "대구",
+      "CPA": 18360,
+      "CTR": 0.63,
+      "CVR": 8.33,
+      "총전환": 4,
+      "총비용": 73439,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg_260225",
+      "display_name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+      "branch": "대전",
+      "CPA": 48682,
+      "CTR": 0.48,
+      "CVR": 4.44,
+      "총전환": 2,
+      "총비용": 97363,
+      "집행일수": 7,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)_260403",
+      "display_name": "주사형비만치료제(the.hyunniverse)",
+      "branch": "일산",
+      "CPA": 9554,
+      "CTR": 0.62,
+      "CVR": 13.89,
+      "총전환": 5,
+      "총비용": 47770,
+      "집행일수": 7,
+      "cpa_color": "good",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)_260403",
+      "display_name": "주사형비만치료제(the.hyunniverse)",
+      "branch": "수원",
+      "CPA": 11785,
+      "CTR": 0.36,
+      "CVR": 17.95,
+      "총전환": 7,
+      "총비용": 82498,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)_260403",
+      "display_name": "주사형비만치료제(the.hyunniverse)",
+      "branch": "대전",
+      "CPA": 21825,
+      "CTR": 0.36,
+      "CVR": 11.11,
+      "총전환": 1,
+      "총비용": 21825,
+      "집행일수": 7,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)_260403",
+      "display_name": "주사형비만치료제(the.hyunniverse)",
+      "branch": "천안",
+      "CPA": 36345,
+      "CTR": 0.31,
+      "CVR": 6.67,
+      "총전환": 1,
+      "총비용": 36345,
+      "집행일수": 7,
+      "cpa_color": "danger",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)_260403",
+      "display_name": "주사형비만치료제(the.hyunniverse)",
+      "branch": "부평",
+      "CPA": null,
+      "CTR": 0.37,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 174696,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    },
+    {
+      "creative_name": "주사형비만치료제(the.hyunniverse)_260403",
+      "display_name": "주사형비만치료제(the.hyunniverse)",
+      "branch": "서울",
+      "CPA": null,
+      "CTR": 0.59,
+      "CVR": 0.0,
+      "총전환": 0,
+      "총비용": 31114,
+      "집행일수": 7,
+      "cpa_color": "normal",
+      "tier": "TIER1"
+    }
+  ],
+  "monthly_target_conv": 1131,
+  "conv_so_far": 75,
+  "proj_conv": 581,
+  "conv_pct": 6.6,
+  "proj_pct": 51.4,
+  "insights": [
+    {
+      "type": "악화",
+      "color": "#f87171",
+      "title": "부평 CPA 동반 상승",
+      "points": [
+        "부평 CPA +21,720원 전주 대비 상승",
+        "'밥빵면안당기는원장님(itsmeyuriwon)' 비용 176K · 전환 0건",
+        "'주사형비만치료제(the.hyunniverse)' 비용 174K · 전환 0건",
+        "'비만주사는입만막을뿐' 비용 97K · 전환 0건"
+      ]
+    },
+    {
+      "type": "개선",
+      "color": "#4ade80",
+      "title": "'다이어트의적 밥빵면 (대구 외 6개)' TIER3→TIER1 ↑",
+      "points": [
+        "CTR/CVR 전주 대비 개선",
+        "미집행 지점 추가 등록 검토"
+      ]
+    },
+    {
+      "type": "변동",
+      "color": "#f59e0b",
+      "title": "'50대다이어트대사' TIER3→저볼륨 ↓",
+      "points": [
+        "이번 주 성과 하락",
+        "지속 모니터링 필요"
+      ]
+    },
+    {
+      "type": "확장 기회",
+      "color": "#60a5fa",
+      "title": "TIER1 '주사형비만치료제 고민끝에 50대부부 -32kg' 미집행 지점 확장",
+      "points": [
+        "미집행 지점: 부평, 수원, 일산, 창원...",
+        "현재 CPA: 17,521.0원",
+        "TIER1 소재 2개 확장 가능"
+      ]
+    }
+  ],
+  "daily": [
+    {
+      "date_str": "04/28",
+      "cost": 1907361,
+      "conv": 35,
+      "cpa": 54496,
+      "ctr": 0.53
+    },
+    {
+      "date_str": "04/29",
+      "cost": 884569,
+      "conv": 32,
+      "cpa": 27643,
+      "ctr": 0.58
+    },
+    {
+      "date_str": "04/30",
+      "cost": 848727,
+      "conv": 30,
+      "cpa": 28291,
+      "ctr": 0.68
+    },
+    {
+      "date_str": "05/01",
+      "cost": 372384,
+      "conv": 29,
+      "cpa": 12841,
+      "ctr": 0.79
+    },
+    {
+      "date_str": "05/02",
+      "cost": 388633,
+      "conv": 21,
+      "cpa": 18506,
+      "ctr": 0.72
+    },
+    {
+      "date_str": "05/03",
+      "cost": 358015,
+      "conv": 18,
+      "cpa": 19890,
+      "ctr": 0.71
+    },
+    {
+      "date_str": "05/04",
+      "cost": 114232,
+      "conv": 7,
+      "cpa": 16319,
+      "ctr": 0.73
+    }
+  ],
+  "end_date_str": "05/04",
+  "full_insight": {
+    "summary": {
+      "headline": "전반적 효율 개선",
+      "headline_color": "#4ade80",
+      "points": [
+        "비용 2,695,907원 감소 (35.6%)",
+        "전환 59건 감소 (-25.5%)",
+        "CPA 4,433원 개선 (-13.5%)",
+        "CTR 0.62% (+0.06%p) · CVR 7.01% (+0.90%p)"
+      ]
+    },
+    "branches": [
+      {
+        "branch": "서울",
+        "grade": "최우수",
+        "grade_color": "#4ade80",
+        "points": [
+          "CPA 10,934원 — 전주 대비 9,586원 개선",
+          "CVR 10.42% (+3.28%p) — 급등",
+          "효율점수 2.60 — 비용 대비 전환 비중 탁월",
+          "TARGET CPA 대비 64% 절감"
+        ],
+        "conv": 42,
+        "cost": 459219,
+        "cpa": 10934,
+        "eff_score": 2.6
+      },
+      {
+        "branch": "부평",
+        "grade": "약세",
+        "grade_color": "#f87171",
+        "points": [
+          "CPA 55,089원 — 전주 대비 +21,720원 급등, 원인 분석 시급",
+          "CVR 5.13% (-1.73%p 하락)",
+          "효율점수 0.52 — 비용 대비 전환 비중 불균형",
+          "TARGET CPA의 1.8배 — 개선 필요"
+        ],
+        "conv": 28,
+        "cost": 1542495,
+        "cpa": 55089,
+        "eff_score": 0.52
+      },
+      {
+        "branch": "수원",
+        "grade": "보통",
+        "grade_color": "#fb923c",
+        "points": [
+          "CPA 39,498원 — 전주 대비 18,051원 대폭 개선",
+          "CVR 6.64% (+2.57%p 상승)"
+        ],
+        "conv": 15,
+        "cost": 592468,
+        "cpa": 39498,
+        "eff_score": 0.71
+      },
+      {
+        "branch": "일산",
+        "grade": "최우수",
+        "grade_color": "#4ade80",
+        "points": [
+          "CPA 18,484원 — 전주 대비 +1,393원",
+          "CVR 6.95% (-2.90%p 하락)",
+          "효율점수 1.54 — 비용 대비 전환 비중 탁월",
+          "TARGET CPA 대비 38% 절감"
+        ],
+        "conv": 23,
+        "cost": 425130,
+        "cpa": 18484,
+        "eff_score": 1.54
+      },
+      {
+        "branch": "대구",
+        "grade": "최우수",
+        "grade_color": "#4ade80",
+        "points": [
+          "CPA 18,884원 — 전주 대비 14,012원 대폭 개선",
+          "CVR 9.15% (+3.70%p) — 급등",
+          "효율점수 1.50 — 비용 대비 전환 비중 탁월",
+          "TARGET CPA 대비 37% 절감"
+        ],
+        "conv": 26,
+        "cost": 490978,
+        "cpa": 18884,
+        "eff_score": 1.5
+      },
+      {
+        "branch": "창원",
+        "grade": "약세",
+        "grade_color": "#f87171",
+        "points": [
+          "CPA 48,190원 — 전주 대비 2,659원 소폭 개선",
+          "효율점수 0.59 — 비용 대비 전환 비중 불균형",
+          "TARGET CPA의 1.6배 — 개선 필요"
+        ],
+        "conv": 12,
+        "cost": 578280,
+        "cpa": 48190,
+        "eff_score": 0.59
+      },
+      {
+        "branch": "천안",
+        "grade": "보통",
+        "grade_color": "#fb923c",
+        "points": [
+          "CPA 31,202원 — 전주 대비 +5,045원 상승"
+        ],
+        "conv": 13,
+        "cost": 405622,
+        "cpa": 31202,
+        "eff_score": 0.92
+      },
+      {
+        "branch": "대전",
+        "grade": "보통",
+        "grade_color": "#fb923c",
+        "points": [
+          "CPA 29,210원 — 전주 대비 5,031원 개선",
+          "CVR 7.22% (+1.68%p 상승)"
+        ],
+        "conv": 13,
+        "cost": 379729,
+        "cpa": 29210,
+        "eff_score": 0.97
+      }
+    ],
+    "tier_analysis": [
+      {
+        "tier": "TIER1",
+        "title": "핵심 성장 소재",
+        "color": "#4ade80",
+        "desc": "CPA ≤ TARGET + CVR ≥ 5%",
+        "count": 5,
+        "items": [
+          {
+            "name": "주사형비만치료제 고민끝에 50대부부 -32kg",
+            "cpa": 17521.0,
+            "cvr": 7.72,
+            "ctr": 0.73,
+            "conv": 19,
+            "cost": 332898,
+            "branches": [
+              "대구",
+              "대전",
+              "서울"
+            ]
+          },
+          {
+            "name": "다이어트의적 밥빵면 (대구 외 6개)",
+            "cpa": 18033.0,
+            "cvr": 9.18,
+            "ctr": 1.14,
+            "conv": 39,
+            "cost": 703275,
+            "branches": [
+              "대구",
+              "대전",
+              "서울",
+              "수원",
+              "일산",
+              "창원",
+              "천안"
+            ]
+          },
+          {
+            "name": "10kg성공공식",
+            "cpa": 19823.0,
+            "cvr": 6.25,
+            "ctr": 0.48,
+            "conv": 3,
+            "cost": 59470,
+            "branches": [
+              "대구",
+              "대전",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "창원",
+              "천안"
+            ]
+          },
+          {
+            "name": "식욕억제주사이길수없는",
+            "cpa": 21914.0,
+            "cvr": 5.77,
+            "ctr": 0.41,
+            "conv": 3,
+            "cost": 65741,
+            "branches": [
+              "대구",
+              "대전",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "창원",
+              "천안"
+            ]
+          },
+          {
+            "name": "주사형비만치료제(the.hyunniverse)",
+            "cpa": 28161.0,
+            "cvr": 7.91,
+            "ctr": 0.41,
+            "conv": 14,
+            "cost": 394248,
+            "branches": [
+              "대전",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "천안"
+            ]
+          }
+        ],
+        "insights": [
+          "'주사형비만치료제 고민끝에 50대부부 -32kg' (CPA 17,521원) → 미집행 5개 지점 확장 가능",
+          "'주사형비만치료제(the.hyunniverse)' (CPA 28,161원) → 미집행 2개 지점 확장 가능",
+          "TIER1 소재 총 전환 78건"
+        ]
+      },
+      {
+        "tier": "TIER3",
+        "title": "CVR 양호 / CPA 초과",
+        "color": "#a78bfa",
+        "desc": "CVR ≥ 5% but CPA > TARGET",
+        "count": 1,
+        "items": [
+          {
+            "name": "식욕억제주사실패 마지막 (대구 외 5개)",
+            "cpa": 33927.0,
+            "cvr": 7.01,
+            "ctr": 0.69,
+            "conv": 53,
+            "cost": 1798137,
+            "branches": [
+              "대구",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "창원"
+            ]
+          }
+        ],
+        "insights": [
+          "'식욕억제주사실패 마지막 (대구 외 5개)' CPA 3,877원 초과 — 미세 조정으로 TIER1 승격 가능성"
+        ]
+      },
+      {
+        "tier": "TIER4",
+        "title": "개선 또는 OFF 검토",
+        "color": "#f87171",
+        "desc": "CPA 초과 + CVR 미달",
+        "count": 4,
+        "items": [
+          {
+            "name": "운동안해도되는",
+            "cpa": 51024.0,
+            "cvr": 4.83,
+            "ctr": 0.43,
+            "conv": 7,
+            "cost": 357170,
+            "branches": [
+              "대구",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "창원",
+              "천안"
+            ]
+          },
+          {
+            "name": "다이어트의적 밥빵면 (부평)",
+            "cpa": 67764.0,
+            "cvr": 2.56,
+            "ctr": 1.12,
+            "conv": 1,
+            "cost": 67764,
+            "branches": [
+              "부평"
+            ]
+          },
+          {
+            "name": "비만주사는입만막을뿐",
+            "cpa": 71062.0,
+            "cvr": 3.57,
+            "ctr": 0.26,
+            "conv": 3,
+            "cost": 213185,
+            "branches": [
+              "대구",
+              "대전",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "창원",
+              "천안"
+            ]
+          },
+          {
+            "name": "밥빵면안당기는원장님(itsmeyuriwon)",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.78,
+            "conv": 0,
+            "cost": 221160,
+            "branches": [
+              "대구",
+              "대전",
+              "부평",
+              "서울",
+              "창원",
+              "천안",
+              "수원"
+            ]
+          }
+        ],
+        "insights": [
+          "'밥빵면안당기는원장님(itsmeyuriwon)' 비용 22.1만원 — OFF 또는 리뉴얼 검토",
+          "'비만주사는입만막을뿐' 비용 21.3만원 — OFF 또는 리뉴얼 검토",
+          "'운동안해도되는' 비용 35.7만원 — OFF 또는 리뉴얼 검토"
+        ]
+      },
+      {
+        "tier": "LOW_VOLUME",
+        "title": "저볼륨 (판단 보류)",
+        "color": "#6b7280",
+        "desc": "클릭 < 50 or 비용 < 5만원",
+        "count": 16,
+        "items": [
+          {
+            "name": "굶지않는다이어트(창원잇츠)",
+            "cpa": 5890.0,
+            "cvr": 11.76,
+            "ctr": 0.78,
+            "conv": 2,
+            "cost": 11780,
+            "branches": [
+              "창원"
+            ]
+          },
+          {
+            "name": "맘껏먹는 다이어트 한달후기",
+            "cpa": 23030.0,
+            "cvr": 4.17,
+            "ctr": 1.31,
+            "conv": 1,
+            "cost": 23030,
+            "branches": [
+              "일산"
+            ]
+          },
+          {
+            "name": "4050나잇살 이유는 여기에",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.14,
+            "conv": 0,
+            "cost": 7508,
+            "branches": [
+              "수원"
+            ]
+          },
+          {
+            "name": "4050다이어트비밀",
+            "cpa": null,
+            "cvr": null,
+            "ctr": null,
+            "conv": 0,
+            "cost": 0,
+            "branches": [
+              "부평"
+            ]
+          },
+          {
+            "name": "50대다이어트대사",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.45,
+            "conv": 0,
+            "cost": 42084,
+            "branches": [
+              "대구",
+              "대전",
+              "부평",
+              "서울",
+              "수원",
+              "일산",
+              "창원",
+              "천안"
+            ]
+          },
+          {
+            "name": "건강한다이어트(대구,박고경)",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.55,
+            "conv": 0,
+            "cost": 7173,
+            "branches": [
+              "대구"
+            ]
+          },
+          {
+            "name": "건강한다이어트(박고경)",
+            "cpa": null,
+            "cvr": null,
+            "ctr": null,
+            "conv": 0,
+            "cost": 0,
+            "branches": [
+              "부평"
+            ]
+          },
+          {
+            "name": "건강한다이어트(천안, 박고경)",
+            "cpa": null,
+            "cvr": null,
+            "ctr": null,
+            "conv": 0,
+            "cost": 0,
+            "branches": [
+              "천안"
+            ]
+          },
+          {
+            "name": "먹고싶은거다먹는(수원잇츠)",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.41,
+            "conv": 0,
+            "cost": 2896,
+            "branches": [
+              "일산",
+              "창원"
+            ]
+          },
+          {
+            "name": "비만주사가놓친것",
+            "cpa": null,
+            "cvr": null,
+            "ctr": 0.0,
+            "conv": 0,
+            "cost": 890,
+            "branches": [
+              "서울",
+              "일산",
+              "창원",
+              "천안",
+              "대구"
+            ]
+          },
+          {
+            "name": "식욕억제주사실패 마지막 (대전)",
+            "cpa": null,
+            "cvr": null,
+            "ctr": null,
+            "conv": 0,
+            "cost": 0,
+            "branches": [
+              "대전"
+            ]
+          },
+          {
+            "name": "연예인다이어트(일산 플랜비)",
+            "cpa": null,
+            "cvr": null,
+            "ctr": 0.0,
+            "conv": 0,
+            "cost": 360,
+            "branches": [
+              "일산"
+            ]
+          },
+          {
+            "name": "연예인다이어트(플랜비)",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.2,
+            "conv": 0,
+            "cost": 30241,
+            "branches": [
+              "대전",
+              "부평",
+              "서울",
+              "수원",
+              "창원",
+              "천안",
+              "대구"
+            ]
+          },
+          {
+            "name": "의사가권하지않는4050",
+            "cpa": null,
+            "cvr": null,
+            "ctr": 0.0,
+            "conv": 0,
+            "cost": 1364,
+            "branches": [
+              "서울"
+            ]
+          },
+          {
+            "name": "주사형 비만치료제보다 더중요한이것",
+            "cpa": null,
+            "cvr": null,
+            "ctr": null,
+            "conv": 0,
+            "cost": 0,
+            "branches": [
+              "천안"
+            ]
+          },
+          {
+            "name": "주사형비만치료제 10년은",
+            "cpa": null,
+            "cvr": 0.0,
+            "ctr": 0.31,
+            "conv": 0,
+            "cost": 16963,
+            "branches": [
+              "천안"
+            ]
+          }
+        ],
+        "insights": [
+          "전환 0건 소재 14개 — 비용 미미하나 정리 검토"
+        ]
+      }
+    ],
+    "cross_findings": [
+      {
+        "creative": "비만주사는입만막을뿐",
+        "type": "지점 편차",
+        "color": "#fb923c",
+        "detail": "최저 대전 CPA 1,454원 vs 최고 창원 CPA 23,851원 (16.4배)",
+        "ratio": 16.403713892709767
+      },
+      {
+        "creative": "식욕억제주사실패 마지막 (서울 외 5개)",
+        "type": "지점 편차",
+        "color": "#fb923c",
+        "detail": "최저 서울 CPA 9,849원 vs 최고 수원 CPA 116,789원 (11.9배)",
+        "ratio": 11.857955122347446
+      },
+      {
+        "creative": "다이어트의적 밥빵면 (서울 외 6개)",
+        "type": "지점 편차",
+        "color": "#fb923c",
+        "detail": "최저 서울 CPA 6,927원 vs 최고 대전 CPA 47,817원 (6.9배)",
+        "ratio": 6.902988306626245
+      },
+      {
+        "creative": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "type": "지점 편차",
+        "color": "#fb923c",
+        "detail": "최저 서울 CPA 12,469원 vs 최고 대전 CPA 48,682원 (3.9배)",
+        "ratio": 3.904242521453204
+      },
+      {
+        "creative": "주사형비만치료제(the.hyunniverse)",
+        "type": "지점 편차",
+        "color": "#fb923c",
+        "detail": "최저 일산 CPA 9,554원 vs 최고 천안 CPA 36,345원 (3.8배)",
+        "ratio": 3.804165794431652
+      },
+      {
+        "creative": "식욕억제주사이길수없는",
+        "type": "지점 특화",
+        "color": "#60a5fa",
+        "detail": "부평에서만 전환 3건 — 나머지 3개 지점 전환 0건 (비용 소진 중)",
+        "ratio": 0
+      }
+    ],
+    "off_findings": [
+      {
+        "creative": "식욕억제주사실패 마지막",
+        "type": "고비용 OFF",
+        "color": "#f87171",
+        "detail": "비용 25.4만원, CPA 28,267원 — OFF 상태 비용 소진"
+      },
+      {
+        "creative": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "type": "고비용 OFF",
+        "color": "#f87171",
+        "detail": "비용 20.6만원, CPA 14,720원 — OFF 상태 비용 소진"
+      },
+      {
+        "creative": "주사형비만치료제 고민끝에 50대부부 -32kg",
+        "type": "ON보다 우수",
+        "color": "#fb923c",
+        "detail": "OFF CPA 14,720원 < ON CPA 17,521원 — 재등록 검토"
+      },
+      {
+        "creative": "주사형비만치료제(the.hyunniverse)",
+        "type": "ON보다 우수",
+        "color": "#fb923c",
+        "detail": "OFF CPA 14,025원 < ON CPA 28,161원 — 재등록 검토"
+      }
+    ],
+    "actions": {
+      "immediate": [
+        {
+          "action": "'주사형비만치료제 고민끝에 50대부부 -32kg' → 부평, 수원, 일산, 창원, 천안 확장",
+          "reason": "CPA 17,521원 (TIER1) · 미집행 5개 지점",
+          "priority": 17521.0
+        },
+        {
+          "action": "'주사형비만치료제(the.hyunniverse)' → 대구, 창원 확장",
+          "reason": "CPA 28,161원 (TIER1) · 미집행 2개 지점",
+          "priority": 28161.0
+        },
+        {
+          "action": "'다이어트의적 밥빵면 (부평)' OFF 검토",
+          "reason": "CPA 67,764원 (TARGET의 2.3배)",
+          "priority": 999999
+        },
+        {
+          "action": "'비만주사는입만막을뿐' OFF 검토",
+          "reason": "CPA 71,062원 (TARGET의 2.4배)",
+          "priority": 999999
+        }
+      ],
+      "monitoring": [
+        "부평 CPA +21,720원 급등 — 소재 피로도/경쟁 심화 확인",
+        "'50대다이어트대사' TIER3→저볼륨 ↓ — 지속 모니터링",
+        "'건강한다이어트(대구,박고경)' TIER4→저볼륨 ↓ — 지속 모니터링",
+        "'맘껏먹는 다이어트 한달후기' TIER3→저볼륨 ↓ — 지속 모니터링",
+        "'비만주사는입만막을뿐' TIER1→TIER4 ↓ — 지속 모니터링",
+        "'연예인다이어트(일산 플랜비)' TIER1→저볼륨 ↓ — 지속 모니터링",
+        "'연예인다이어트(플랜비)' TIER3→저볼륨 ↓ — 지속 모니터링",
+        "'주사형 비만치료제보다 더중요한이것' TIER1→저볼륨 ↓ — 지속 모니터링",
+        "주 후반 전환 감소 (97건→46건) — 하락 원인 점검"
+      ],
+      "monthly": "현재 75건 / 목표 1131건 (6.6%) — 잔여 1056건 필요, 예상 581건 (51.4%)"
+    }
+  }
+}

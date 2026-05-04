@@ -1,0 +1,30 @@
+{
+  "updated": "2026-05-04 02:25:37",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "토",
+      "action_type": "weekday_boost",
+      "title": "토요일 예산 가중 검토",
+      "reason": "토요일 효율점수 1.14 (편차 0.34) — CPA 25,309원, 전환비중 16.7%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "토"
+      },
+      "evidence": {
+        "weekday": "토",
+        "eff_score": 1.14,
+        "variance": 0.34
+      }
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "high": 0,
+    "medium": 1,
+    "low": 0
+  }
+}

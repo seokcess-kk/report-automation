@@ -1,0 +1,48 @@
+{
+  "updated": "2026-05-05 02:14:04",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "medium",
+      "scope": "hour",
+      "target": "7시",
+      "action_type": "dayparting",
+      "title": "07시 시간대 송출 축소 검토",
+      "reason": "CPA 44,205원 (평균 29,075원의 1.5배), 비용비중 5.3%",
+      "recommended_value": {
+        "action": "reduce_hour_dayparting",
+        "hour": 7
+      },
+      "evidence": {
+        "hour_cpa": 44205,
+        "avg_cpa": 29075,
+        "cost_share": 5.3
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "일",
+      "action_type": "weekday_boost",
+      "title": "일요일 예산 가중 검토",
+      "reason": "일요일 효율점수 1.13 (편차 0.31) — CPA 25,815원, 전환비중 9.5%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "일"
+      },
+      "evidence": {
+        "weekday": "일",
+        "eff_score": 1.13,
+        "variance": 0.31
+      }
+    }
+  ],
+  "summary": {
+    "total": 2,
+    "high": 0,
+    "medium": 2,
+    "low": 0
+  }
+}

@@ -108,6 +108,7 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
 .hm-hdr{font-size:10px;font-weight:600;color:var(--tx2);text-align:center;display:flex;align-items:center;justify-content:center;height:30px}
 .hm-lbl{font-size:11px;color:var(--tx2);display:flex;align-items:center;height:44px;padding-right:6px}
 .num{font-family:"DM Mono",monospace}
+#branch-media-tbl th,#branch-media-tbl td{text-align:center}
 .good{color:var(--acc)} .bad{color:var(--red)} .warn{color:var(--warn)} .muted{color:var(--tx2)}
 ::-webkit-scrollbar{width:5px;height:5px} ::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
 </style>
@@ -221,6 +222,8 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
   </div>
   <div class="sec"><div class="sec-lbl">지점별 상세</div>
     <div class="card tw"><table id="branch-tbl"></table></div></div>
+  <div class="sec"><div class="sec-lbl">지점별 매체 지표</div>
+    <div class="card tw"><table id="branch-media-tbl"></table></div></div>
   <div class="sec"><div class="sec-lbl">소재×지점 CPA 편차</div>
     <div class="card tw"><table id="gap-tbl"></table></div></div>
   <div class="sec"><div class="sec-lbl">지점×나이대 CPA 히트맵</div>
@@ -671,6 +674,46 @@ function buildBranch(){
       <td class="num">${b.전환비중||0}%</td>
       <td class="num ${(b.효율점수||0)>=1?"good":(b.효율점수||0)>=0.7?"warn":"bad"}">${(b.효율점수||0).toFixed(2)}</td>
     </tr>`).join("")}</tbody>`;
+
+  // 지점별 매체 지표 (광고비/노출/CPM/클릭/CPC/CTR/매체DB/CVR + 총계)
+  const brOrder=['서울','부평','수원','일산','대구','창원','천안','대전'];
+  const brMedia=[...D.branch].sort((a,b)=>brOrder.indexOf(a.branch)-brOrder.indexOf(b.branch));
+  const tot=brMedia.reduce((s,b)=>({
+    cost:s.cost+(b.총비용||0), impr:s.impr+(b.총노출||0),
+    clicks:s.clicks+(b.총클릭||0), conv:s.conv+(b.총전환||0),
+  }),{cost:0,impr:0,clicks:0,conv:0});
+  const cpm=(c,i)=>i>0?Math.round(c/i*1000):null;
+  const cpc=(c,k)=>k>0?Math.round(c/k):null;
+  const ctrV=(k,i)=>i>0?(k/i*100):null;
+  const cvrV=(v,k)=>k>0?(v/k*100):null;
+  document.getElementById("branch-media-tbl").innerHTML=`
+    <thead><tr><th>지점</th><th title="광고 집행 비용">광고비</th><th title="광고 노출 횟수">노출수</th>
+      <th title="1,000회 노출당 비용">CPM</th><th title="광고 클릭 수">클릭수</th>
+      <th title="클릭 1회당 비용">CPC</th><th title="클릭률 (클릭÷노출)">CTR</th>
+      <th title="매체 추적 전환(DB) 수">매체 DB</th><th title="전환율 (전환÷클릭)">CVR</th></tr></thead>
+    <tbody>${brMedia.map(b=>`<tr>
+      <td style="font-weight:700">${b.branch}</td>
+      <td class="num">${fmt(b.총비용)}</td>
+      <td class="num">${fmt(b.총노출)}</td>
+      <td class="num">${fmt(cpm(b.총비용,b.총노출))}</td>
+      <td class="num">${fmt(b.총클릭)}</td>
+      <td class="num">${fmt(cpc(b.총비용,b.총클릭))}</td>
+      <td class="num">${b.CTR!=null?b.CTR.toFixed(1)+"%":"-"}</td>
+      <td class="num">${b.총전환||0}</td>
+      <td class="num">${b.CVR!=null?b.CVR.toFixed(1)+"%":"-"}</td>
+    </tr>`).join("")}
+    <tr style="font-weight:700;border-top:2px solid var(--bd);background:var(--s2)">
+      <td>총계</td>
+      <td class="num">${fmt(tot.cost)}</td>
+      <td class="num">${fmt(tot.impr)}</td>
+      <td class="num">${fmt(cpm(tot.cost,tot.impr))}</td>
+      <td class="num">${fmt(tot.clicks)}</td>
+      <td class="num">${fmt(cpc(tot.cost,tot.clicks))}</td>
+      <td class="num">${ctrV(tot.clicks,tot.impr)!=null?ctrV(tot.clicks,tot.impr).toFixed(1)+"%":"-"}</td>
+      <td class="num">${tot.conv}</td>
+      <td class="num">${cvrV(tot.conv,tot.clicks)!=null?cvrV(tot.conv,tot.clicks).toFixed(1)+"%":"-"}</td>
+    </tr></tbody>`;
+
   document.getElementById("gap-tbl").innerHTML=`
     <thead><tr><th>소재명</th><th>TIER</th><th>격차</th><th>최우수 지점</th>
       <th>최우수 CPA</th><th>최저 지점</th><th>최저 CPA</th></tr></thead>

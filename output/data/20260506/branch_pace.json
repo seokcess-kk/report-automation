@@ -1,0 +1,454 @@
+{
+  "updated": "2026-05-06",
+  "month": "2026-05",
+  "days_total": 31,
+  "days_elapsed": 6,
+  "date_progress": 19.4,
+  "overall": {
+    "budget_total": 22000000,
+    "cost_so_far": 1808319,
+    "budget_pct": 8.2,
+    "conv_target": 1131,
+    "conv_so_far": 105,
+    "conv_pct": 9.3,
+    "proj_conv": 542,
+    "proj_pct": 47.9,
+    "target_cpa": 17222,
+    "status": "warn"
+  },
+  "branches": [
+    {
+      "branch": "서울",
+      "budget": 2000000,
+      "cost_so_far": 351682,
+      "budget_pct": 17.6,
+      "conv_target": 150,
+      "conv_so_far": 34,
+      "conv_pct": 22.7,
+      "proj_conv": 176,
+      "proj_pct": 117.3,
+      "clicks": 283,
+      "impressions": 29932,
+      "cpa": 10344,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 60,
+      "status": "ok",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 65358.0,
+          "conv": 10.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 64642.0,
+          "conv": 5.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 65179.0,
+          "conv": 7.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 65165.0,
+          "conv": 6.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 65038.0,
+          "conv": 3.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 26300.0,
+          "conv": 3.0
+        }
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 2,
+        "TIER1": 2,
+        "TIER3": 1,
+        "LOW_VOLUME": 1
+      }
+    },
+    {
+      "branch": "부평",
+      "budget": 4000000,
+      "cost_so_far": 309231,
+      "budget_pct": 7.7,
+      "conv_target": 150,
+      "conv_so_far": 19,
+      "conv_pct": 12.7,
+      "proj_conv": 98,
+      "proj_pct": 65.3,
+      "clicks": 166,
+      "impressions": 28748,
+      "cpa": 16275,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 95,
+      "status": "ok",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 35304.0,
+          "conv": 5.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 81250.0,
+          "conv": 5.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 63958.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 66568.0,
+          "conv": 7.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 50315.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 11836.0,
+          "conv": 0.0
+        }
+      ],
+      "tier_distribution": {
+        "TIER3": 2,
+        "UNCLASSIFIED": 2,
+        "TIER1": 2
+      }
+    },
+    {
+      "branch": "수원",
+      "budget": 4000000,
+      "cost_so_far": 157963,
+      "budget_pct": 3.9,
+      "conv_target": 201,
+      "conv_so_far": 9,
+      "conv_pct": 4.5,
+      "proj_conv": 46,
+      "proj_pct": 22.9,
+      "clicks": 84,
+      "impressions": 14557,
+      "cpa": 17551,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 102,
+      "status": "warn",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 53263.0,
+          "conv": 3.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 24090.0,
+          "conv": 3.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 35755.0,
+          "conv": 2.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 23881.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 14310.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 6664.0,
+          "conv": 0.0
+        }
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 2,
+        "TIER1": 2,
+        "TIER3": 1
+      }
+    },
+    {
+      "branch": "일산",
+      "budget": 2000000,
+      "cost_so_far": 274195,
+      "budget_pct": 13.7,
+      "conv_target": 150,
+      "conv_so_far": 18,
+      "conv_pct": 12.0,
+      "proj_conv": 93,
+      "proj_pct": 62.0,
+      "clicks": 214,
+      "impressions": 20867,
+      "cpa": 15233,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 88,
+      "status": "ok",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 61046.0,
+          "conv": 4.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 56602.0,
+          "conv": 5.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 43769.0,
+          "conv": 4.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 55409.0,
+          "conv": 4.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 41584.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 15785.0,
+          "conv": 1.0
+        }
+      ],
+      "tier_distribution": {
+        "TIER3": 2,
+        "UNCLASSIFIED": 2,
+        "TIER1": 2
+      }
+    },
+    {
+      "branch": "대구",
+      "budget": 3000000,
+      "cost_so_far": 206617,
+      "budget_pct": 6.9,
+      "conv_target": 150,
+      "conv_so_far": 7,
+      "conv_pct": 4.7,
+      "proj_conv": 36,
+      "proj_pct": 24.0,
+      "clicks": 124,
+      "impressions": 19752,
+      "cpa": 29517,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 171,
+      "status": "danger",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 31337.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 32368.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 61685.0,
+          "conv": 4.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 52779.0,
+          "conv": 3.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 20015.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 8433.0,
+          "conv": 0.0
+        }
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 2,
+        "TIER1": 2,
+        "TIER3": 1
+      }
+    },
+    {
+      "branch": "창원",
+      "budget": 3000000,
+      "cost_so_far": 132997,
+      "budget_pct": 4.4,
+      "conv_target": 100,
+      "conv_so_far": 5,
+      "conv_pct": 5.0,
+      "proj_conv": 26,
+      "proj_pct": 26.0,
+      "clicks": 96,
+      "impressions": 13122,
+      "cpa": 26599,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 154,
+      "status": "danger",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 31564.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 31293.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 26195.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 22958.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 13416.0,
+          "conv": 2.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 7571.0,
+          "conv": 0.0
+        }
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 3,
+        "TIER1": 2,
+        "TIER3": 1
+      }
+    },
+    {
+      "branch": "천안",
+      "budget": 2000000,
+      "cost_so_far": 208030,
+      "budget_pct": 10.4,
+      "conv_target": 150,
+      "conv_so_far": 9,
+      "conv_pct": 6.0,
+      "proj_conv": 46,
+      "proj_pct": 30.7,
+      "clicks": 124,
+      "impressions": 17553,
+      "cpa": 23114,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 134,
+      "status": "warn",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 65978.0,
+          "conv": 6.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 64022.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 31535.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 17658.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 18626.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 10211.0,
+          "conv": 0.0
+        }
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 2,
+        "TIER1": 2,
+        "TIER3": 1
+      }
+    },
+    {
+      "branch": "대전",
+      "budget": 2000000,
+      "cost_so_far": 167604,
+      "budget_pct": 8.4,
+      "conv_target": 80,
+      "conv_so_far": 4,
+      "conv_pct": 5.0,
+      "proj_conv": 21,
+      "proj_pct": 26.2,
+      "clicks": 89,
+      "impressions": 12947,
+      "cpa": 41901,
+      "target_cpa": 17222,
+      "cpa_vs_target_pct": 243,
+      "status": "danger",
+      "sparkline": [
+        {
+          "date": "2026-05-01",
+          "cost": 28534.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-02",
+          "cost": 34366.0,
+          "conv": 1.0
+        },
+        {
+          "date": "2026-05-03",
+          "cost": 29939.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-04",
+          "cost": 16775.0,
+          "conv": 0.0
+        },
+        {
+          "date": "2026-05-05",
+          "cost": 48899.0,
+          "conv": 3.0
+        },
+        {
+          "date": "2026-05-06",
+          "cost": 9091.0,
+          "conv": 0.0
+        }
+      ],
+      "tier_distribution": {
+        "UNCLASSIFIED": 2,
+        "TIER1": 2,
+        "TIER3": 1
+      }
+    }
+  ]
+}

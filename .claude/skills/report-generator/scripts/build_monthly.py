@@ -49,7 +49,7 @@ def load_monthly_data(data_dir: str) -> tuple:
     """Parquet 파일 로드 및 ON/OFF 분리
 
     Returns:
-        tuple: (creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max)
+        tuple: (creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max, df_age)
 
     Raises:
         FileNotFoundError: 필수 파일이 없는 경우
@@ -57,6 +57,7 @@ def load_monthly_data(data_dir: str) -> tuple:
     creative_path = os.path.join(data_dir, "creative_tier.parquet")
     parsed_path = os.path.join(data_dir, "parsed.parquet")
     off_path = os.path.join(data_dir, "creative_off.parquet")
+    by_age_path = os.path.join(data_dir, "normalized_by_age.parquet")
 
     if not os.path.exists(creative_path) or not os.path.exists(parsed_path):
         raise FileNotFoundError(
@@ -94,7 +95,19 @@ def load_monthly_data(data_dir: str) -> tuple:
     else:
         date_min = date_max = pd.Timestamp.now()
 
-    return creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max
+    # 나이대 데이터 로드 + parsed_df의 ad_name → branch/creative_type 매핑 join
+    df_age = pd.DataFrame()
+    if os.path.exists(by_age_path):
+        df_age = pd.read_parquet(by_age_path)
+        if 'date' in df_age.columns:
+            df_age['date'] = pd.to_datetime(df_age['date'])
+        # ad_name 단위 메타 추출 (가장 흔한 값으로 대표 매핑)
+        meta_cols = [c for c in ['branch', 'creative_type', 'creative_name', 'is_off'] if c in parsed_df.columns]
+        if 'ad_name' in parsed_df.columns and meta_cols:
+            ad_meta = parsed_df[['ad_name'] + meta_cols].drop_duplicates('ad_name')
+            df_age = df_age.merge(ad_meta, on='ad_name', how='left')
+
+    return creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max, df_age
 
 
 def calculate_monthly_kpis(df_on: pd.DataFrame) -> tuple:
@@ -267,7 +280,7 @@ def build_monthly(data_dir: str, target_month: str = None):
     """
     try:
         # 데이터 로드
-        creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max = load_monthly_data(data_dir)
+        creative_df, parsed_df, df_on, df_off, off_path, date_min, date_max, df_age = load_monthly_data(data_dir)
     except FileNotFoundError as e:
         print(f"[ERROR] {e}")
         return None
@@ -294,6 +307,10 @@ def build_monthly(data_dir: str, target_month: str = None):
         df_off['date'] = pd.to_datetime(df_off['date'])
         df_off = df_off[(df_off['date'] >= month_start) & (df_off['date'] <= month_end)].copy()
 
+    # 나이대 데이터도 대상 월로 필터링 (parsed.parquet엔 age_group 없음 → 별도 소스)
+    if not df_age.empty and 'date' in df_age.columns:
+        df_age = df_age[(df_age['date'] >= month_start) & (df_age['date'] <= month_end)].copy()
+
     # 25-34 연령대 제외 (3월 기준 타겟 외 연령)
     exclude_ages = ['25-34']
     if 'age_group' in df_all.columns:
@@ -302,6 +319,8 @@ def build_monthly(data_dir: str, target_month: str = None):
         df_on = df_on[~df_on['age_group'].isin(exclude_ages)]
     if 'age_group' in df_off.columns:
         df_off = df_off[~df_off['age_group'].isin(exclude_ages)]
+    if not df_age.empty and 'age_group' in df_age.columns:
+        df_age = df_age[~df_age['age_group'].isin(exclude_ages)]
 
     # 필터 후 날짜 범위 갱신
     if 'date' in df_all.columns and len(df_all) > 0:
@@ -338,8 +357,9 @@ def build_monthly(data_dir: str, target_month: str = None):
     # 지점 리스트 (ON+OFF+FAIL 포함 - 실제 집행 전액 반영)
     branch_list = build_branch_list(df_all, total_cost, total_conv)
 
-    # 나이대 리스트 (ON+OFF+FAIL 포함)
-    age_list = build_age_list(df_all, total_cost, total_conv)
+    # 나이대 리스트 (ON+OFF+FAIL 포함) - parsed.parquet엔 age_group 없으므로 normalized_by_age 사용
+    age_source = df_age if not df_age.empty and 'age_group' in df_age.columns else df_all
+    age_list = build_age_list(age_source, total_cost, total_conv)
 
     # ========== hook_compare (신규 vs 재가공 - df_on 대상 월 기준) ==========
     hook_list = []
@@ -661,11 +681,13 @@ def build_monthly(data_dir: str, target_month: str = None):
         cross_gap.sort(key=lambda x: x['ratio'] or 0, reverse=True)
 
     # ========== hm_ctr, hm_cvr (소재유형×나이대 히트맵) - Unknown 제외, ON+OFF 포함 ==========
+    # 히트맵은 age_group이 필요 → df_age(normalized_by_age + ad_meta join) 사용
+    hm_source = df_age if not df_age.empty and 'age_group' in df_age.columns else df_all
     hm_ctr = []
     hm_cvr = []
-    if 'creative_type' in df_all.columns and 'age_group' in df_all.columns:
+    if 'creative_type' in hm_source.columns and 'age_group' in hm_source.columns:
         # Unknown 제외
-        df_hm_filtered = df_all[~df_all['age_group'].str.lower().str.contains('unknown', na=False)]
+        df_hm_filtered = hm_source[~hm_source['age_group'].str.lower().str.contains('unknown', na=False)]
         agg_dict = {
             'clicks': ('clicks', 'sum'), 'impr': ('impressions', 'sum'), 'conv': ('conversions', 'sum'),
         }
@@ -683,9 +705,9 @@ def build_monthly(data_dir: str, target_month: str = None):
 
     # ========== hm_br_age (지점×나이대 히트맵) - Unknown 제외, ON+OFF 포함 ==========
     hm_br_age = []
-    if 'branch' in df_all.columns and 'age_group' in df_all.columns:
+    if 'branch' in hm_source.columns and 'age_group' in hm_source.columns:
         # Unknown 제외
-        df_br_age_filtered = df_all[~df_all['age_group'].str.lower().str.contains('unknown', na=False)]
+        df_br_age_filtered = hm_source[~hm_source['age_group'].str.lower().str.contains('unknown', na=False)]
         br_age_agg = df_br_age_filtered.groupby(['branch', 'age_group']).agg(
             cost=('cost', 'sum'), conv=('conversions', 'sum'),
         ).reset_index()
@@ -960,6 +982,8 @@ def generate_html(D: dict, month: str) -> str:
     html = re.sub(r'\d{4}년 \d{1,2}월 먼슬리 리포트', f'{year}년 {mon}월 먼슬리 리포트', html)
     html = re.sub(r'분석 기간 <span>[^<]+</span>', f'분석 기간 <span>{D["period"]}</span>', html)
     html = re.sub(r'\d{1,2}월 월간 KPI', f'{mon}월 월간 KPI', html)
+    target_conv = D.get('monthly_target_conv', 0)
+    html = re.sub(r'전환 목표 <span>[^<]+</span>', f'전환 목표 <span>{target_conv:,}건</span>', html)
 
     return html
 

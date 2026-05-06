@@ -273,7 +273,7 @@ def fetch_and_save(
         audience_metrics = [
             'spend', 'impressions', 'clicks', 'ctr',
             'conversion', 'cost_per_conversion', 'conversion_rate',
-            METRIC_REACH,
+            METRIC_LANDING, METRIC_REACH,
         ]
         metrics = audience_metrics + META_FIELDS
         label = '일별 × 광고 × 나이대 (AUDIENCE)'

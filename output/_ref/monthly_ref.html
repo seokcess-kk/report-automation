@@ -66,6 +66,8 @@ nav{position:sticky;top:0;z-index:100;background:rgba(11,13,18,.95);backdrop-fil
 .ic-ti{font-size:14px;font-weight:700;margin-bottom:8px}
 .ic-pt{font-size:12px;color:var(--tx2);padding:3px 0 3px 10px;border-left:2px solid var(--bd);margin:3px 0}
 .tw{overflow-x:auto}
+select{background:var(--s2);color:var(--tx);border:1px solid var(--bd)}
+select option{background:var(--s1);color:var(--tx)}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{background:var(--s2);color:var(--tx2);font-weight:600;font-size:10px;letter-spacing:.06em;
   text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
@@ -227,7 +229,7 @@ tr:last-child td{border-bottom:none} tr:hover td{background:rgba(255,255,255,.01
     <div class="card">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
         <label style="font-size:12px;color:var(--tx2)">지점 선택</label>
-        <select id="branch-creative-select" style="padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--tx1);font-size:12px;cursor:pointer"></select>
+        <select id="branch-creative-select" style="padding:6px 12px;border:1px solid var(--bd);border-radius:6px;background:var(--s2);color:var(--tx);font-size:12px;cursor:pointer"></select>
         <span id="branch-creative-count" style="font-size:11px;color:var(--tx3)"></span>
       </div>
       <div class="tw"><table id="branch-creative-tbl"></table></div>

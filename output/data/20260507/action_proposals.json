@@ -1,0 +1,66 @@
+{
+  "updated": "2026-05-07 09:54:39",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,462원, 전환 15건 (목표 17,500원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17462,
+        "off_conv": 15,
+        "target_cpa": 17500
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "medium",
+      "scope": "hour",
+      "target": "7시",
+      "action_type": "dayparting",
+      "title": "07시 시간대 송출 축소 검토",
+      "reason": "CPA 44,680원 (평균 29,089원의 1.5배), 비용비중 5.3%",
+      "recommended_value": {
+        "action": "reduce_hour_dayparting",
+        "hour": 7
+      },
+      "evidence": {
+        "hour_cpa": 44680,
+        "avg_cpa": 29089,
+        "cost_share": 5.3
+      }
+    },
+    {
+      "id": "p003",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "일",
+      "action_type": "weekday_boost",
+      "title": "일요일 예산 가중 검토",
+      "reason": "일요일 효율점수 1.13 (편차 0.32) — CPA 25,811원, 전환비중 9.5%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "일"
+      },
+      "evidence": {
+        "weekday": "일",
+        "eff_score": 1.13,
+        "variance": 0.32
+      }
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "high": 0,
+    "medium": 3,
+    "low": 0
+  }
+}

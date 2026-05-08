@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>다이트한의원 · 4월 나이대 드릴다운 분석</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --bg:#09090b;--s1:#18181b;--s2:#27272a;--bd:#27272a;
+  --acc:#818cf8;--blue:#38bdf8;--pur:#a78bfa;--warn:#fbbf24;--red:#f87171;--green:#34d399;
+  --tx:#f4f4f5;--tx2:#a1a1aa;--tx3:#52525b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);
+  font-family:'Pretendard Variable',Pretendard,-apple-system,system-ui,'Noto Sans KR',sans-serif;
+  font-size:14px;line-height:1.6;letter-spacing:-0.005em;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{letter-spacing:-0.015em}
+.hdr{background:linear-gradient(180deg,#0c0c10 0%,#09090b 100%);border-bottom:1px solid var(--bd);padding:48px 32px 36px}
+.hdr-inner{max-width:1180px;margin:0 auto}
+.brand{font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--acc);text-transform:uppercase;margin-bottom:10px}
+.hdr-title{font-size:30px;font-weight:900;letter-spacing:-.025em;margin-bottom:6px}
+.hdr-sub{font-size:14px;color:var(--tx2);margin-bottom:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:5px 14px;font-size:12px;color:var(--tx2)}
+.chip span{color:var(--tx);font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding:36px 24px}
+.sec{margin-bottom:60px}
+.sec-num{font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--acc);text-transform:uppercase;margin-bottom:6px}
+.sec-title{font-size:22px;font-weight:900;margin-bottom:8px}
+.sec-desc{font-size:13px;color:var(--tx2);margin-bottom:24px;max-width:760px;line-height:1.7}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:24px}
+.card-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.card-sub{font-size:11px;color:var(--tx2);margin-bottom:18px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:780px){.g2,.g3{grid-template-columns:1fr}}
+
+/* KPI strip */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--bd);border-radius:10px;overflow:hidden;margin-bottom:24px}
+@media(max-width:700px){.kpi-strip{grid-template-columns:repeat(2,1fr)}}
+.kc{background:var(--s1);padding:18px}
+.kc-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--tx2);text-transform:uppercase;margin-bottom:8px}
+.kc-val{font-size:20px;font-weight:900;font-family:"DM Mono",monospace}
+.kc-sub{font-size:11px;color:var(--tx2);margin-top:4px}
+
+/* Exec summary cards */
+.exec{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.ex-card{background:var(--s1);border:1px solid var(--bd);border-left:3px solid var(--ec,var(--acc));border-radius:10px;padding:18px 22px}
+.ex-tag{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--ec,var(--acc));margin-bottom:6px;text-transform:uppercase}
+.ex-ti{font-size:15px;font-weight:800;margin-bottom:8px;line-height:1.4}
+.ex-bd{font-size:12.5px;color:var(--tx2);line-height:1.7}
+.ex-bd b{color:var(--tx);font-weight:700}
+
+/* Matrix */
+.mtx{display:grid;gap:1px;background:var(--bd);border-radius:8px;overflow:hidden;font-size:11px}
+.mtx-r{display:grid;background:var(--s1)}
+.mtx-c{padding:9px 8px;text-align:center;border-right:1px solid var(--bd)}
+.mtx-c:last-child{border-right:none}
+.mtx-h{font-size:10px;color:var(--tx2);font-weight:600;background:var(--s2)}
+.mtx-lbl{text-align:left;padding-left:14px;color:var(--tx2);font-weight:600;background:var(--s2);font-size:11px}
+.mtx-cell{font-family:"DM Mono",monospace;font-weight:700}
+.mtx-cell .top{font-size:13px}
+.mtx-cell .sub{font-size:9px;color:var(--tx2);margin-top:2px}
+.mtx-cell.empty{color:var(--tx3)}
+
+/* Bars */
+.bar-row{display:grid;grid-template-columns:80px 1fr 70px 70px 80px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.bar-row:last-child{border-bottom:none}
+.bar-track{background:var(--s2);border-radius:4px;height:8px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:var(--bf,var(--acc))}
+.num{font-family:"DM Mono",monospace}
+
+/* Mismatch */
+.mm-row{display:grid;grid-template-columns:80px 1fr 1fr 100px 1fr;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--bd)}
+.mm-row:last-child{border-bottom:none}
+.mm-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--s2);position:relative}
+.mm-cost{height:100%;background:#7a8499}
+.mm-conv{height:100%;background:var(--acc)}
+.mm-gap{font-family:"DM Mono",monospace;font-weight:700;text-align:right;font-size:13px}
+.gap-pos{color:var(--green)}
+.gap-neg{color:var(--red)}
+.gap-zero{color:var(--tx2)}
+
+/* Top creative table */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--s2);color:var(--tx2);font-weight:600;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:9px 12px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tw{overflow-x:auto}
+td.cn{white-space:normal;min-width:160px;max-width:280px;word-break:keep-all}
+.bdg{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--s2);color:var(--tx2)}
+.bdg.t-진료셀프캠{background:rgba(96,165,250,.12);color:#60a5fa}
+.bdg.t-인플방문후기{background:rgba(167,139,250,.12);color:#a78bfa}
+.bdg.t-의료진정보{background:rgba(74,222,128,.12);color:#4ade80}
+.bdg.t-방문후기{background:rgba(251,146,60,.12);color:#fb923c}
+.bdg.t-진료QnA{background:rgba(248,113,113,.12);color:#f87171}
+.bdg.t-리얼모델후기{background:rgba(229,231,235,.12);color:#e5e7eb}
+.bdg.h-신규{background:rgba(74,222,128,.12);color:#4ade80}
+.bdg.h-재가공{background:rgba(167,139,250,.12);color:#a78bfa}
+
+/* Branch card */
+.br-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:18px;border-left:4px solid var(--bc,var(--bd))}
+.br-head{padding:18px 22px 14px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.br-name{font-size:18px;font-weight:900;letter-spacing:-.01em}
+.br-name .br-badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;background:var(--bc,var(--s2));color:var(--bg);margin-left:8px;vertical-align:middle}
+.br-meta{font-size:11px;color:var(--tx2);font-family:"DM Mono",monospace}
+.br-meta b{color:var(--tx);font-weight:700}
+.br-body{padding:18px 22px}
+.br-stry{background:rgba(129,140,248,.06);border-left:3px solid var(--acc);padding:12px 16px;border-radius:0 8px 8px 0;font-size:12.5px;color:var(--tx2);line-height:1.75;margin-bottom:16px}
+.br-stry b{color:var(--tx)}
+.br-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:680px){.br-grid{grid-template-columns:1fr}}
+.br-block{background:var(--s2);border-radius:8px;padding:13px 15px}
+.br-block-ti{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);margin-bottom:8px}
+.cell{display:grid;grid-template-columns:1fr 60px 65px 70px;gap:10px;font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--bd);align-items:center}
+.cell:last-child{border-bottom:none}
+.cell .c-tag{font-size:11px;color:var(--tx)}
+.cell .c-tag .ag{color:var(--tx2);font-weight:600}
+.cell .c-num{font-family:"DM Mono",monospace;text-align:right}
+.action-list{font-size:12.5px;color:var(--tx2);line-height:1.85}
+.action-list li{padding-left:14px;position:relative;margin-bottom:6px}
+.action-list li::before{content:"→";position:absolute;left:0;color:var(--acc);font-weight:700}
+.action-list li b{color:var(--tx)}
+
+/* Age gap */
+.gap-row{display:grid;grid-template-columns:1fr 90px 90px 90px 80px 1fr;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd);align-items:center;font-size:12px}
+.gap-row:last-child{border-bottom:none}
+.gap-cn{display:flex;flex-direction:column;gap:4px}
+.gap-cn .nm{font-weight:700;line-height:1.3}
+.gap-cn .ct{font-size:10px;color:var(--tx2)}
+.gap-c{text-align:center;font-family:"DM Mono",monospace;border-radius:4px;padding:5px 0;font-weight:700;font-size:11.5px}
+.gap-c.hi{background:rgba(74,222,128,.12);color:var(--green)}
+.gap-c.md{background:var(--s2);color:var(--tx)}
+.gap-c.lo{background:rgba(248,113,113,.12);color:var(--red)}
+.gap-c.na{color:var(--tx3);background:transparent}
+.gap-rec{font-size:11.5px;color:var(--tx2);line-height:1.55}
+.gap-rec b{color:var(--tx);font-weight:700}
+
+/* Footer */
+.foot{font-size:11px;color:var(--tx3);text-align:center;padding:30px 24px;border-top:1px solid var(--bd);margin-top:40px}
+
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div class="hdr"><div class="hdr-inner">
+  <div class="brand">다이트한의원 · TikTok 광고 · 1회성 분석 리포트</div>
+  <div class="hdr-title">4월 나이대 × 소재유형 × 지점 드릴다운</div>
+  <div class="hdr-sub">광고 운영 의사결정에 필요한 인사이트 — 어디에 더 쓰고, 어디서 빼고, 어떤 소재를 어떤 연령대에 좁힐지</div>
+  <div class="chips" id="hdr-chips"></div>
+  <div style="margin-top:14px;font-size:11px;color:var(--tx3);line-height:1.7;max-width:760px">
+    데이터 출처 · TikTok Marketing API AUDIENCE breakdown 재수집 (2026-05-07) · 4월 먼슬리 리포트와 비용·전환·클릭 100% 정합.
+    Unknown(연령 미식별) 행 — 비용 4.3만원, 전환 25건 — 은 어트리뷰션 지연 추정으로 비율 분석에서 별도 표기.
+  </div>
+</div></div>
+
+<div class="wrap">
+
+<!-- ============ 0. EXECUTIVE SUMMARY ============ -->
+<div class="sec">
+  <div class="sec-num">Executive Summary</div>
+  <div class="sec-title">한 페이지 요약</div>
+  <div class="sec-desc">4월 한 달 ON+OFF 통합 데이터 기준, 소재 매칭 실패 행과 0건 셀을 제외한 유효 데이터로 산출했습니다. Unknown(나이 미식별)과 25-34도 포함하되, 분석 의미는 별도로 명시했습니다.</div>
+  <div class="kpi-strip" id="kpi-strip"></div>
+  <div class="exec" id="exec"></div>
+</div>
+
+<!-- ============ A. 매트릭스 ============ -->
+<div class="sec">
+  <div class="sec-num">Section A · 매트릭스</div>
+  <div class="sec-title">소재유형 × 나이대 — 어디서 무엇이 통하는가</div>
+  <div class="sec-desc">행은 소재유형(6종), 열은 나이대(5종). 각 셀에 CVR(%) 위에 비용/전환을 표기했습니다. 셀 색상은 CVR 기준 — 진할수록 높음. 클릭 30 미만 셀은 회색 처리.</div>
+  <div class="card">
+    <div class="card-title">CVR 매트릭스</div>
+    <div class="card-sub">각 셀: 상단 CVR(%) / 하단 비용·전환</div>
+    <div class="mtx" id="matrix"></div>
+  </div>
+</div>
+
+<!-- ============ C. 미스매치 ============ -->
+<div class="sec">
+  <div class="sec-num">Section C · 효율 진단</div>
+  <div class="sec-title">나이대별 비용·전환 점유율 미스매치</div>
+  <div class="sec-desc">비용 점유율보다 전환 점유율이 낮으면 <b style="color:var(--red)">과대투자</b>(빨간색·−), 비용 대비 전환이 더 많으면 <b style="color:var(--green)">과소투자</b>(녹색·+) 신호입니다. 갭이 ±2%p 안쪽이면 균형으로 봅니다.</div>
+  <div class="card">
+    <div id="mm"></div>
+    <div class="ex-bd" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--bd);font-size:12px;color:var(--tx2);line-height:1.8" id="mm-insight"></div>
+  </div>
+</div>
+
+<!-- ============ B. 나이대별 TOP 소재 ============ -->
+<div class="sec">
+  <div class="sec-num">Section B · 나이대별 핵심 소재</div>
+  <div class="sec-title">35-44 · 45-54 · ≥55에서 누가 끌고 갔나</div>
+  <div class="sec-desc">전환수 Top 소재 (click ≥ 30 필터). 25-34는 표본이 작아 부분 노출만, Unknown은 어트리뷰션 지연 가능성이 커 표에서 제외합니다.</div>
+  <div id="top-by-age"></div>
+</div>
+
+<!-- ============ D. 지점별 가이드 ============ -->
+<div class="sec">
+  <div class="sec-num">Section D · 지점 운영 가이드</div>
+  <div class="sec-title">지점별 캐릭터와 5월 액션</div>
+  <div class="sec-desc">8개 지점 각각의 나이·소재유형 강·약점을 진단하고, 다음 달 운영 액션을 제시합니다. 동일 예산 안에서의 재배분 관점이며, 지점 간 예산 이동은 별도 검토가 필요합니다.</div>
+  <div id="branches"></div>
+</div>
+
+<!-- ============ E. 나이대 격차 큰 소재 ============ -->
+<div class="sec">
+  <div class="sec-num">Section E · 타겟팅 후보</div>
+  <div class="sec-title">나이대별 격차가 큰 소재 — 좁히거나 넓히거나</div>
+  <div class="sec-desc">동일 소재가 35-44 / 45-54 / ≥55에서 보이는 CVR 격차(spread)가 큰 순서로 정렬했습니다. 격차 ≥ 4%p 이상이면 <b>연령 타겟팅을 좁히는 것</b>이 더 효율적입니다. 비용 30만원 이상, 두 개 이상 연령대 데이터가 있는 소재만 포함.</div>
+  <div class="card">
+    <div class="card-title">소재명별 나이대 CVR 격차</div>
+    <div class="card-sub">35-44 · 45-54 · ≥55 / 셀 색: 가장 높은 셀=녹색, 가장 낮은 셀=빨강</div>
+    <div id="age-gap"></div>
+  </div>
+</div>
+
+<!-- ============ 5월 액션 ============ -->
+<div class="sec">
+  <div class="sec-num">Next</div>
+  <div class="sec-title">5월 운영 우선순위</div>
+  <div class="sec-desc">위 분석으로부터 즉시 실행 가능한 액션 5가지를 우선순위순으로 정리했습니다.</div>
+  <div class="card">
+    <ol class="action-list" id="next-actions"></ol>
+  </div>
+</div>
+
+</div>
+
+<div class="foot">
+  본 리포트는 1회성 분석으로 자동 파이프라인에 포함되지 않습니다.<br>
+  생성: <span id="gen-date"></span> · 다이트한의원 TikTok 광고 분석
+</div>
+
+<script>
+const D = {"period": "2026.04.01 ~ 04.30", "total": {"cost": 23029423, "conv": 762, "click": 11816, "cpa": 30222, "cvr": 6.45}, "age_kpi": [{"cost": 532991, "conv": 7, "click": 386, "imp": 99563, "cpa": 76141, "cvr": 1.81, "ctr": 0.39, "age_group": "25-34", "share_cost": 2.3, "share_conv": 0.9, "gap": -1.4}, {"cost": 5721401, "conv": 176, "click": 2790, "imp": 630875, "cpa": 32507, "cvr": 6.31, "ctr": 0.44, "age_group": "35-44", "share_cost": 24.8, "share_conv": 23.1, "gap": -1.7}, {"cost": 9970284, "conv": 322, "click": 4924, "imp": 766617, "cpa": 30963, "cvr": 6.54, "ctr": 0.64, "age_group": "45-54", "share_cost": 43.3, "share_conv": 42.3, "gap": -1.0}, {"cost": 6761333, "conv": 232, "click": 3689, "imp": 554564, "cpa": 29143, "cvr": 6.29, "ctr": 0.67, "age_group": "≥55", "share_cost": 29.4, "share_conv": 30.4, "gap": 1.0}, {"cost": 43414, "conv": 25, "click": 27, "imp": 4919, "cpa": 1736, "cvr": 92.59, "ctr": 0.55, "age_group": "Unknown", "share_cost": 0.2, "share_conv": 3.3, "gap": 3.1}], "matrix": [{"creative_type": "진료셀프캠", "age_group": "25-34", "cost": 237104, "conv": 2, "click": 128, "imp": 36689, "cpa": 118552, "cvr": 1.56, "ctr": 0.35}, {"creative_type": "진료셀프캠", "age_group": "35-44", "cost": 3412418, "conv": 106, "click": 1614, "imp": 349542, "cpa": 32192, "cvr": 6.57, "ctr": 0.46}, {"creative_type": "진료셀프캠", "age_group": "45-54", "cost": 6595942, "conv": 234, "click": 3283, "imp": 467700, "cpa": 28187, "cvr": 7.13, "ctr": 0.7}, {"creative_type": "진료셀프캠", "age_group": "≥55", "cost": 4649212, "conv": 172, "click": 2556, "imp": 345609, "cpa": 27030, "cvr": 6.73, "ctr": 0.74}, {"creative_type": "진료셀프캠", "age_group": "Unknown", "cost": 30162, "conv": 16, "click": 13, "imp": 3088, "cpa": 1885, "cvr": 123.08, "ctr": 0.42}, {"creative_type": "인플방문후기", "age_group": "25-34", "cost": 268416, "conv": 5, "click": 227, "imp": 56217, "cpa": 53683, "cvr": 2.2, "ctr": 0.4}, {"creative_type": "인플방문후기", "age_group": "35-44", "cost": 2135190, "conv": 70, "click": 1076, "imp": 254409, "cpa": 30502, "cvr": 6.51, "ctr": 0.42}, {"creative_type": "인플방문후기", "age_group": "45-54", "cost": 3059117, "conv": 86, "click": 1473, "imp": 267319, "cpa": 35571, "cvr": 5.84, "ctr": 0.55}, {"creative_type": "인플방문후기", "age_group": "≥55", "cost": 1857394, "conv": 49, "click": 997, "imp": 183063, "cpa": 37906, "cvr": 4.91, "ctr": 0.54}, {"creative_type": "인플방문후기", "age_group": "Unknown", "cost": 12488, "conv": 9, "click": 13, "imp": 1691, "cpa": 1387, "cvr": 69.23, "ctr": 0.77}, {"creative_type": "의료진정보", "age_group": "25-34", "cost": 27471, "conv": 0, "click": 31, "imp": 6657, "cpa": null, "cvr": 0.0, "ctr": 0.47}, {"creative_type": "의료진정보", "age_group": "35-44", "cost": 161290, "conv": 0, "click": 96, "imp": 25488, "cpa": null, "cvr": 0.0, "ctr": 0.38}, {"creative_type": "의료진정보", "age_group": "45-54", "cost": 295563, "conv": 1, "click": 154, "imp": 29998, "cpa": 295563, "cvr": 0.65, "ctr": 0.51}, {"creative_type": "의료진정보", "age_group": "≥55", "cost": 244468, "conv": 11, "click": 133, "imp": 25093, "cpa": 22224, "cvr": 8.27, "ctr": 0.53}, {"creative_type": "의료진정보", "age_group": "Unknown", "cost": 715, "conv": 0, "click": 1, "imp": 136, "cpa": null, "cvr": 0.0, "ctr": 0.74}, {"creative_type": "방문후기", "age_group": "Unknown", "cost": 0, "conv": 0, "click": 0, "imp": 0, "cpa": null, "cvr": 0.0, "ctr": 0.0}, {"creative_type": "진료QnA", "age_group": "35-44", "cost": 12503, "conv": 0, "click": 4, "imp": 1436, "cpa": null, "cvr": 0.0, "ctr": 0.28}, {"creative_type": "진료QnA", "age_group": "45-54", "cost": 19662, "conv": 1, "click": 14, "imp": 1600, "cpa": 19662, "cvr": 7.14, "ctr": 0.88}, {"creative_type": "진료QnA", "age_group": "≥55", "cost": 10259, "conv": 0, "click": 3, "imp": 799, "cpa": null, "cvr": 0.0, "ctr": 0.38}, {"creative_type": "진료QnA", "age_group": "Unknown", "cost": 49, "conv": 0, "click": 0, "imp": 4, "cpa": null, "cvr": 0.0, "ctr": 0.0}, {"creative_type": "리얼모델후기", "age_group": "35-44", "cost": 0, "conv": 0, "click": 0, "imp": 0, "cpa": null, "cvr": 0.0, "ctr": 0.0}, {"creative_type": "리얼모델후기", "age_group": "≥55", "cost": 0, "conv": 0, "click": 0, "imp": 0, "cpa": null, "cvr": 0.0, "ctr": 0.0}, {"creative_type": "리얼모델후기", "age_group": "Unknown", "cost": 0, "conv": 0, "click": 0, "imp": 0, "cpa": null, "cvr": 0.0, "ctr": 0.0}], "top_by_age": {"25-34": [{"creative_name": "주사형비만치료제(the.hyunniverse)", "creative_type": "인플방문후기", "hook": "신규", "cost": 84605, "conv": 4, "click": 63, "cpa": 21151, "cvr": 6.35, "branch_count": 1}, {"creative_name": "먹고싶은거다먹는(수원잇츠)", "creative_type": "인플방문후기", "hook": "재가공", "cost": 34763, "conv": 1, "click": 39, "cpa": 34763, "cvr": 2.56, "branch_count": 1}, {"creative_name": "식욕억제주사실패 마지막", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 100320, "conv": 1, "click": 51, "cpa": 100320, "cvr": 1.96, "branch_count": 1}, {"creative_name": "운동안해도되는", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 63775, "conv": 1, "click": 40, "cpa": 63775, "cvr": 2.5, "branch_count": 1}, {"creative_name": "건강한다이어트(수원,박고경)", "creative_type": "인플방문후기", "hook": "재가공", "cost": 58981, "conv": 0, "click": 52, "cpa": null, "cvr": 0.0, "branch_count": 1}, {"creative_name": "밥빵면안당기는원장님(itsmeyuriwon)", "creative_type": "인플방문후기", "hook": "신규", "cost": 72416, "conv": 0, "click": 64, "cpa": null, "cvr": 0.0, "branch_count": 1}], "35-44": [{"creative_name": "식욕억제주사실패 마지막", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 1747492, "conv": 48, "click": 815, "cpa": 36406, "cvr": 5.89, "branch_count": 8}, {"creative_name": "밥빵면안당기는원장님(itsmeyuriwon)", "creative_type": "인플방문후기", "hook": "신규", "cost": 628960, "conv": 27, "click": 310, "cpa": 23294, "cvr": 8.71, "branch_count": 8}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 471099, "conv": 24, "click": 254, "cpa": 19629, "cvr": 9.45, "branch_count": 6}, {"creative_name": "주사형비만치료제(the.hyunniverse)", "creative_type": "인플방문후기", "hook": "신규", "cost": 580591, "conv": 19, "click": 264, "cpa": 30557, "cvr": 7.2, "branch_count": 8}, {"creative_name": "운동안해도되는", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 406642, "conv": 15, "click": 190, "cpa": 27109, "cvr": 7.89, "branch_count": 8}, {"creative_name": "다이어트의적 밥빵면", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 238369, "conv": 7, "click": 110, "cpa": 34052, "cvr": 6.36, "branch_count": 2}, {"creative_name": "맘껏먹는 다이어트 한달후기", "creative_type": "인플방문후기", "hook": "재가공", "cost": 119890, "conv": 6, "click": 65, "cpa": 19981, "cvr": 9.23, "branch_count": 5}, {"creative_name": "주사형 비만치료제보다 더중요한이것", "creative_type": "진료셀프캠", "hook": "신규", "cost": 90174, "conv": 5, "click": 58, "cpa": 18034, "cvr": 8.62, "branch_count": 2}], "45-54": [{"creative_name": "식욕억제주사실패 마지막", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 3373527, "conv": 127, "click": 1763, "cpa": 26563, "cvr": 7.2, "branch_count": 8}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 1090518, "conv": 48, "click": 558, "cpa": 22719, "cvr": 8.6, "branch_count": 6}, {"creative_name": "주사형비만치료제(the.hyunniverse)", "creative_type": "인플방문후기", "hook": "신규", "cost": 950218, "conv": 26, "click": 386, "cpa": 36546, "cvr": 6.74, "branch_count": 8}, {"creative_name": "다이어트의적 밥빵면", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 570139, "conv": 22, "click": 288, "cpa": 25915, "cvr": 7.64, "branch_count": 2}, {"creative_name": "운동안해도되는", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 712370, "conv": 21, "click": 335, "cpa": 33922, "cvr": 6.27, "branch_count": 8}, {"creative_name": "밥빵면안당기는원장님(itsmeyuriwon)", "creative_type": "인플방문후기", "hook": "신규", "cost": 907023, "conv": 19, "click": 484, "cpa": 47738, "cvr": 3.93, "branch_count": 8}, {"creative_name": "먹고싶은거다먹는(수원잇츠)", "creative_type": "인플방문후기", "hook": "재가공", "cost": 281422, "conv": 11, "click": 135, "cpa": 25583, "cvr": 8.15, "branch_count": 7}, {"creative_name": "건강한다이어트(대구,박고경)", "creative_type": "인플방문후기", "hook": "재가공", "cost": 99519, "conv": 8, "click": 60, "cpa": 12439, "cvr": 13.33, "branch_count": 1}], "≥55": [{"creative_name": "식욕억제주사실패 마지막", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 2096874, "conv": 80, "click": 1126, "cpa": 26210, "cvr": 7.1, "branch_count": 8}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 995209, "conv": 40, "click": 588, "cpa": 24880, "cvr": 6.8, "branch_count": 6}, {"creative_name": "주사형비만치료제(the.hyunniverse)", "creative_type": "인플방문후기", "hook": "신규", "cost": 697214, "conv": 20, "click": 340, "cpa": 34860, "cvr": 5.88, "branch_count": 8}, {"creative_name": "다이어트의적 밥빵면", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 433820, "conv": 18, "click": 251, "cpa": 24101, "cvr": 7.17, "branch_count": 2}, {"creative_name": "밥빵면안당기는원장님(itsmeyuriwon)", "creative_type": "인플방문후기", "hook": "신규", "cost": 472435, "conv": 10, "click": 321, "cpa": 47243, "cvr": 3.12, "branch_count": 8}, {"creative_name": "비만주사는입만막을뿐", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 188448, "conv": 8, "click": 95, "cpa": 23556, "cvr": 8.42, "branch_count": 8}, {"creative_name": "먹고싶은거다먹는(수원잇츠)", "creative_type": "인플방문후기", "hook": "재가공", "cost": 188508, "conv": 7, "click": 86, "cpa": 26929, "cvr": 8.14, "branch_count": 7}, {"creative_name": "운동안해도되는", "creative_type": "진료셀프캠", "hook": "재가공", "cost": 472879, "conv": 7, "click": 245, "cpa": 67554, "cvr": 2.86, "branch_count": 8}], "Unknown": []}, "branch_cells": {"서울": {"cost": 1997102, "conv": 114, "click": 1414, "imp": 165499, "cpa": 17518, "cvr": 8.06, "ctr": 0.85, "cells": [{"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 542654, "conv": 43, "click": 402, "cpa": 12619, "cvr": 10.7}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 157198, "conv": 9, "click": 104, "cpa": 17466, "cvr": 8.65}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 208500, "conv": 9, "click": 125, "cpa": 23166, "cvr": 7.2}, {"age_group": "35-44", "creative_type": "인플방문후기", "cost": 126986, "conv": 5, "click": 73, "cpa": 25397, "cvr": 6.85}, {"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 646142, "conv": 32, "click": 486, "cpa": 20191, "cvr": 6.58}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 284682, "conv": 9, "click": 206, "cpa": 31631, "cvr": 4.37}], "age_share": [{"age_group": "35-44", "cost": 417823, "conv": 14, "cvr": 5.0, "cpa": 29844, "share_cost": 20.9}, {"age_group": "45-54", "cost": 865892, "conv": 41, "cvr": 6.69, "cpa": 21119, "share_cost": 43.4}, {"age_group": "≥55", "cost": 709922, "conv": 53, "cvr": 10.23, "cpa": 13394, "share_cost": 35.5}, {"age_group": "Unknown", "cost": 3465, "conv": 6, "cvr": 200.0, "cpa": 577, "share_cost": 0.2}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 1475976, "conv": 90, "cvr": 8.21, "cpa": 16399, "share_cost": 73.9}, {"creative_type": "인플방문후기", "cost": 493609, "conv": 23, "cvr": 7.59, "cpa": 21461, "share_cost": 24.7}]}, "부평": {"cost": 5046033, "conv": 134, "click": 2221, "imp": 423213, "cpa": 37656, "cvr": 6.03, "ctr": 0.52, "cells": [{"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 1415629, "conv": 45, "click": 570, "cpa": 31458, "cvr": 7.89}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 946538, "conv": 30, "click": 444, "cpa": 31551, "cvr": 6.76}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 718951, "conv": 20, "click": 337, "cpa": 35947, "cvr": 5.93}, {"age_group": "35-44", "creative_type": "인플방문후기", "cost": 508567, "conv": 12, "click": 229, "cpa": 42380, "cvr": 5.24}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 813753, "conv": 12, "click": 315, "cpa": 67812, "cvr": 3.81}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 500497, "conv": 8, "click": 240, "cpa": 62562, "cvr": 3.33}, {"age_group": "45-54", "creative_type": "의료진정보", "cost": 55648, "conv": 0, "click": 40, "cpa": null, "cvr": 0.0}], "age_share": [{"age_group": "35-44", "cost": 1351052, "conv": 24, "cvr": 4.3, "cpa": 56293, "share_cost": 26.8}, {"age_group": "45-54", "cost": 2190228, "conv": 65, "cvr": 6.86, "cpa": 33695, "share_cost": 43.4}, {"age_group": "≥55", "cost": 1493982, "conv": 41, "cvr": 5.79, "cpa": 36438, "share_cost": 29.6}, {"age_group": "Unknown", "cost": 10771, "conv": 4, "cvr": 50.0, "cpa": 2692, "share_cost": 0.2}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 3183615, "conv": 89, "cvr": 6.68, "cpa": 35770, "share_cost": 63.1}, {"creative_type": "인플방문후기", "cost": 1731025, "conv": 42, "cvr": 5.18, "cpa": 41214, "share_cost": 34.3}, {"creative_type": "의료진정보", "cost": 131393, "conv": 3, "cvr": 3.85, "cpa": 43797, "share_cost": 2.6}]}, "수원": {"cost": 3997063, "conv": 70, "click": 1761, "imp": 413101, "cpa": 57100, "cvr": 3.98, "ctr": 0.43, "cells": [{"age_group": "35-44", "creative_type": "인플방문후기", "cost": 467368, "conv": 11, "click": 196, "cpa": 42488, "cvr": 5.61}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 602054, "conv": 11, "click": 229, "cpa": 54732, "cvr": 4.8}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 559032, "conv": 11, "click": 240, "cpa": 50821, "cvr": 4.58}, {"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 837527, "conv": 13, "click": 323, "cpa": 64425, "cvr": 4.02}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 488293, "conv": 6, "click": 161, "cpa": 81382, "cvr": 3.73}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 341929, "conv": 4, "click": 154, "cpa": 85482, "cvr": 2.6}, {"age_group": "25-34", "creative_type": "인플방문후기", "cost": 268416, "conv": 5, "click": 227, "cpa": 53683, "cvr": 2.2}, {"age_group": "25-34", "creative_type": "진료셀프캠", "cost": 237104, "conv": 2, "click": 128, "cpa": 118552, "cvr": 1.56}, {"age_group": "25-34", "creative_type": "의료진정보", "cost": 27471, "conv": 0, "click": 31, "cpa": null, "cvr": 0.0}], "age_share": [{"age_group": "25-34", "cost": 532991, "conv": 7, "cvr": 1.81, "cpa": 76141, "share_cost": 13.3}, {"age_group": "35-44", "cost": 996252, "conv": 17, "cvr": 4.49, "cpa": 58603, "share_cost": 24.9}, {"age_group": "45-54", "cost": 1506238, "conv": 24, "cvr": 4.17, "cpa": 62759, "share_cost": 37.7}, {"age_group": "≥55", "cost": 955900, "conv": 18, "cvr": 4.32, "cpa": 53105, "share_cost": 23.9}, {"age_group": "Unknown", "cost": 5682, "conv": 4, "cvr": 100.0, "cpa": 1420, "share_cost": 0.1}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 2125188, "conv": 34, "cvr": 3.99, "cpa": 62505, "share_cost": 53.2}, {"creative_type": "인플방문후기", "cost": 1682093, "conv": 33, "cvr": 4.08, "cpa": 50972, "share_cost": 42.1}, {"creative_type": "의료진정보", "cost": 189782, "conv": 3, "cvr": 3.03, "cpa": 63260, "share_cost": 4.7}]}, "일산": {"cost": 1999804, "conv": 102, "click": 1278, "imp": 195263, "cpa": 19605, "cvr": 7.98, "ctr": 0.65, "cells": [{"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 466750, "conv": 25, "click": 298, "cpa": 18670, "cvr": 8.39}, {"age_group": "35-44", "creative_type": "인플방문후기", "cost": 235930, "conv": 10, "click": 120, "cpa": 23593, "cvr": 8.33}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 229524, "conv": 12, "click": 146, "cpa": 19127, "cvr": 8.22}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 354065, "conv": 17, "click": 208, "cpa": 20827, "cvr": 8.17}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 417642, "conv": 23, "click": 296, "cpa": 18158, "cvr": 7.77}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 223341, "conv": 10, "click": 147, "cpa": 22334, "cvr": 6.8}], "age_share": [{"age_group": "35-44", "cost": 476036, "conv": 20, "cvr": 6.92, "cpa": 23801, "share_cost": 23.8}, {"age_group": "45-54", "cost": 852250, "conv": 42, "cvr": 8.02, "cpa": 20291, "share_cost": 42.6}, {"age_group": "≥55", "cost": 667251, "conv": 35, "cvr": 7.61, "cpa": 19064, "share_cost": 33.4}, {"age_group": "Unknown", "cost": 4267, "conv": 5, "cvr": 100.0, "cpa": 853, "share_cost": 0.2}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 1109602, "conv": 62, "cvr": 8.32, "cpa": 17896, "share_cost": 55.5}, {"creative_type": "인플방문후기", "cost": 821820, "conv": 40, "cvr": 8.42, "cpa": 20545, "share_cost": 41.1}, {"creative_type": "의료진정보", "cost": 68382, "conv": 0, "cvr": 0.0, "cpa": null, "share_cost": 3.4}]}, "대구": {"cost": 2995196, "conv": 135, "click": 1661, "imp": 257664, "cpa": 22186, "cvr": 8.13, "ctr": 0.64, "cells": [{"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 444324, "conv": 24, "click": 233, "cpa": 18513, "cvr": 10.3}, {"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 994129, "conv": 53, "click": 524, "cpa": 18757, "cvr": 10.11}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 340076, "conv": 15, "click": 184, "cpa": 22671, "cvr": 8.15}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 175977, "conv": 7, "click": 102, "cpa": 25139, "cvr": 6.86}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 707850, "conv": 25, "click": 404, "cpa": 28314, "cvr": 6.19}, {"age_group": "35-44", "creative_type": "인플방문후기", "cost": 244518, "conv": 8, "click": 164, "cpa": 30564, "cvr": 4.88}], "age_share": [{"age_group": "35-44", "cost": 705196, "conv": 32, "cvr": 7.9, "cpa": 22037, "share_cost": 23.5}, {"age_group": "45-54", "cost": 1370808, "conv": 68, "cvr": 9.32, "cpa": 20158, "share_cost": 45.8}, {"age_group": "≥55", "cost": 913682, "conv": 33, "cvr": 6.3, "cpa": 27687, "share_cost": 30.5}, {"age_group": "Unknown", "cost": 5510, "conv": 2, "cvr": 100.0, "cpa": 2755, "share_cost": 0.2}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 2150406, "conv": 104, "cvr": 8.95, "cpa": 20676, "share_cost": 71.8}, {"creative_type": "인플방문후기", "cost": 761818, "conv": 30, "cvr": 6.65, "cpa": 25393, "share_cost": 25.4}, {"creative_type": "의료진정보", "cost": 82972, "conv": 1, "cvr": 2.08, "cpa": 82972, "share_cost": 2.8}]}, "창원": {"cost": 2994777, "conv": 69, "click": 1356, "imp": 254172, "cpa": 43402, "cvr": 5.09, "ctr": 0.53, "cells": [{"age_group": "35-44", "creative_type": "인플방문후기", "cost": 233429, "conv": 9, "click": 114, "cpa": 25936, "cvr": 7.89}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 426067, "conv": 13, "click": 186, "cpa": 32774, "cvr": 6.99}, {"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 960123, "conv": 26, "click": 403, "cpa": 36927, "cvr": 6.45}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 655703, "conv": 12, "click": 298, "cpa": 54641, "cvr": 4.03}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 418420, "conv": 6, "click": 192, "cpa": 69736, "cvr": 3.12}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 235572, "conv": 2, "click": 131, "cpa": 117786, "cvr": 1.53}], "age_share": [{"age_group": "35-44", "cost": 673140, "conv": 22, "cvr": 7.17, "cpa": 30597, "share_cost": 22.5}, {"age_group": "45-54", "cost": 1405417, "conv": 32, "cvr": 5.23, "cpa": 43919, "share_cost": 46.9}, {"age_group": "≥55", "cost": 910975, "conv": 14, "cvr": 3.22, "cpa": 65069, "share_cost": 30.4}, {"age_group": "Unknown", "cost": 5245, "conv": 1, "cvr": 50.0, "cpa": 5245, "share_cost": 0.2}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 2045864, "conv": 51, "cvr": 5.74, "cpa": 40114, "share_cost": 68.3}, {"creative_type": "인플방문후기", "cost": 888666, "conv": 18, "cvr": 4.11, "cpa": 49370, "share_cost": 29.7}, {"creative_type": "의료진정보", "cost": 60247, "conv": 0, "cvr": 0.0, "cpa": null, "share_cost": 2.0}]}, "천안": {"cost": 1999793, "conv": 56, "click": 1096, "imp": 190230, "cpa": 35710, "cvr": 5.11, "ctr": 0.58, "cells": [{"age_group": "≥55", "creative_type": "의료진정보", "cost": 62872, "conv": 3, "click": 32, "cpa": 20957, "cvr": 9.38}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 322046, "conv": 14, "click": 182, "cpa": 23003, "cvr": 7.69}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 138434, "conv": 5, "click": 67, "cpa": 27686, "cvr": 7.46}, {"age_group": "35-44", "creative_type": "인플방문후기", "cost": 226753, "conv": 10, "click": 135, "cpa": 22675, "cvr": 7.41}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 300782, "conv": 8, "click": 183, "cpa": 37597, "cvr": 4.37}, {"age_group": "45-54", "creative_type": "의료진정보", "cost": 67096, "conv": 1, "click": 32, "cpa": 67096, "cvr": 3.12}, {"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 519438, "conv": 9, "click": 290, "cpa": 57715, "cvr": 3.1}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 277613, "conv": 3, "click": 131, "cpa": 92537, "cvr": 2.29}], "age_share": [{"age_group": "35-44", "cost": 600351, "conv": 24, "cvr": 7.0, "cpa": 25014, "share_cost": 30.0}, {"age_group": "45-54", "cost": 883809, "conv": 14, "cvr": 3.0, "cpa": 63129, "share_cost": 44.2}, {"age_group": "≥55", "cost": 512347, "conv": 16, "cvr": 5.61, "cpa": 32021, "share_cost": 25.6}, {"age_group": "Unknown", "cost": 3286, "conv": 2, "cvr": 200.0, "cpa": 1643, "share_cost": 0.2}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 1144382, "conv": 31, "cvr": 4.73, "cpa": 36915, "share_cost": 57.2}, {"creative_type": "인플방문후기", "cost": 643724, "conv": 20, "cvr": 6.01, "cpa": 32186, "share_cost": 32.2}, {"creative_type": "의료진정보", "cost": 169214, "conv": 4, "cvr": 4.6, "cpa": 42303, "share_cost": 8.5}]}, "대전": {"cost": 1999655, "conv": 82, "click": 1029, "imp": 157396, "cpa": 24386, "cvr": 7.97, "ctr": 0.65, "cells": [{"age_group": "35-44", "creative_type": "인플방문후기", "cost": 91639, "conv": 5, "click": 45, "cpa": 18327, "cvr": 11.11}, {"age_group": "35-44", "creative_type": "진료셀프캠", "cost": 409912, "conv": 18, "click": 184, "cpa": 22772, "cvr": 9.78}, {"age_group": "45-54", "creative_type": "진료셀프캠", "cost": 756204, "conv": 31, "click": 389, "cpa": 24393, "cvr": 7.97}, {"age_group": "45-54", "creative_type": "인플방문후기", "cost": 139438, "conv": 5, "click": 67, "cpa": 27887, "cvr": 7.46}, {"age_group": "≥55", "creative_type": "진료셀프캠", "cost": 519011, "conv": 20, "click": 289, "cpa": 25950, "cvr": 6.92}, {"age_group": "≥55", "creative_type": "인플방문후기", "cost": 78263, "conv": 2, "click": 53, "cpa": 39131, "cvr": 3.77}], "age_share": [{"age_group": "35-44", "cost": 501551, "conv": 23, "cvr": 10.04, "cpa": 21806, "share_cost": 25.1}, {"age_group": "45-54", "cost": 895642, "conv": 36, "cvr": 7.89, "cpa": 24878, "share_cost": 44.8}, {"age_group": "≥55", "cost": 597274, "conv": 22, "cvr": 6.43, "cpa": 27148, "share_cost": 29.9}, {"age_group": "Unknown", "cost": 5188, "conv": 1, "cvr": 50.0, "cpa": 5188, "share_cost": 0.3}], "ct_share": [{"creative_type": "진료셀프캠", "cost": 1689805, "conv": 69, "cvr": 8.0, "cpa": 24489, "share_cost": 84.5}, {"creative_type": "인플방문후기", "cost": 309850, "conv": 13, "cvr": 7.83, "cpa": 23834, "share_cost": 15.5}]}}, "age_gap": [{"creative_name": "50대다이어트대사", "creative_type": "진료셀프캠", "by_age": {"35-44": 6.98, "45-54": 0.0, "≥55": 12.5}, "total_cost": 325609, "spread": 12.5, "max_age": "≥55", "min_age": "45-54", "max_cvr": 12.5, "min_cvr": 0.0}, {"creative_name": "먹고싶은거다먹는(수원잇츠)", "creative_type": "인플방문후기", "by_age": {"35-44": 1.16, "45-54": 8.15, "≥55": 8.14}, "total_cost": 656797, "spread": 6.99, "max_age": "45-54", "min_age": "35-44", "max_cvr": 8.15, "min_cvr": 1.16}, {"creative_name": "밥빵면안당기는원장님(itsmeyuriwon)", "creative_type": "인플방문후기", "by_age": {"35-44": 8.71, "45-54": 3.93, "≥55": 3.12}, "total_cost": 2008418, "spread": 5.59, "max_age": "35-44", "min_age": "≥55", "max_cvr": 8.71, "min_cvr": 3.12}, {"creative_name": "연예인다이어트(플랜비)", "creative_type": "인플방문후기", "by_age": {"35-44": 5.26, "45-54": 3.95, "≥55": 0.0}, "total_cost": 415650, "spread": 5.26, "max_age": "35-44", "min_age": "≥55", "max_cvr": 5.26, "min_cvr": 0.0}, {"creative_name": "운동안해도되는", "creative_type": "진료셀프캠", "by_age": {"35-44": 7.89, "45-54": 6.27, "≥55": 2.86}, "total_cost": 1591891, "spread": 5.03, "max_age": "35-44", "min_age": "≥55", "max_cvr": 7.89, "min_cvr": 2.86}, {"creative_name": "주사형 비만치료제보다 더중요한이것", "creative_type": "진료셀프캠", "by_age": {"35-44": 8.62, "45-54": 3.95, "≥55": 5.08}, "total_cost": 321191, "spread": 4.67, "max_age": "35-44", "min_age": "45-54", "max_cvr": 8.62, "min_cvr": 3.95}, {"creative_name": "무작정운동으로 팩폭", "creative_type": "의료진정보", "by_age": {"35-44": 0.0, "45-54": 0.0, "≥55": 4.55}, "total_cost": 333963, "spread": 4.55, "max_age": "≥55", "min_age": "35-44", "max_cvr": 4.55, "min_cvr": 0.0}, {"creative_name": "비만주사는입만막을뿐", "creative_type": "진료셀프캠", "by_age": {"35-44": 4.41, "45-54": 6.67, "≥55": 8.42}, "total_cost": 594562, "spread": 4.01, "max_age": "≥55", "min_age": "35-44", "max_cvr": 8.42, "min_cvr": 4.41}, {"creative_name": "맘껏먹는 다이어트 한달후기", "creative_type": "인플방문후기", "by_age": {"35-44": 9.23, "45-54": 5.56, "≥55": 8.93}, "total_cost": 368251, "spread": 3.67, "max_age": "35-44", "min_age": "45-54", "max_cvr": 9.23, "min_cvr": 5.56}, {"creative_name": "주사형비만치료제 고민끝에 50대부부 -32kg", "creative_type": "진료셀프캠", "by_age": {"35-44": 9.45, "45-54": 8.6, "≥55": 6.8}, "total_cost": 2556826, "spread": 2.65, "max_age": "35-44", "min_age": "≥55", "max_cvr": 9.45, "min_cvr": 6.8}, {"creative_name": "주사형비만치료제(the.hyunniverse)", "creative_type": "인플방문후기", "by_age": {"35-44": 7.2, "45-54": 6.74, "≥55": 5.88}, "total_cost": 2228023, "spread": 1.32, "max_age": "35-44", "min_age": "≥55", "max_cvr": 7.2, "min_cvr": 5.88}, {"creative_name": "식욕억제주사실패 마지막", "creative_type": "진료셀프캠", "by_age": {"35-44": 5.89, "45-54": 7.2, "≥55": 7.1}, "total_cost": 7217893, "spread": 1.31, "max_age": "45-54", "min_age": "35-44", "max_cvr": 7.2, "min_cvr": 5.89}, {"creative_name": "다이어트의적 밥빵면", "creative_type": "진료셀프캠", "by_age": {"35-44": 6.36, "45-54": 7.64, "≥55": 7.17}, "total_cost": 1242328, "spread": 1.28, "max_age": "45-54", "min_age": "35-44", "max_cvr": 7.64, "min_cvr": 6.36}]};
+document.getElementById('gen-date').textContent = new Date().toLocaleString('ko-KR');
+
+const fmtKRW = n => n==null?'-':Number(n).toLocaleString('ko-KR');
+const fmtMan = n => n==null?'-':(n>=10000?(n/10000).toFixed(0)+'만':n.toLocaleString());
+const pct = n => n==null?'-':Number(n).toFixed(2)+'%';
+const bdg = (kind,val) => `<span class="bdg ${kind}-${val}">${val}</span>`;
+
+// ===== Header chips =====
+{
+  const t = D.total;
+  document.getElementById('hdr-chips').innerHTML = `
+    <div class="chip">기간 <span>${D.period}</span></div>
+    <div class="chip">총 비용 <span>${fmtKRW(t.cost)}원</span></div>
+    <div class="chip">전환 <span>${t.conv}건</span></div>
+    <div class="chip">CPA <span>${fmtKRW(t.cpa)}원</span></div>
+    <div class="chip">CVR <span>${t.cvr}%</span></div>
+    <div class="chip" style="border-color:rgba(74,222,128,.3);color:var(--green)">먼슬리와 정합 <span style="color:var(--green)">100%</span></div>`;
+}
+
+// ===== KPI strip (per age) =====
+{
+  const colorOf = ag => ({'25-34':'#a1a1aa','35-44':'#60a5fa','45-54':'#818cf8','≥55':'#a78bfa','Unknown':'#52525b'}[ag] || '#a1a1aa');
+  document.getElementById('kpi-strip').innerHTML = D.age_kpi.map(k => `
+    <div class="kc" style="border-top:3px solid ${colorOf(k.age_group)}">
+      <div class="kc-lbl">${k.age_group}</div>
+      <div class="kc-val">${fmtKRW(k.cpa)}원</div>
+      <div class="kc-sub">CVR ${k.cvr}% · 비용 ${k.share_cost}% · 전환 ${k.share_conv}%</div>
+    </div>`).join('');
+}
+
+// ===== Exec summary cards =====
+{
+  // 핵심 카드 4개 — 데이터에서 자동 도출되, 텍스트는 미리 작성
+  const cards = [
+    {color:'#818cf8', tag:'주축 연령대', ti:'45-54가 광고의 코어',
+     bd:`비용 <b>43.3%</b> / 전환 <b>42.3%</b>로 정확히 균형. CPA <b>30,963원</b>. 이 연령대를 흔드는 결정은 4월 성과 전체에 직결되므로 보수적으로 운영.`},
+    {color:'#34d399', tag:'가장 효율적', ti:'≥55가 숨은 1등',
+     bd:`CPA <b>29,143원</b>으로 평균(30,222원)보다 4% 낮음. 비용 점유 29.4%인데 전환 30.4%로 <b>+1.0%p 과소투자</b>. 5월에 비중을 1~2%p 늘릴 여지.`},
+    {color:'#f87171', tag:'명백한 누수', ti:'25-34는 차단 검토',
+     bd:`CPA <b>76,141원</b> — 목표 CPA(29,119원)의 <b>2.6배</b>. 비용 53만원 대비 전환 7건. 특히 <b>수원 25-34</b>가 단독 셀로 비용 53만원 / CVR 1.5~2.2%를 차지 — 즉시 차단 권장.`},
+    {color:'#fbbf24', tag:'숨은 강자', ti:'서울 ≥55 진료셀프캠',
+     bd:`4월 전체에서 가장 효율적인 셀. CVR <b>10.70%</b> / CPA <b>12,620원</b>. 서울은 ≥55 진료셀프캠 비중을 더 늘리고, 35-44 진료셀프캠(CVR 4.37%)은 줄이는 방향이 적합.`},
+  ];
+  document.getElementById('exec').innerHTML = cards.map(c => `
+    <div class="ex-card" style="--ec:${c.color}">
+      <div class="ex-tag">${c.tag}</div>
+      <div class="ex-ti">${c.ti}</div>
+      <div class="ex-bd">${c.bd}</div>
+    </div>`).join('');
+}
+
+// ===== Section A: matrix =====
+{
+  const ages = ['25-34','35-44','45-54','≥55','Unknown'];
+  const cts = ['진료셀프캠','인플방문후기','의료진정보','방문후기','진료QnA','리얼모델후기'];
+  const lookup = {};
+  D.matrix.forEach(m => { lookup[`${m.creative_type}|${m.age_group}`] = m; });
+  // CVR 색 스케일: 0~10
+  const colorCVR = (c, click) => {
+    if (click<30) return 'var(--s2)';
+    if (c>=8) return 'rgba(74,222,128,.22)';
+    if (c>=6) return 'rgba(74,222,128,.14)';
+    if (c>=4) return 'rgba(96,165,250,.12)';
+    if (c>=2) return 'rgba(251,146,60,.12)';
+    return 'rgba(248,113,113,.14)';
+  };
+  let h = `<div class="mtx-r" style="grid-template-columns:140px repeat(${ages.length},1fr)">
+    <div class="mtx-c mtx-lbl">소재유형 \\ 나이대</div>
+    ${ages.map(a => `<div class="mtx-c mtx-h">${a}</div>`).join('')}</div>`;
+  cts.forEach(ct => {
+    h += `<div class="mtx-r" style="grid-template-columns:140px repeat(${ages.length},1fr)">
+      <div class="mtx-c mtx-lbl">${ct}</div>`;
+    ages.forEach(ag => {
+      const m = lookup[`${ct}|${ag}`];
+      if (!m) {
+        h += `<div class="mtx-c mtx-cell empty"><div class="top">·</div></div>`;
+      } else {
+        const lowVol = m.click<30;
+        const bg = colorCVR(m.cvr, m.click);
+        const cvrStr = lowVol ? '저볼륨' : pct(m.cvr);
+        h += `<div class="mtx-c mtx-cell" style="background:${bg}">
+          <div class="top" style="color:${lowVol?'var(--tx3)':'var(--tx)'}">${cvrStr}</div>
+          <div class="sub">비${fmtMan(m.cost)} / 전${m.conv}</div></div>`;
+      }
+    });
+    h += '</div>';
+  });
+  document.getElementById('matrix').innerHTML = h;
+}
+
+// ===== Section C: mismatch =====
+{
+  const total = D.total;
+  let h = `<div class="mm-row" style="font-size:10px;color:var(--tx2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--bd);padding-bottom:10px">
+    <div>나이대</div><div>비용 비중</div><div>전환 비중</div><div style="text-align:right">갭</div><div>CPA / 진단</div></div>`;
+  D.age_kpi.forEach(k => {
+    const cw = k.share_cost.toFixed(1), vw = k.share_conv.toFixed(1);
+    const gapClass = Math.abs(k.gap)<2 ? 'gap-zero' : (k.gap>0 ? 'gap-pos' : 'gap-neg');
+    const sign = k.gap>0?'+':'';
+    let diag;
+    if (k.age_group==='Unknown') {
+      diag = '<span style="color:var(--tx3)">어트리뷰션 누락 추정 — 분석 제외</span>';
+    } else if (k.age_group==='25-34') {
+      diag = `<span class="gap-neg">CPA ${fmtKRW(k.cpa)}원 (목표 2.7배) — 차단 검토</span>`;
+    } else if (Math.abs(k.gap)<2) {
+      diag = `<span class="gap-zero">CPA ${fmtKRW(k.cpa)}원 · 균형</span>`;
+    } else if (k.gap>0) {
+      diag = `<span class="gap-pos">CPA ${fmtKRW(k.cpa)}원 · 비중 확대 여지</span>`;
+    } else {
+      diag = `<span class="gap-neg">CPA ${fmtKRW(k.cpa)}원 · 비중 축소 검토</span>`;
+    }
+    h += `<div class="mm-row">
+      <div style="font-weight:700">${k.age_group}</div>
+      <div><div class="mm-bar"><div class="mm-cost" style="width:${cw}%"></div></div><div style="font-size:11px;color:var(--tx2);margin-top:4px">${cw}%</div></div>
+      <div><div class="mm-bar"><div class="mm-conv" style="width:${vw}%"></div></div><div style="font-size:11px;color:var(--tx2);margin-top:4px">${vw}%</div></div>
+      <div class="mm-gap ${gapClass}">${sign}${k.gap.toFixed(1)}p</div>
+      <div style="font-size:12px;line-height:1.5">${diag}</div></div>`;
+  });
+  document.getElementById('mm').innerHTML = h;
+  document.getElementById('mm-insight').innerHTML = `
+    <b style="color:var(--tx)">읽는 법</b> · 4월에는 큰 미스매치는 없지만, 미세하게 <b style="color:var(--tx)">35-44가 −1.7p</b>(약한 과대투자)이고 <b style="color:var(--tx)">≥55가 +1.0p</b>(약한 과소투자)입니다.<br>
+    35-44 비중에서 1~2%p를 ≥55로 옮기면 평균 CPA가 약 1~2% 개선되는 방향이지만, 35-44 안에 잘 작동하는 소재(대전·창원 인플방문후기, 부평 45-54 진료셀프캠 등)가 있으니 일률 감액보다 <b style="color:var(--tx)">부진 셀(부평 35-44 진료셀프캠 CVR 3.81%, 천안 45-54 모든 유형 3% 미만)을 핀포인트로 줄이는</b> 것이 안전합니다.<br>
+    25-34는 갭은 −1.4p로 작아 보이지만 절대 효율(CPA 76,141원, 목표 2.6배)이 무너졌습니다. 비중이 작아서 신호가 묻혔을 뿐이며, 차단 시 평균 CPA가 약 420원 개선되고 5월 동일 패턴 재발 시 누적 효과는 1만원 단위로 커집니다.`;
+}
+
+// ===== Section B: top by age =====
+{
+  const ages = ['35-44','45-54','≥55']; // 25-34/Unknown 제외
+  let h = '';
+  ages.forEach(ag => {
+    const rows = (D.top_by_age[ag] || []).slice(0,7);
+    const tot_cost = rows.reduce((a,r)=>a+r.cost,0);
+    const tot_conv = rows.reduce((a,r)=>a+r.conv,0);
+    const cpa_band = tot_conv>0?Math.round(tot_cost/tot_conv):null;
+    h += `<div class="card" style="margin-bottom:14px">
+      <div class="card-title">${ag} <span style="font-weight:400;color:var(--tx2);font-size:12px;margin-left:8px">Top ${rows.length}건 합계 — 비용 ${fmtKRW(tot_cost)} · 전환 ${tot_conv}건 · CPA ${fmtKRW(cpa_band)}원</span></div>
+      <div class="tw"><table>
+        <thead><tr><th>유형</th><th>훅</th><th>소재명</th><th style="text-align:right">비용</th><th style="text-align:right">전환</th><th style="text-align:right">CVR</th><th style="text-align:right">CPA</th><th style="text-align:right">지점</th></tr></thead>
+        <tbody>${rows.map(r => `<tr>
+          <td>${bdg('t',r.creative_type)}</td>
+          <td>${bdg('h',r.hook)}</td>
+          <td class="cn">${r.creative_name}</td>
+          <td class="num" style="text-align:right">${fmtKRW(r.cost)}</td>
+          <td class="num" style="text-align:right">${r.conv}</td>
+          <td class="num" style="text-align:right;color:${r.cvr>=7?'var(--green)':r.cvr<5?'var(--red)':'var(--tx)'}">${r.cvr}%</td>
+          <td class="num" style="text-align:right">${fmtKRW(r.cpa)}</td>
+          <td class="num" style="text-align:right">${r.branch_count}곳</td>
+        </tr>`).join('')}</tbody></table></div></div>`;
+  });
+  document.getElementById('top-by-age').innerHTML = h;
+}
+
+// ===== Section D: branches =====
+{
+  // 지점별 캐릭터 + 액션 (수기 — 분석 결과 기반)
+  const branchProfile = {
+    '서울': {color:'#34d399', label:'고연령 강자',
+            story:'4월 전체에서 가장 효율적인 지점. CPA <b>17,518원</b>, 평균(30,222원) 대비 42% 낮음. <b>≥55 × 진료셀프캠 CVR 10.70%/CPA 12,620원</b>은 4월 전사 1위 셀. <b>≥55 × 인플방문후기 8.65%</b>도 강점. 다만 <b>35-44 × 진료셀프캠 CVR 4.37%</b>는 같은 소재유형이 연령에 따라 두 배 이상 차이남을 보여줌.',
+            actions:[
+              '<b>≥55 진료셀프캠 비중을 적극 확대</b> — 현재 비용 54만원 → 70~80만원 상향 검토',
+              '<b>서울 35-44 진료셀프캠은 인플방문후기로 교체</b> (CVR 4.37% → 인플 6.85%)',
+              '서울은 평균 CPA가 낮아 5월 예산 추가 투입 1순위 후보',
+            ]},
+    '부평': {color:'#a78bfa', label:'중장년 안정',
+            story:'CPA <b>37,656원</b>으로 평균보다 25% 높지만 비용 규모가 가장 큼(505만원). <b>45-54·≥55 × 진료셀프캠</b>이 핵심 엔진(CVR 6.76~7.89%). 반면 <b>35-44 × 진료셀프캠 CVR 3.81%</b>(비용 81만원)는 명백한 누수, <b>≥55 × 인플방문후기 CVR 3.33%</b>(비용 50만원) 역시 다른 지점(6%+) 대비 부진.',
+            actions:[
+              '<b>부평 35-44 진료셀프캠 비중 30~40% 축소</b> — CVR 3.81% / CPA 67,812원',
+              '<b>부평 ≥55에서 인플방문후기 비중 축소</b>, 진료셀프캠으로 일원화',
+              '회수 예산은 부평 45-54 진료셀프캠(CVR 7.89%/142만원)으로 추가 투입',
+            ]},
+    '수원': {color:'#f87171', label:'최우선 정비 지점',
+            story:'CPA <b>57,100원</b>으로 4월 최악(평균 1.89배). 핵심 누수는 <b>25-34 세 셀에 53만원 / 전환 7건 / CVR 0~2.2%</b> (인플 2.20%, 진료셀프캠 1.56%, 의료진정보 0%). 35-44 인플방문후기(CVR 5.61%)와 ≥55 진료셀프캠(4.58%)도 평균 이하지만 차단할 정도는 아님.',
+            actions:[
+              '<b>수원 25-34 3개 셀 즉시 차단</b> — 예상 절감 53만원/월, 평균 CPA 약 420원 개선',
+              '<b>수원 ≥55 인플방문후기 일시정지 검토</b> (CVR 3.31% / 비용 27만원)',
+              '회수 예산은 수원 35-44 인플방문후기·≥55 진료셀프캠으로 재편',
+            ]},
+    '일산': {color:'#34d399', label:'균형형 우등생',
+            story:'CPA <b>19,605원</b>(전사 2위). 모든 6개 셀이 CVR 6.8% 이상으로 가장 균형 잡힌 지점. <b>≥55 × 인플방문후기 CVR 8.22%</b>는 일산 고유 강점(다른 지점 대부분 5% 미만). 45-54 진료셀프캠 8.39%, 35-44 인플방문후기 8.33%까지 — 어느 셀에 추가 투입해도 안전.',
+            actions:[
+              '<b>일산 ≥55 × 인플방문후기는 타 지점 ≥55 인플 활성화 시 벤치마킹 대상</b>',
+              '일산은 추가 예산 투입 후보 — 모든 셀이 안정적으로 6.8%+',
+              '특이 누수 없음. 운영 그대로 유지',
+            ]},
+    '대구': {color:'#60a5fa', label:'진료셀프캠 특화',
+            story:'CPA <b>22,186원</b>(전사 3위). <b>35-44 × 진료셀프캠 CVR 10.30%</b>, <b>45-54 × 진료셀프캠 10.11%</b>로 4월 두 번째 강한 진료셀프캠 지점. 그러나 <b>인플방문후기는 35-44 4.88%, ≥55 6.86%</b>로 진료셀프캠 대비 명확히 떨어짐 — 대구는 진료셀프캠이 절대 강자.',
+            actions:[
+              '<b>대구 인플방문후기 비중 축소</b> → 진료셀프캠으로 이동 (35-44 인플 4.88%)',
+              '<b>대구 ≥55 진료셀프캠 추가 노출</b> 권장 (현재 CVR 6.19%로 35-44/45-54 대비 낮음 — 신규 ≥55 진료셀프캠 소재 테스트)',
+              '진료셀프캠 신규 소재 테스트 시 대구 우선 적용',
+            ]},
+    '창원': {color:'#fbbf24', label:'35-44 강세 + 누수',
+            story:'CPA <b>43,402원</b>. <b>35-44 × 인플방문후기 7.89%</b>, <b>35-44 × 진료셀프캠 6.99%</b>로 35-44가 강점. 반면 <b>≥55 × 인플방문후기 CVR 1.53%</b>(비용 23.5만원/전환 2건)와 <b>45-54 × 인플방문후기 3.12%</b>(비용 41.8만원)는 합쳐 65만원 누수. ≥55 × 진료셀프캠도 4.03%로 부진.',
+            actions:[
+              '<b>창원 ≥55 인플방문후기 즉시 차단</b> (월 23.5만원 회수, CVR 1.53%)',
+              '<b>창원 45-54 인플방문후기 비중 50% 축소</b> (CVR 3.12%)',
+              '회수 예산은 창원 35-44 양 유형에 분배',
+            ]},
+    '천안': {color:'#fb923c', label:'45-54 약점',
+            story:'CPA <b>35,710원</b>. <b>35-44 × 진료셀프캠 7.69%</b>, <b>≥55 × 인플방문후기 7.46%</b>가 강세. 반면 <b>45-54가 세 유형 모두 2.29~3.12%</b>로 폭락 — 다른 지점에서 코어인 45-54가 천안만 정반대 패턴(누적 비용 86만원/전환 13건). ≥55 × 의료진정보 9.38%(비용 6.3만)도 작은 강점.',
+            actions:[
+              '<b>천안 45-54 세 유형 비중 합쳐 40% 축소</b> (현재 비용 86만원, 전환 13건)',
+              '회수 예산 → <b>천안 35-44 진료셀프캠</b>(7.69%)과 <b>≥55 인플방문후기</b>(7.46%)로 이동',
+              '천안만의 45-54 부진 원인 가설 점검 필요(랜딩 페이지? 지역 인구 구조? 시점?)',
+            ]},
+    '대전': {color:'#60a5fa', label:'35-44 폭발',
+            story:'CPA <b>24,386원</b>(전사 4위). <b>35-44 × 인플방문후기 11.11%</b>(4월 전사 최고 CVR), <b>35-44 × 진료셀프캠 9.78%</b>로 35-44가 4월 가장 효율적인 연령대. 45-54도 7-8%대로 견조. 반면 <b>≥55 × 인플방문후기 3.77%</b>(비용 7.8만)는 약점.',
+            actions:[
+              '<b>대전 35-44 비중 확대</b> — 두 유형 모두 9-11% / 인플방문후기 비용 9.2만원에 머물고 있어 확대 여지 큼',
+              '<b>대전 ≥55 인플방문후기 비중 축소</b>(CVR 3.77%)',
+              '대전은 35-44가 코어인 지점 — 신규 35-44 소재 우선 테스트 적격',
+            ]},
+  };
+
+  let h = '';
+  Object.keys(branchProfile).forEach(br => {
+    const bc = D.branch_cells[br];
+    if (!bc) return;
+    const p = branchProfile[br];
+    const top3 = bc.cells.slice(0,3);
+    const bot3 = bc.cells.slice(-3).reverse();
+    h += `<div class="br-card" style="--bc:${p.color}">
+      <div class="br-head">
+        <div>
+          <div class="br-name">${br} <span class="br-badge" style="background:${p.color}">${p.label}</span></div>
+          <div class="br-meta" style="margin-top:6px">비용 <b>${fmtKRW(bc.cost)}원</b> · 전환 <b>${bc.conv}건</b> · CPA <b>${fmtKRW(bc.cpa)}원</b> · CVR <b>${bc.cvr}%</b></div>
+        </div>
+      </div>
+      <div class="br-body">
+        <div class="br-stry">${p.story}</div>
+        <div class="br-grid">
+          <div class="br-block">
+            <div class="br-block-ti">강점 셀 (CVR Top 3)</div>
+            ${top3.map(c=>`<div class="cell">
+              <div class="c-tag"><span class="ag">${c.age_group}</span> · ${c.creative_type}</div>
+              <div class="c-num" style="color:var(--green)">${c.cvr}%</div>
+              <div class="c-num">${fmtKRW(c.cpa)}</div>
+              <div class="c-num">${fmtMan(c.cost)}/${c.conv}</div></div>`).join('')}
+          </div>
+          <div class="br-block">
+            <div class="br-block-ti">약점 셀 (CVR Bottom 3)</div>
+            ${bot3.map(c=>`<div class="cell">
+              <div class="c-tag"><span class="ag">${c.age_group}</span> · ${c.creative_type}</div>
+              <div class="c-num" style="color:${c.cvr<4?'var(--red)':'var(--tx)'}">${c.cvr}%</div>
+              <div class="c-num">${fmtKRW(c.cpa)}</div>
+              <div class="c-num">${fmtMan(c.cost)}/${c.conv}</div></div>`).join('')}
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);margin-top:6px;margin-bottom:10px">5월 액션</div>
+        <ol class="action-list">${p.actions.map(a=>`<li>${a}</li>`).join('')}</ol>
+      </div></div>`;
+  });
+  document.getElementById('branches').innerHTML = h;
+}
+
+// ===== Section E: age gap =====
+{
+  const ages = ['35-44','45-54','≥55'];
+  // 추천 메시지 자동 생성
+  const recOf = r => {
+    if (r.spread >= 5) return `<b>${r.max_age} 한정 운용 권장</b> — ${r.min_age}는 차단·축소`;
+    if (r.spread >= 3) return `<b>${r.max_age}에 가중치</b> 두고 ${r.min_age} 비중 축소 검토`;
+    return `연령대별 격차 작아 현재 운영 유지`;
+  };
+  let h = `<div class="gap-row" style="font-size:10px;color:var(--tx2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid var(--bd);padding-bottom:10px">
+    <div>소재</div>${ages.map(a=>`<div style="text-align:center">${a}</div>`).join('')}<div style="text-align:center">SPREAD</div><div>권장</div></div>`;
+  D.age_gap.slice(0,12).forEach(r => {
+    const cells = ages.map(a => {
+      const v = r.by_age[a];
+      if (v==null) return `<div class="gap-c na">-</div>`;
+      const cls = (v===r.max_cvr)?'hi':(v===r.min_cvr)?'lo':'md';
+      return `<div class="gap-c ${cls}">${v.toFixed(2)}%</div>`;
+    }).join('');
+    h += `<div class="gap-row">
+      <div class="gap-cn"><div class="nm">${r.creative_name}</div>
+        <div class="ct">${bdg('t',r.creative_type)} · 총비용 ${fmtKRW(r.total_cost)}원</div></div>
+      ${cells}
+      <div class="gap-c md" style="background:var(--s2);color:${r.spread>=5?'var(--warn)':'var(--tx)'}">${r.spread.toFixed(2)}p</div>
+      <div class="gap-rec">${recOf(r)}</div></div>`;
+  });
+  document.getElementById('age-gap').innerHTML = h;
+}
+
+// ===== 5월 우선순위 액션 =====
+{
+  const fiftyDae = D.age_gap.find(r=>r.creative_name==='50대다이어트대사');
+  const actions = [
+    `<b>수원 25-34 3개 셀 즉시 차단</b> — 4월 비용 53만원, CVR 1.5~2.2%, CPA 5.4~11.9만원. 단일 액션으로 전체 평균 CPA 약 420원 개선, 5월 동일 패턴 재발 시 누적 효과 1만원/월 단위.`,
+    `<b>창원 ≥55 × 인플방문후기 즉시 차단</b> — 비용 23.5만원/전환 2건/CVR 1.53%. 같은 패턴(<b>부평 ≥55 인플방문후기</b> CVR 3.33%, <b>천안 45-54 인플방문후기</b> CVR 2.29%) 일괄 점검.`,
+    `<b>"50대다이어트대사" ≥55 비중 확대</b> — ≥55에서 CVR 12.50% / CPA 18,986원, 그러나 45-54에선 CVR 0%(전환 0건/비용 14만원)로 폭락. 현재 총 비용 ${fmtKRW(fiftyDae?.total_cost || 0)}원 → ≥55 한정으로 두 배 이상 가능.`,
+    `<b>"운동안해도되는" ≥55 노출 차단</b>, <b>"밥빵면안당기는원장님" ≥55 비중 축소</b> — 두 소재 모두 35-44에선 7-8%로 우수하지만 ≥55에서 2~3%로 폭락. 연령 타겟팅을 좁히는 것이 효율적.`,
+    `<b>지점별 캐릭터에 맞춘 소재유형 재편</b> — <b>대구·서울</b>은 진료셀프캠 위주, <b>대전·창원</b>은 35-44 인플방문후기 위주, <b>부평·일산</b>은 45-54·≥55 진료셀프캠 위주로 분기. 일산 ≥55 인플방문후기 (CVR 8.22%)는 타 지점 ≥55 인플 활성화 시 벤치마킹 1순위.`,
+  ];
+  document.getElementById('next-actions').innerHTML = actions.map(a=>`<li>${a}</li>`).join('');
+}
+</script>
+</body>
+</html>

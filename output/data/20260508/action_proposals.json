@@ -1,0 +1,124 @@
+{
+  "updated": "2026-05-08 09:57:31",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "high",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "pause_creative",
+      "title": "[재가공] 중단 검토 (TIER4 14일 지속)",
+      "reason": "CPA 46,893원, 전환 7건, 비용 328,254원",
+      "recommended_value": {
+        "action": "disable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "TIER": "TIER4",
+        "집행일수": 14,
+        "CPA": 46893
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "high",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "scale_creative",
+      "title": "[재가공] 예산 확대 검토 (TIER1 활용 부족)",
+      "reason": "비용비중 41.0% < 전환비중 47.1% (CPA 16,749원, CVR 9.3%)",
+      "recommended_value": {
+        "action": "increase_exposure",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "TIER": "TIER1",
+        "cost_share": 41.0,
+        "conv_share": 47.1
+      }
+    },
+    {
+      "id": "p003",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "부산",
+      "action_type": "budget_increase",
+      "title": "부산 예산 +20% 제안",
+      "reason": "소진률 3.5% vs 일자진행 25.8% (-22%p), CPA 13,985원은 목표 내 — 여력 있음",
+      "recommended_value": {
+        "current": 2000000,
+        "proposed": 2400000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "budget_pct": 3.5,
+        "date_progress": 25.8,
+        "cpa": 13985,
+        "target_cpa": 19537
+      }
+    },
+    {
+      "id": "p004",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "서울→부산",
+      "action_type": "budget_reallocate",
+      "title": "예산 재분배: 서울 → 부산 (200,000원)",
+      "reason": "서울 여유(전환 26.0%, 예산 23.6%) → 부산 부족(전환 3.3%, 일자진행 25.8%)",
+      "recommended_value": {
+        "from": "서울",
+        "to": "부산",
+        "amount": 200000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "src_status": "ok",
+        "dst_status": "danger",
+        "dst_conv_gap": -22.5
+      }
+    },
+    {
+      "id": "p005",
+      "priority": "medium",
+      "scope": "hour",
+      "target": "7시",
+      "action_type": "dayparting",
+      "title": "07시 시간대 송출 축소 검토",
+      "reason": "CPA 44,680원 (평균 29,089원의 1.5배), 비용비중 5.3%",
+      "recommended_value": {
+        "action": "reduce_hour_dayparting",
+        "hour": 7
+      },
+      "evidence": {
+        "hour_cpa": 44680,
+        "avg_cpa": 29089,
+        "cost_share": 5.3
+      }
+    },
+    {
+      "id": "p006",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "금",
+      "action_type": "weekday_boost",
+      "title": "금요일 예산 가중 검토",
+      "reason": "금요일 효율점수 1.92 (편차 1.35) — CPA 14,650원, 전환비중 11.7%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "금"
+      },
+      "evidence": {
+        "weekday": "금",
+        "eff_score": 1.92,
+        "variance": 1.35
+      }
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "high": 2,
+    "medium": 4,
+    "low": 0
+  }
+}

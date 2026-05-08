@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>다이트 TikTok 4월 나이대 x 소재유형 드릴다운 리포트</title>
+  <style>
+    :root {
+      --bg: #f6f7f8;
+      --paper: #ffffff;
+      --ink: #16181c;
+      --muted: #626975;
+      --line: #dde1e6;
+      --soft: #eef2f6;
+      --green: #14845f;
+      --blue: #2563eb;
+      --red: #c2410c;
+      --amber: #b7791f;
+      --navy: #1f2a44;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", Arial, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 36px 22px 64px; }
+    header {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 30px;
+    }
+    .eyebrow { color: var(--blue); font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+    h1 { margin: 0; font-size: 30px; line-height: 1.25; }
+    h2 { margin: 0 0 16px; font-size: 22px; }
+    h3 { margin: 0 0 10px; font-size: 17px; }
+    p { margin: 0 0 12px; }
+    .lead { margin-top: 14px; max-width: 920px; color: var(--muted); font-size: 16px; }
+    .section { margin-top: 22px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.kpi { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 22px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stat { border: 1px solid var(--line); border-radius: 8px; padding: 15px; background: #fbfcfd; }
+    .stat .label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .stat .value { margin-top: 6px; font-size: 24px; font-weight: 800; }
+    .stat .note { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .callout { border-left: 4px solid var(--blue); background: #f3f7ff; padding: 15px 16px; border-radius: 6px; color: #1f335f; }
+    .callout.green { border-left-color: var(--green); background: #effaf5; color: #174d39; }
+    .callout.red { border-left-color: var(--red); background: #fff4ed; color: #733416; }
+    .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 800; background: var(--soft); color: var(--navy); }
+    .pill.good { background: #e8f7ef; color: var(--green); }
+    .pill.warn { background: #fff6db; color: var(--amber); }
+    .pill.bad { background: #fff0e8; color: var(--red); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+    th, td { padding: 10px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { text-align: left; color: var(--muted); background: #f8fafc; font-size: 12px; }
+    td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .bar {
+      height: 9px;
+      background: #e5e9ef;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .bar > span { display: block; height: 100%; background: var(--blue); }
+    .bar.green > span { background: var(--green); }
+    .bar.red > span { background: var(--red); }
+    .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 15px; background: #fbfcfd; }
+    .card strong { display: block; margin-bottom: 8px; font-size: 15px; }
+    .card p { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .small { color: var(--muted); font-size: 12px; }
+    .quote { font-size: 19px; font-weight: 800; line-height: 1.45; color: var(--navy); }
+    ul { margin: 10px 0 0; padding-left: 20px; }
+    li { margin: 7px 0; }
+    .action-table td:first-child { font-weight: 800; }
+    @media (max-width: 900px) {
+      .grid.kpi, .grid.two, .grid.three, .cards { grid-template-columns: 1fr; }
+      .wrap { padding: 18px 12px 44px; }
+      header, .section { padding: 18px; }
+      h1 { font-size: 24px; }
+      table { display: block; overflow-x: auto; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">2026년 4월 TikTok 광고 운영 인사이트</div>
+      <h1>나이대 x 소재유형 x 지점별 CVR 드릴다운 리포트</h1>
+      <p class="lead">
+        이번 리포트의 목적은 성과 숫자를 나열하는 것이 아니라, 다음 광고 운영에서 어떤 지점에 어떤 나이대와 소재유형을 붙여야 하는지 결정하는 것이다.
+        4월 성과는 전체 평균보다 지점별 반응 차이가 더 중요하게 나타났다.
+      </p>
+      <div class="grid kpi">
+        <div class="stat"><div class="label">광고비</div><div class="value">23,029,423원</div><div class="note">4/1~4/30 전체</div></div>
+        <div class="stat"><div class="label">전환</div><div class="value">762건</div><div class="note">전체 캠페인 기준</div></div>
+        <div class="stat"><div class="label">CPA</div><div class="value">30,222원</div><div class="note">목표 CPA 근접</div></div>
+        <div class="stat"><div class="label">CVR</div><div class="value">6.45%</div><div class="note">클릭 대비 전환</div></div>
+        <div class="stat"><div class="label">핵심 방향</div><div class="value">지점별 분리</div><div class="note">일괄 최적화 금지</div></div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>1. 결론 먼저</h2>
+      <p class="quote">
+        4월 캠페인은 45세 이상이 전환의 중심이지만, 모든 지점에서 같은 공식이 통하지 않았다.
+        다음 운영은 전체 예산을 넓게 뿌리는 방식보다, 지점별로 검증된 나이대 x 소재유형 조합을 확장하는 방식이 맞다.
+      </p>
+      <div class="grid three" style="margin-top:16px">
+        <div class="callout green">
+          <strong>확장 축</strong>
+          <p>서울 55+ 진료셀프캠, 대구 45-54 진료셀프캠, 일산 45-54/55+ 혼합, 대전 35-44 조합은 CPA와 CVR이 모두 좋다.</p>
+        </div>
+        <div class="callout">
+          <strong>운영 축</strong>
+          <p>45-54는 전환 볼륨, 55+는 CPA 효율, 35-44는 지점 선별형 확장으로 역할을 분리해야 한다.</p>
+        </div>
+        <div class="callout red">
+          <strong>축소 축</strong>
+          <p>수원 전반, 창원 55+ 인플방문후기, 천안 45-54 인플방문후기, 부평 35-44 진료셀프캠은 비용 대비 효율이 약하다.</p>
+        </div>
+      </div>
+      <p class="small" style="margin-top:12px">
+        주: 나이대 분석은 TikTok AUDIENCE API로 보강한 4/1~4/30 전체 기준이다. 운영 가능한 나이대 분석에서는 Unknown 및 메타 매칭 불가분을 제외했다.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>2. 월간 성과 흐름</h2>
+      <p>
+        4월 초반은 효율이 더 좋았다. 4/1~4/7은 CPA 25,761원, CVR 6.88%로 월 평균보다 우수했고,
+        4/8 이후에는 비용 규모가 커지면서 CPA가 31,015원으로 상승했다. 월중 후반 최적화의 핵심은 신규 소재 확장이 아니라,
+        늘어난 비용이 어느 지점과 어느 나이대에서 비효율로 흘렀는지 분리하는 것이다.
+      </p>
+      <table>
+        <thead><tr><th>기간</th><th class="num">광고비</th><th class="num">전환</th><th class="num">클릭</th><th class="num">CPA</th><th class="num">CVR</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td>4/1~4/7</td><td class="num">2,962,480원</td><td class="num">115</td><td class="num">1,671</td><td class="num">25,761원</td><td class="num">6.88%</td><td>초반 효율 우수. 이 구간의 좋은 조합을 월 전체 운영에 반영해야 함.</td></tr>
+          <tr><td>4/8~4/30</td><td class="num">20,066,943원</td><td class="num">647</td><td class="num">10,145</td><td class="num">31,015원</td><td class="num">6.38%</td><td>비용이 커진 구간. 지점별 비효율 조합이 CPA를 끌어올림.</td></tr>
+          <tr><td>4월 전체</td><td class="num">23,029,423원</td><td class="num">762</td><td class="num">11,816</td><td class="num">30,222원</td><td class="num">6.45%</td><td>전체 평균만 보면 양호하지만, 지점별로 승패가 뚜렷함.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>3. 나이대 구조</h2>
+      <p>
+        전환의 중심은 45-54다. 비용 43.4%, 전환 43.7%로 볼륨을 담당한다.
+        55+는 비용 29.4% 대비 전환 31.5%, CPA 29,144원으로 가장 효율이 좋다.
+        35-44는 평균 수준이지만 지점별 편차가 크고, 25-34는 축소 대상이다.
+      </p>
+      <table>
+        <thead><tr><th>나이대</th><th class="num">비용</th><th class="num">전환</th><th class="num">CVR</th><th class="num">CPA</th><th class="num">비용비중</th><th class="num">전환비중</th><th>운영 판단</th></tr></thead>
+        <tbody>
+          <tr><td>25-34</td><td class="num">532,991원</td><td class="num">7</td><td class="num">1.81%</td><td class="num">76,142원</td><td class="num">2.3%</td><td class="num">0.9%</td><td><span class="pill bad">축소</span> 별도 저비용 테스트 외 확장 비추천</td></tr>
+          <tr><td>35-44</td><td class="num">5,721,401원</td><td class="num">176</td><td class="num">6.31%</td><td class="num">32,508원</td><td class="num">24.9%</td><td class="num">23.9%</td><td><span class="pill warn">선별</span> 대전/대구/천안 중심으로 확장</td></tr>
+          <tr><td>45-54</td><td class="num">9,970,284원</td><td class="num">322</td><td class="num">6.54%</td><td class="num">30,964원</td><td class="num">43.4%</td><td class="num">43.7%</td><td><span class="pill good">메인</span> 볼륨 확보용 핵심 타겟</td></tr>
+          <tr><td>55+</td><td class="num">6,761,333원</td><td class="num">232</td><td class="num">6.29%</td><td class="num">29,144원</td><td class="num">29.4%</td><td class="num">31.5%</td><td><span class="pill good">확장</span> CPA 효율 중심 타겟</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>4. 소재유형별 역할</h2>
+      <div class="cards">
+        <div class="card">
+          <strong>진료셀프캠</strong>
+          <p>4월의 주력 전환형 소재. 특히 45-54 CVR 7.13%, 55+ CPA 27,030원으로 고연령 전환에 강하다.</p>
+          <span class="pill good">메인 예산</span>
+        </div>
+        <div class="card">
+          <strong>인플방문후기</strong>
+          <p>35-44에서 CVR 6.51%, CPA 30,503원으로 가장 좋다. 55+에서는 CPA가 37,906원으로 약해진다.</p>
+          <span class="pill warn">지점 선별</span>
+        </div>
+        <div class="card">
+          <strong>의료진정보</strong>
+          <p>55+에서 CVR 8.27%, CPA 22,224원으로 높지만 전환 11건 중 9건이 수원·부평·천안에 집중됐다. 전지점 확대가 아니라 지점 선별 테스트가 맞다.</p>
+          <span class="pill warn">지점 한정 검증</span>
+        </div>
+        <div class="card">
+          <strong>진료QnA/리얼모델</strong>
+          <p>볼륨이 작아 운영 판단 근거로 쓰기 어렵다. 신규 기획 후보로만 보되 예산 확장은 보류한다.</p>
+          <span class="pill bad">판단 보류</span>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>소재유형 x 나이대</th><th class="num">비용</th><th class="num">전환</th><th class="num">CVR</th><th class="num">CPA</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td>진료셀프캠 x 45-54</td><td class="num">6,595,942원</td><td class="num">234</td><td class="num">7.13%</td><td class="num">28,188원</td><td>가장 큰 전환 볼륨. 월간 운영의 중심축.</td></tr>
+          <tr><td>진료셀프캠 x 55+</td><td class="num">4,649,212원</td><td class="num">172</td><td class="num">6.73%</td><td class="num">27,030원</td><td>CPA가 가장 안정적. 서울/일산/대구에서 확장 가치 높음.</td></tr>
+          <tr><td>인플방문후기 x 35-44</td><td class="num">2,135,190원</td><td class="num">70</td><td class="num">6.51%</td><td class="num">30,503원</td><td>젊은 중장년 설득에는 인플 후기형이 유효.</td></tr>
+          <tr><td>인플방문후기 x 55+</td><td class="num">1,857,394원</td><td class="num">49</td><td class="num">4.91%</td><td class="num">37,906원</td><td>고연령 확장에는 부적합한 지점이 많음.</td></tr>
+          <tr><td>의료진정보 x 55+</td><td class="num">244,468원</td><td class="num">11</td><td class="num">8.27%</td><td class="num">22,224원</td><td>신뢰형 메시지의 가능성. 단, 수원·부평·천안 편중으로 전지점 확대는 보류.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>5. 55+ 의료진정보 상세 진단</h2>
+      <p>
+        소재유형 x 나이대 히트맵에서 `55+ x 의료진정보`의 CVR이 8.27%로 가장 높게 보였지만,
+        이 성과는 의료진정보 유형 전체가 모든 지점에서 강했다는 의미는 아니다.
+        실제로는 특정 소재와 특정 지점에서 전환이 집중되며 평균이 올라간 구조다.
+      </p>
+      <div class="grid three" style="margin-top:16px">
+        <div class="stat"><div class="label">55+ 의료진정보 비용</div><div class="value">244,468원</div><div class="note">전체 표본은 작음</div></div>
+        <div class="stat"><div class="label">전환 / 클릭</div><div class="value">11 / 133</div><div class="note">CVR 8.27%</div></div>
+        <div class="stat"><div class="label">핵심 편중</div><div class="value">81.8%</div><div class="note">전환 11건 중 9건이 수원·부평·천안</div></div>
+      </div>
+      <table>
+        <thead><tr><th>소재</th><th class="num">비용</th><th class="num">클릭</th><th class="num">전환</th><th class="num">CVR</th><th class="num">CPA</th><th>해석</th></tr></thead>
+        <tbody>
+          <tr><td>주사형비만치료제 10년은</td><td class="num">95,072원</td><td class="num">45</td><td class="num">5</td><td class="num">11.11%</td><td class="num">19,014원</td><td>의료진정보 내 전환 최대 소재. 부평·천안에서 특히 강함.</td></tr>
+          <tr><td>4050나잇살 이유는 여기에</td><td class="num">47,996원</td><td class="num">22</td><td class="num">3</td><td class="num">13.64%</td><td class="num">15,999원</td><td>CVR은 가장 높지만 표본이 작음. 수원에서 성과 집중.</td></tr>
+          <tr><td>무작정운동으로 팩폭</td><td class="num">101,400원</td><td class="num">66</td><td class="num">3</td><td class="num">4.55%</td><td class="num">33,800원</td><td>비용과 클릭은 가장 크지만 효율은 낮음. 메인 확장 소재로 보기 어려움.</td></tr>
+        </tbody>
+      </table>
+      <table>
+        <thead><tr><th>지점</th><th class="num">비용</th><th class="num">클릭</th><th class="num">전환</th><th class="num">CVR</th><th class="num">CPA</th><th>판단</th></tr></thead>
+        <tbody>
+          <tr><td>수원</td><td class="num">54,939원</td><td class="num">23</td><td class="num">3</td><td class="num">13.04%</td><td class="num">18,313원</td><td>전체 지점 성과는 약했지만 55+ 의료진정보는 예외적으로 좋음.</td></tr>
+          <tr><td>부평</td><td class="num">46,947원</td><td class="num">24</td><td class="num">3</td><td class="num">12.50%</td><td class="num">15,649원</td><td>의료진정보 테스트 우선 지점.</td></tr>
+          <tr><td>천안</td><td class="num">62,872원</td><td class="num">32</td><td class="num">3</td><td class="num">9.38%</td><td class="num">20,957원</td><td>클릭/비용 표본이 가장 크고 CPA도 양호.</td></tr>
+          <tr><td>서울</td><td class="num">10,070원</td><td class="num">12</td><td class="num">1</td><td class="num">8.33%</td><td class="num">10,070원</td><td>효율은 좋지만 표본이 작아 보조 테스트 수준.</td></tr>
+          <tr><td>대구</td><td class="num">29,855원</td><td class="num">18</td><td class="num">1</td><td class="num">5.56%</td><td class="num">29,855원</td><td>평균 이하. 확장 판단 보류.</td></tr>
+          <tr><td>일산</td><td class="num">20,085원</td><td class="num">18</td><td class="num">0</td><td class="num">0.00%</td><td class="num">-</td><td>의료진정보보다 기존 강점인 진료셀프캠/인플후기 유지.</td></tr>
+          <tr><td>창원</td><td class="num">19,700원</td><td class="num">6</td><td class="num">0</td><td class="num">0.00%</td><td class="num">-</td><td>전환 없음. 확대 제외.</td></tr>
+        </tbody>
+      </table>
+      <div class="callout" style="margin-top:16px">
+        <strong>해석</strong>
+        <p>
+          `55+ x 의료진정보`는 전지점 공통 승리 조합이 아니라, `주사형비만치료제 10년은`과 `4050나잇살 이유는 여기에`가
+          부평·천안·수원에서 만든 성과다. 따라서 의료진정보 유형은 전국 확장보다 `부평/천안/수원 55+`에 한정해 예산을 작게 늘리고,
+          일산·창원은 확대 대상에서 제외하는 것이 안전하다.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>6. 지점별 성과 차이</h2>
+      <p>
+        지점별 CPA 격차가 크다. 서울, 일산, 대구, 대전은 목표 CPA 이하 또는 근접한 확장 후보이고,
+        수원은 CPA 60,475원으로 전체 평균의 2배 수준이다. 부평과 창원은 전환 볼륨은 있으나 특정 조합에서 비용이 새고 있다.
+      </p>
+      <table>
+        <thead><tr><th>지점</th><th class="num">비용</th><th class="num">전환</th><th class="num">CVR</th><th class="num">CPA</th><th>진단</th></tr></thead>
+        <tbody>
+          <tr><td>서울</td><td class="num">1,993,637원</td><td class="num">108</td><td class="num">7.65%</td><td class="num">18,460원</td><td>55+ 진료셀프캠이 압도적. 확장 우선.</td></tr>
+          <tr><td>일산</td><td class="num">1,995,537원</td><td class="num">97</td><td class="num">7.62%</td><td class="num">20,573원</td><td>45-54/55+ 모두 안정. 인플 후기까지 활용 가능.</td></tr>
+          <tr><td>대구</td><td class="num">2,989,686원</td><td class="num">133</td><td class="num">8.02%</td><td class="num">22,479원</td><td>45-54 진료셀프캠 중심으로 가장 강한 볼륨 지점.</td></tr>
+          <tr><td>대전</td><td class="num">1,994,467원</td><td class="num">81</td><td class="num">7.89%</td><td class="num">24,623원</td><td>35-44 반응이 매우 좋음. 젊은 중장년 공략 지점.</td></tr>
+          <tr><td>천안</td><td class="num">1,996,507원</td><td class="num">54</td><td class="num">4.93%</td><td class="num">36,972원</td><td>35-44는 가능성, 45-54 인플은 축소.</td></tr>
+          <tr><td>부평</td><td class="num">5,035,262원</td><td class="num">130</td><td class="num">5.87%</td><td class="num">38,733원</td><td>비용 과다. 45-54 진료셀프캠 외 정리 필요.</td></tr>
+          <tr><td>창원</td><td class="num">2,989,532원</td><td class="num">68</td><td class="num">5.02%</td><td class="num">43,964원</td><td>35-44는 가능성, 55+ 인플은 비효율.</td></tr>
+          <tr><td>수원</td><td class="num">3,991,381원</td><td class="num">66</td><td class="num">3.76%</td><td class="num">60,475원</td><td>전반 재설계 필요. 예산 축소와 소재 교체 우선.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>7. 지점 x 나이대 x 소재유형 핵심 조합</h2>
+      <p>
+        다음 운영의 실질 기준은 아래 조합이다. 같은 45-54라도 대구에서는 확장 대상이지만 수원에서는 비효율이다.
+        따라서 나이대 타겟은 전국 공통이 아니라 지점별로 분리해야 한다.
+      </p>
+      <div class="grid two">
+        <div>
+          <h3>확장 후보</h3>
+          <table>
+            <thead><tr><th>조합</th><th class="num">CVR</th><th class="num">CPA</th><th>운영안</th></tr></thead>
+            <tbody>
+              <tr><td>서울 55+ x 진료셀프캠</td><td class="num">10.70%</td><td class="num">12,620원</td><td>예산 증액 1순위</td></tr>
+              <tr><td>대구 45-54 x 진료셀프캠</td><td class="num">10.11%</td><td class="num">18,757원</td><td>볼륨 확장</td></tr>
+              <tr><td>대구 35-44 x 진료셀프캠</td><td class="num">10.30%</td><td class="num">18,514원</td><td>추가 테스트 확대</td></tr>
+              <tr><td>대전 35-44 x 인플방문후기</td><td class="num">11.11%</td><td class="num">18,328원</td><td>인플 후기형 유지/확대</td></tr>
+              <tr><td>부평/천안/수원 55+ x 의료진정보</td><td class="num">9.38~13.04%</td><td class="num">15,649~20,957원</td><td>소액 증액 테스트</td></tr>
+              <tr><td>일산 45-54 x 진료셀프캠</td><td class="num">8.39%</td><td class="num">18,670원</td><td>안정 확장</td></tr>
+              <tr><td>일산 55+ x 인플방문후기</td><td class="num">8.22%</td><td class="num">19,127원</td><td>타 지점과 다른 예외적 강점</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3>축소/점검 후보</h3>
+          <table>
+            <thead><tr><th>조합</th><th class="num">CVR</th><th class="num">CPA</th><th>운영안</th></tr></thead>
+            <tbody>
+              <tr><td>수원 25-34 x 진료셀프캠</td><td class="num">1.56%</td><td class="num">118,552원</td><td>즉시 축소</td></tr>
+              <tr><td>창원 55+ x 인플방문후기</td><td class="num">1.53%</td><td class="num">117,786원</td><td>OFF 또는 강한 축소</td></tr>
+              <tr><td>천안 45-54 x 인플방문후기</td><td class="num">2.29%</td><td class="num">92,538원</td><td>인플 후기형 축소</td></tr>
+              <tr><td>수원 55+ x 인플방문후기</td><td class="num">2.60%</td><td class="num">85,482원</td><td>고연령 인플 중단 검토</td></tr>
+              <tr><td>부평 35-44 x 진료셀프캠</td><td class="num">3.81%</td><td class="num">67,813원</td><td>35-44 메시지 재검토</td></tr>
+              <tr><td>수원 45-54 x 진료셀프캠</td><td class="num">4.02%</td><td class="num">64,425원</td><td>소재/랜딩 정합성 점검</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>8. 실제 소재별 인사이트</h2>
+      <p>
+        소재는 전체 평균 순위로 보면 안 된다. 같은 소재라도 어느 나이대와 지점에 붙느냐에 따라 성과가 크게 달라진다.
+        확장할 소재는 “강한 나이대와 강한 지점”을 함께 지정해야 한다.
+      </p>
+      <table>
+        <thead><tr><th>소재</th><th>강한 조합</th><th class="num">CVR</th><th class="num">CPA</th><th>운영 판단</th></tr></thead>
+        <tbody>
+          <tr><td>주사형비만치료제 고민끝에 50대부부 -32kg</td><td>35-44/45-54 진료셀프캠</td><td class="num">9.45% / 8.60%</td><td class="num">19,629원 / 22,719원</td><td>대구/서울/일산 중심 확장</td></tr>
+          <tr><td>식욕억제주사실패 마지막</td><td>45-54/55+ 진료셀프캠</td><td class="num">7.20% / 7.10%</td><td class="num">26,563원 / 26,211원</td><td>볼륨 유지, 약한 지점은 제한</td></tr>
+          <tr><td>밥빵면안당기는원장님</td><td>35-44 인플방문후기</td><td class="num">8.71%</td><td class="num">23,295원</td><td>35-44 전용으로 운영</td></tr>
+          <tr><td>맘껏먹는 다이어트 한달후기</td><td>35-44/55+ 인플방문후기</td><td class="num">9.23% / 8.93%</td><td class="num">19,982원 / 17,296원</td><td>일산 등 반응 지점 중심 재테스트</td></tr>
+          <tr><td>주사형비만치료제 10년은</td><td>55+ 의료진정보</td><td class="num">11.11%</td><td class="num">19,014원</td><td>부평·천안 중심으로 의료진정보 테스트</td></tr>
+          <tr><td>4050나잇살 이유는 여기에</td><td>55+ 의료진정보</td><td class="num">13.64%</td><td class="num">15,999원</td><td>수원 한정 신뢰형 메시지 테스트</td></tr>
+          <tr><td>운동안해도되는</td><td>35-44 진료셀프캠</td><td class="num">7.89%</td><td class="num">27,109원</td><td>35-44만 유지, 55+는 축소</td></tr>
+          <tr><td>무작정운동으로 팩폭</td><td>55+ 의료진정보</td><td class="num">4.55%</td><td class="num">33,800원</td><td>의료진정보 내에서도 효율 낮음. 확장 제외</td></tr>
+        </tbody>
+      </table>
+      <div class="callout red" style="margin-top:16px">
+        <strong>주의 소재</strong>
+        <p>
+          `운동안해도되는`은 55+ 진료셀프캠에서 CPA 67,554원으로 약하고, `밥빵면안당기는원장님`은 45-54/55+ 인플방문후기에서 CPA 47,000원대다.
+          이 소재들은 전체 OFF가 아니라 나이대 제한이 필요하다. 또한 `무작정운동으로 팩폭`은 의료진정보 유형 안에서도 55+ CVR 4.55%에 그쳐,
+          의료진정보 확장 판단의 근거로 쓰기 어렵다.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>9. 지역 특성 기반 운영 가설</h2>
+      <div class="cards">
+        <div class="card">
+          <strong>서울</strong>
+          <p>55+에서 치료/진료 맥락의 설득이 강하다. 진료셀프캠 중심으로 예산을 키우고, 35-44는 보조로 둔다.</p>
+        </div>
+        <div class="card">
+          <strong>대구</strong>
+          <p>45-54 전환 볼륨이 가장 좋다. 중장년의 구체적 감량 서사와 주사형 치료제 대안 메시지가 잘 맞는다.</p>
+        </div>
+        <div class="card">
+          <strong>일산</strong>
+          <p>45-54/55+ 모두 안정적이고 인플방문후기도 먹힌다. 소재유형을 넓게 가져갈 수 있는 지점이다.</p>
+        </div>
+        <div class="card">
+          <strong>대전</strong>
+          <p>35-44 반응이 두드러진다. 고연령보다 젊은 중장년에게 후기형/진료형을 함께 테스트하는 방향이 맞다.</p>
+        </div>
+        <div class="card">
+          <strong>부평</strong>
+          <p>전환 볼륨은 있으나 비용이 과다하다. 다만 55+ 의료진정보에서 CPA 15,649원으로 신뢰형 메시지 테스트 가치가 있다.</p>
+        </div>
+        <div class="card">
+          <strong>수원</strong>
+          <p>전 나이대 CPA는 높지만 55+ 의료진정보는 예외적으로 양호하다. 수원은 진료셀프캠 확대보다 신뢰형 메시지 별도 테스트가 먼저다.</p>
+        </div>
+        <div class="card">
+          <strong>창원</strong>
+          <p>35-44는 가능성이 있으나 55+ 인플은 약하다. 고연령 후기형을 줄이고 진료형 중심으로 재편한다.</p>
+        </div>
+        <div class="card">
+          <strong>천안</strong>
+          <p>35-44 진료셀프캠은 가능성이 있고, 55+ 의료진정보도 CPA 20,957원으로 양호하다. 45-54 인플보다 진료/의료진형 테스트가 적합하다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>10. 다음 광고 운영 액션 플랜</h2>
+      <table class="action-table">
+        <thead><tr><th>우선순위</th><th>액션</th><th>대상</th><th>판단 기준</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>확장</td><td>서울 55+ 진료셀프캠, 대구 45-54 진료셀프캠, 일산 45-54/55+</td><td>CPA 12,620~20,827원, CVR 8% 이상 조합 존재</td></tr>
+          <tr><td>2</td><td>지점별 타겟 분리</td><td>대전/천안은 35-44, 서울/대구/일산은 45+ 중심</td><td>지점별 고효율 나이대가 다름</td></tr>
+          <tr><td>3</td><td>축소</td><td>수원 전반, 창원 55+ 인플, 천안 45-54 인플</td><td>CPA 85,000원 이상 또는 CVR 3% 이하</td></tr>
+          <tr><td>4</td><td>소재 리뉴얼</td><td>수원 진료셀프캠, 부평 35-44 진료셀프캠</td><td>소재유형 자체보다 메시지/지역 적합도 문제 가능성</td></tr>
+          <tr><td>5</td><td>신규 테스트</td><td>부평·천안 `주사형비만치료제 10년은`, 수원 `4050나잇살 이유는 여기에`</td><td>55+ 의료진정보 성과가 특정 소재/지점에 집중됨</td></tr>
+        </tbody>
+      </table>
+      <div class="callout green" style="margin-top:16px">
+        <strong>운영 원칙</strong>
+        <p>
+          5월 운영은 전국 공통 타겟 세팅보다 지점별 세그먼트 세팅이 우선이다.
+          각 지점의 승리 조합에 예산을 더 주고, 약한 조합은 OFF가 아니라 나이대/소재유형 단위로 줄여야 한다.
+        </p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

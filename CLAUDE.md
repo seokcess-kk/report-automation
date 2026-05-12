@@ -165,8 +165,10 @@ from common import VALID_BRANCHES, MONTHLY_BUDGET, MONTHLY_TARGET_CONV
 
 MONTHLY_BUDGET = {'서울': 2_000_000, '부평': 2_000_000, '수원': 2_000_000,
                   '일산': 2_000_000, '대구': 2_000_000, '창원': 2_000_000,
-                  '천안': 2_000_000, '대전': 2_000_000}
-MONTHLY_TARGET_CONV = 1_051
+                  '천안': 2_000_000, '대전': 2_000_000, '부산': 2_000_000}
+MONTHLY_TARGET_CONV = 891   # 지점별 합산 (2026-05 기준)
+MONTHLY_TARGET_IMP = 1_675_675
+MONTHLY_TARGET_CLICK = 11_646
 ```
 
 ---

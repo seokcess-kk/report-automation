@@ -23,7 +23,7 @@ from pathlib import Path
 
 # 공용 모듈 경로 추가
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from common import VALID_BRANCHES, VALID_AD_TYPES
+from common import VALID_BRANCHES, VALID_AD_TYPES, load_ad_name_corrections, apply_ad_name_corrections
 
 
 def parse_ad_name(name: str) -> dict:
@@ -216,6 +216,13 @@ def main(input_path: str, output_path: str, failures_path: str):
         df = pd.read_csv(input_path, encoding='utf-8-sig')
 
     print(f"[입력] {len(df)}행 로드됨")
+
+    # 광고명 정정 사전 적용 (input/ad_name_corrections.csv)
+    # 클라이언트가 검증한 정답 이름으로 통일하여 매칭키 집계 정확도 보장
+    corrections = load_ad_name_corrections()
+    if corrections:
+        df, n_applied = apply_ad_name_corrections(df, corrections)
+        print(f"[정정] 광고명 정정 사전 적용: {len(corrections)}개 ad_id, {n_applied}행 교체")
 
     # 파싱 실행
     parsed_df = parse_dataframe(df)

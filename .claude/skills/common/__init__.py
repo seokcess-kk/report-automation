@@ -17,6 +17,8 @@ from .constants import (
 from .parsers import (
     strip_date_code,
     load_target_cpa,
+    load_ad_name_corrections,
+    apply_ad_name_corrections,
     parse_branch,
 )
 from .kpi import (
@@ -53,6 +55,8 @@ __all__ = [
     # parsers
     'strip_date_code',
     'load_target_cpa',
+    'load_ad_name_corrections',
+    'apply_ad_name_corrections',
     'parse_branch',
     # kpi
     'calc_kpi',

@@ -7,6 +7,35 @@
 """
 
 JS_BODY = r"""
+// ==================== Theme ====================
+const cssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const CHART_TEXT = cssVar('--chart-text') || '#a1a1aa';
+const CHART_GRID = cssVar('--chart-grid') || '#27272a';
+const CHART_STRONG = cssVar('--chart-strong') || '#f4f4f5';
+(function(){
+  const btn = document.getElementById('themeToggle');
+  if(!btn) return;
+  btn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    if(next === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    else document.documentElement.removeAttribute('data-theme');
+    try{ localStorage.setItem('proposal-theme', next); }catch(e){}
+    // Charts cache resolved colors at init — reload to fully repaint
+    location.reload();
+  });
+})();
+(function(){
+  const btn = document.getElementById('zoomToggle');
+  if(!btn) return;
+  btn.addEventListener('click', () => {
+    const isLg = document.documentElement.getAttribute('data-zoom') === 'lg';
+    if(isLg) document.documentElement.removeAttribute('data-zoom');
+    else document.documentElement.setAttribute('data-zoom','lg');
+    try{ localStorage.setItem('proposal-zoom', isLg ? 'sm' : 'lg'); }catch(e){}
+  });
+})();
+
 // ==================== Helpers ====================
 const fmt = (n, suffix = '') => (n === null || n === undefined) ? '-' : (Math.round(n).toLocaleString() + suffix);
 const fmtPct = (n) => (n === null || n === undefined) ? '-' : (n.toFixed(2) + '%');
@@ -205,8 +234,8 @@ document.querySelectorAll('.tb').forEach(btn => {
         } } },
       },
       scales: {
-        x: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' } },
-        y: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' }, title: { display: true, text: '전환 수', color: '#a1a1aa' } },
+        x: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
+        y: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID }, title: { display: true, text: '전환 수', color: CHART_TEXT } },
       },
     },
   });
@@ -294,7 +323,7 @@ document.querySelectorAll('.tb').forEach(btn => {
           if (!point) return;
           const r = point.options.radius || 6;
           ctx.save();
-          ctx.fillStyle = '#f4f4f5';
+          ctx.fillStyle = CHART_STRONG;
           ctx.font = 'bold 11px "Pretendard Variable", Pretendard, sans-serif';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom';
@@ -316,8 +345,8 @@ document.querySelectorAll('.tb').forEach(btn => {
         tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: 전환 ${ctx.raw.y}건, CPA ${ctx.raw.x.toLocaleString()}원` } },
       },
       scales: {
-        x: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' }, title: { display: true, text: '평균 CPA (원) · 우측일수록 비쌈', color: '#a1a1aa' } },
-        y: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' }, title: { display: true, text: '전 기간 누적 전환수 · 위쪽일수록 많음', color: '#a1a1aa' } },
+        x: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID }, title: { display: true, text: '평균 CPA (원) · 우측일수록 비쌈', color: CHART_TEXT } },
+        y: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID }, title: { display: true, text: '전 기간 누적 전환수 · 위쪽일수록 많음', color: CHART_TEXT } },
       },
     },
   });
@@ -346,6 +375,147 @@ document.querySelectorAll('.tb').forEach(btn => {
   document.getElementById('hm-cpm').innerHTML = build('cpm', 'low', v => v === null ? '-' : v.toLocaleString());
   document.getElementById('hm-ctr').innerHTML = build('ctr', 'high', v => v === null ? '-' : v.toFixed(2) + '%');
   document.getElementById('hm-cvr').innerHTML = build('cvr', 'high', v => v === null ? '-' : v.toFixed(2) + '%');
+
+  // ============ 2.3.1 히트맵 변동 주원인 (Shapley 분해 카드) ============
+  (function renderFunnelVariance(){
+    const fv = DATA.funnel_variance;
+    if (!fv) return;
+    const fmtMetric = (m, v) => v === null || v === undefined ? '-'
+      : (m === 'cpm' ? Math.round(v).toLocaleString() + '원' : v.toFixed(2) + '%');
+    const fmtPP = (v) => (v >= 0 ? '+' : '') + v.toFixed(2) + '%p';
+    const fmtSign = (v, suffix='%') => (v >= 0 ? '+' : '') + v.toFixed(1) + suffix;
+
+    // overall trend 한 줄
+    const t = fv.overall_trend || {};
+    const trendParts = ['cpm','ctr','cvr'].map(m => {
+      const tt = t[m]; if (!tt) return null;
+      return `<strong style="color:var(--tx)">${m.toUpperCase()}</strong> ${tt.first_month.slice(5)}월 ${fmtMetric(m, tt.first_value)} → ${tt.last_month.slice(5)}월 ${fmtMetric(m, tt.last_value)} (<span class="${tt.delta_pct > 0 ? 'delta-up' : 'delta-down'}">${fmtSign(tt.delta_pct)}</span>)${tt.partial_flag_last ? ' <span style="color:var(--warn);font-size:10px">⚠️ 5월 부분월</span>' : ''}`;
+    }).filter(Boolean);
+    document.getElementById('fv-trend').innerHTML = `전 지점 평균 추이 · ${trendParts.join(' · ')}`;
+
+    // 카드 렌더
+    const cards = fv.cards || [];
+    const grid = document.createElement('div');
+    grid.className = 'fv-grid';
+    cards.forEach(c => {
+      const cardEl = document.createElement('div');
+      const metricCl = c.metric === 'cvr' && c.direction === 'down' ? 'cvr-down' : c.metric;
+      cardEl.className = `fv-card ${metricCl}`;
+
+      const arrow = c.direction === 'up' ? '↑' : '↓';
+      const metricLabel = c.metric.toUpperCase();
+      const monthStr = c.month.slice(5) + '월';
+      const baseStr = c.baseline.months.map(m => m.slice(5)+'월').join('·');
+
+      // 헤더
+      const hdr = `<div class="fv-hdr">
+        <div class="fv-hdr-branch">${c.branch}</div>
+        <div class="fv-hdr-metric">${metricLabel} ${arrow}</div>
+        ${c.partial_month_flag ? '<div class="fv-hdr-partial">⚠️ 부분월</div>' : ''}
+        <div class="fv-hdr-delta">${fmtSign(c.delta_pct)}</div>
+      </div>`;
+
+      // 메타 (월 수치 + vs prev)
+      const vsPrev = c.vs_prev_month_pct !== null && c.vs_prev_month_pct !== undefined ? ` <span class="fv-meta-trend">(vs 전월 ${fmtSign(c.vs_prev_month_pct)})</span>` : '';
+      const meta = `<div class="fv-meta">
+        ${monthStr} ${fmtMetric(c.metric, c.month_value)} · ${baseStr} 평균 ${fmtMetric(c.metric, c.baseline.value)}${vsPrev}
+      </div>`;
+
+      // 분해
+      const d = c.decomposition;
+      const mixTop = (c.mix_drivers && c.mix_drivers[0]) || null;
+      const withinTop = (c.within_drivers && c.within_drivers[0]) || null;
+      let decompRows = '';
+      // mix 라인
+      let mixDetail = '';
+      if (mixTop) {
+        const dir = mixTop.share_delta_pp >= 0 ? '증가' : '감소';
+        mixDetail = `${mixTop.type} 비중 ${fmtPP(mixTop.share_delta_pp)} ${dir}`;
+        if (mixTop.type_metric_value !== null && mixTop.basket_metric_value) {
+          mixDetail += ` · ${mixTop.type} ${fmtMetric(c.metric, mixTop.type_metric_value)} vs 평균 ${fmtMetric(c.metric, mixTop.basket_metric_value)}`;
+        }
+      }
+      decompRows += `<div class="fv-decomp-row">
+        <div class="fv-decomp-lbl">구성비 효과</div>
+        <div class="fv-decomp-val">${d.mix_contribution_pct.toFixed(0)}%</div>
+        <div class="fv-decomp-detail">${mixDetail || '소재유형 비중 변화 미미'}</div>
+      </div>`;
+      // within 라인
+      let withinDetail = '';
+      if (withinTop) {
+        const dir = withinTop.metric_delta_pct >= 0 ? '상승' : '하락';
+        const absStr = c.metric === 'cpm'
+          ? `${withinTop.metric_delta_abs >= 0 ? '+' : ''}${Math.round(withinTop.metric_delta_abs).toLocaleString()}원`
+          : `${fmtPP(withinTop.metric_delta_abs)}`;
+        withinDetail = `${withinTop.type} 자체 ${absStr} ${dir} (${fmtSign(withinTop.metric_delta_pct)})`;
+      }
+      decompRows += `<div class="fv-decomp-row">
+        <div class="fv-decomp-lbl">단위성과 효과</div>
+        <div class="fv-decomp-val">${d.within_contribution_pct.toFixed(0)}%</div>
+        <div class="fv-decomp-detail">${withinDetail || '동일 유형 내 변화 미미'}</div>
+      </div>`;
+      // interaction (Shapley라 항상 0 — 본문 생략)
+      const decomp = `<div class="fv-decomp">${decompRows}</div>`;
+
+      // aux signals
+      let auxHtml = '';
+      if (c.aux_signals && c.aux_signals.length) {
+        const auxRows = c.aux_signals.map(s => {
+          if (s.key === 'new_resumed_share') {
+            return `<div class="fv-aux-row">신규·재개 광고 노출 비중 <strong>${s.value_pct.toFixed(1)}%</strong> (신규 ${s.new_ad_count}개·재개 ${s.resumed_ad_count}개)</div>`;
+          }
+          if (s.key === 'off_impact') {
+            return `<div class="fv-aux-row">우수 광고 OFF — 직전월 전환 비중 <strong>${s.prev_conversion_share_pct.toFixed(1)}%</strong>를 차지하던 광고 ${s.off_creative_count}개가 OFF</div>`;
+          }
+          if (s.key === 'avg_daily_cost') {
+            return `<div class="fv-aux-row">일평균 비용 <strong>${fmtSign(s.value_pct)}</strong> (${s.baseline_daily_cost.toLocaleString()}원 → ${s.current_daily_cost.toLocaleString()}원)</div>`;
+          }
+          if (s.key === 'active_ad_count') {
+            return `<div class="fv-aux-row">활성 광고 수 <strong>${fmtSign(s.value_pct)}</strong> (${s.baseline_count}개 → ${s.current_count}개)</div>`;
+          }
+          return '';
+        }).filter(Boolean).join('');
+        if (auxRows) auxHtml = `<div class="fv-aux">${auxRows}</div>`;
+      } else {
+        auxHtml = `<div class="fv-aux"></div>`; // grid row 유지
+      }
+
+      // 운영 함의
+      const impCls = c.implication_strength === 'soft' ? 'fv-imp soft' : 'fv-imp';
+      const imp = `<div class="${impCls}"><strong>운영 함의 · </strong>${c.operation_implication}</div>`;
+
+      cardEl.innerHTML = hdr + meta + decomp + auxHtml + imp;
+      // 6번째 자식 자리(혹시 부족) — grid subgrid에 맞춰 자식 수 6개 유지: header / meta / decomp / aux / imp → 5개
+      // aligned-6 격자는 우리가 자식 6개를 요구하지 않음. fv-grid에서 grid-template-rows:repeat(6,auto)지만 자식 5개여도 5 row 사용.
+      // 명세상 'aligned-N'은 정확한 N. 카드 자식 = 5라 grid-row span도 5로 맞춤.
+      cardEl.style.gridRow = `span 5`;
+      grid.appendChild(cardEl);
+    });
+    // 부모 grid template rows도 자식 수에 맞춰 5로 보정
+    grid.style.gridTemplateRows = 'repeat(5,auto)';
+    const wrap = document.getElementById('fv-cards');
+    wrap.innerHTML = '';
+    if (cards.length === 0) {
+      wrap.innerHTML = `<div class="appendix-card" style="text-align:center;padding:24px">변동 임계를 통과한 셀이 없습니다. 모든 지점이 안정 운영 구간입니다.</div>`;
+    } else {
+      wrap.appendChild(grid);
+    }
+
+    // weak appendix
+    const weak = fv.appendix_weak_cells || [];
+    if (weak.length) {
+      const weakWrap = document.getElementById('fv-weak-wrap');
+      weakWrap.style.display = 'block';
+      document.getElementById('fv-weak').innerHTML = weak.map(w =>
+        `<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px dashed var(--bd);font-size:11px">
+          <span style="font-weight:700;min-width:48px">${w.branch}</span>
+          <span style="font-weight:700;color:var(--tx2);min-width:60px">${w.metric.toUpperCase()} ${w.delta_pct >= 0 ? '↑' : '↓'} ${fmtSign(w.delta_pct)}</span>
+          <span style="font-family:'DM Mono',monospace;color:var(--tx2);min-width:64px">${w.month.slice(5)}월</span>
+          <span style="color:var(--tx2);font-size:10.5px">${w.reason}</span>
+        </div>`
+      ).join('');
+    }
+  })();
 
   // Appendix A.1 - conv summary
   const sumHeads = ['지점','누적 전환','전환 비중','평균 CPA','일평균 전환','효율 등급','집행일수'];
@@ -488,10 +658,10 @@ document.querySelectorAll('.tb').forEach(btn => {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { labels: { color: '#a1a1aa', font: { size: 10 } } } },
+      plugins: { legend: { labels: { color: CHART_TEXT, font: { size: 10 } } } },
       scales: {
-        x: { ticks: { color: '#a1a1aa' }, grid: { color: '#27272a' } },
-        y: { type: 'linear', position: 'left', ticks: { color: '#38bdf8', font: { size: 10 } }, grid: { color: '#27272a' }, title: { display: true, text: '비용 (만원)', color: '#38bdf8', font: { size: 10 } } },
+        x: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
+        y: { type: 'linear', position: 'left', ticks: { color: '#38bdf8', font: { size: 10 } }, grid: { color: CHART_GRID }, title: { display: true, text: '비용 (만원)', color: '#38bdf8', font: { size: 10 } } },
         y1: { type: 'linear', position: 'right', ticks: { color: '#34d399', font: { size: 10 } }, grid: { drawOnChartArea: false }, title: { display: true, text: '전환', color: '#34d399', font: { size: 10 } } },
         y2: { display: false },
       },
@@ -526,46 +696,65 @@ document.querySelectorAll('.tb').forEach(btn => {
         } } },
       },
       scales: {
-        x: { ticks: { color: '#a1a1aa', font: { size: 10 } }, grid: { color: '#27272a' }, title: { display: true, text: '100만원당 전환수', color: '#a1a1aa', font: { size: 10 } } },
-        y: { ticks: { color: '#a1a1aa', font: { size: 10 } }, grid: { color: '#27272a' } },
+        x: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID }, title: { display: true, text: '100만원당 전환수', color: CHART_TEXT, font: { size: 10 } } },
+        y: { ticks: { color: CHART_TEXT, font: { size: 10 } }, grid: { color: CHART_GRID } },
       },
     },
   });
 
-  // 지점별 비용·전환 매칭 표
-  const beHeads = ['지점', '평균 월 집행', '100만원당 전환', '비용 비중', '전환 비중', '효율', '등급', '6월 권장'];
+  // 지점별 비용·전환 매칭 표 — 색상 다이어트 적용
+  const beHeads = ['지점', '평균 월 집행', '100만원당 전환', '비용/전환 비중', '효율 지수', '등급', '6월 권장'];
   const rec = budget.june_recommended_by_branch || {};
   let beTrs = '';
+  const gradeText = (grade, label) => {
+    const cls = grade === 'good' ? 'good' : (grade === 'bad' ? 'bad' : (grade === 'new' ? 'new' : 'mid'));
+    return `<span class="bd bd-${cls}">${(label || '').split(' (')[0]}</span>`;
+  };
   branches.forEach(b => {
     const bd = bByB[b];
     if (!bd) return;
     if (bd.no_data) {
-      beTrs += `<tr><td class="lbl">${b}</td><td colspan="7" class="txt muted" style="text-align:center">데이터 없음</td></tr>`;
+      beTrs += `<tr><td class="lbl">${b}</td><td colspan="6" class="txt muted" style="text-align:center">데이터 없음</td></tr>`;
       return;
     }
     if (bd.is_new_branch) {
-      beTrs += `<tr><td class="lbl">${b} ${statusBadge('new','신규')}</td><td>5월 부분 ${fmt(bd.partial_may_cost)}원</td><td colspan="4" class="txt muted">정상월 데이터 없음 (학습 안정화)</td><td>${statusBadge('new','신규')}</td><td>${fmt(rec[b] ? rec[b].recommended_june_budget : 0)}원</td></tr>`;
+      beTrs += `<tr>
+        <td class="lbl">${b} <span class="bd bd-new" style="font-size:10px;margin-left:4px">신규</span></td>
+        <td>5월 부분 ${fmt(bd.partial_may_cost)}원</td>
+        <td colspan="3" class="txt muted">정상월 데이터 없음 · 학습 안정화 단계</td>
+        <td>${gradeText('new','신규')}</td>
+        <td>${fmt(rec[b] ? rec[b].recommended_june_budget : 0)}원</td>
+      </tr>`;
       return;
     }
     const grade = bd.efficiency_grade;
-    const gradeBadge = statusBadge({good:'good',average:'mid',bad:'bad',na:'na'}[grade], bd.efficiency_label.split(' (')[0]);
     const deltaPct = rec[b] ? rec[b].delta_pct : null;
-    const deltaStr = deltaPct !== null && deltaPct !== undefined ? ` <span style="font-size:10px;color:${deltaPct > 0 ? 'var(--t1)' : (deltaPct < 0 ? 'var(--red)' : 'var(--tx2)')}">(${deltaPct > 0 ? '+' : ''}${deltaPct.toFixed(1)}%)</span>` : '';
+    const deltaInline = (deltaPct !== null && deltaPct !== undefined)
+      ? ` <span class="gap-txt ${deltaPct > 0 ? 'up' : (deltaPct < 0 ? 'down' : 'flat')}">${deltaPct > 0 ? '+' : ''}${deltaPct.toFixed(1)}%</span>`
+      : '';
     beTrs += `<tr>
       <td class="lbl">${b}</td>
       <td>${fmt(bd.avg_monthly_cost)}원</td>
-      <td><strong>${bd.conv_per_million || '-'}</strong>건</td>
-      <td>${bd.cost_share_pct}%</td>
-      <td>${bd.conv_share_pct}%</td>
-      <td><strong>${bd.efficiency_ratio || '-'}</strong></td>
-      <td>${gradeBadge}</td>
-      <td>${fmt(rec[b] ? rec[b].recommended_june_budget : 0)}원${deltaStr}</td>
+      <td>${bd.conv_per_million || '—'}건</td>
+      <td>${bd.cost_share_pct}% / ${bd.conv_share_pct}%</td>
+      <td><strong>${bd.efficiency_ratio || '—'}</strong></td>
+      <td>${gradeText(grade, bd.efficiency_label)}</td>
+      <td>${fmt(rec[b] ? rec[b].recommended_june_budget : 0)}원${deltaInline}</td>
     </tr>`;
   });
   // 합계 행
   const sumRec = budget.june_recommended_total || 0;
   const sumDelta = bb.avg_monthly_cost ? ((sumRec - bb.avg_monthly_cost) / bb.avg_monthly_cost * 100) : 0;
-  beTrs += `<tr style="background:rgba(129,140,248,.05);font-weight:800"><td class="lbl">합계</td><td>${fmt(bb.avg_monthly_cost)}원</td><td>${bb.avg_conv_per_million || '-'}건</td><td>100%</td><td>100%</td><td>-</td><td>-</td><td>${fmt(sumRec)}원 <span style="font-size:10px;color:${sumDelta > 0 ? 'var(--t1)' : (sumDelta < 0 ? 'var(--red)' : 'var(--tx2)')}">(${sumDelta > 0 ? '+' : ''}${sumDelta.toFixed(1)}%)</span></td></tr>`;
+  const sumDeltaInline = ` <span class="gap-txt ${sumDelta > 0 ? 'up' : (sumDelta < 0 ? 'down' : 'flat')}">${sumDelta > 0 ? '+' : ''}${sumDelta.toFixed(1)}%</span>`;
+  beTrs += `<tr style="background:rgba(255,255,255,.025);border-top:2px solid var(--bd)">
+    <td class="lbl">합계</td>
+    <td>${fmt(bb.avg_monthly_cost)}원</td>
+    <td>${bb.avg_conv_per_million || '—'}건</td>
+    <td>100% / 100%</td>
+    <td>—</td>
+    <td class="muted">—</td>
+    <td>${fmt(sumRec)}원${sumDeltaInline}</td>
+  </tr>`;
   document.getElementById('budget-efficiency-tbl').innerHTML = `<thead><tr>${beHeads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${beTrs}</tbody>`;
 })();
 
@@ -577,10 +766,29 @@ document.querySelectorAll('.tb').forEach(btn => {
   const rowByBranch = Object.fromEntries((at.rows || []).map(r => [r.branch, r]));
   const targets = (DATA.june_targets.by_branch) || {};
 
-  // 3.1 Master Table - 전환/CPA + 퍼널
-  const heads = ['지점', '그룹', '전환 목표', '전환 갭', 'CPA 목표', 'CPA 갭', 'CPM', 'CTR', 'CVR', '우선'];
+  // 3.1 Master Table — 색상 다이어트 적용
+  //  · 행 좌측 컬러바: 그룹(A/B/C) 표시
+  //  · 갭%: 배지 ✕ → 인라인 작은 컬러 텍스트
+  //  · 퍼널 상태: 양호=무색 텍스트 / 주의=주황 옅게 / 우려=빨강 옅게 (양호는 시선 X)
+  //  · 우선순위: High만 강조, 나머지는 옅은 텍스트
+  const heads = ['지점', '전환 목표', 'CPA 목표', 'CPM', 'CTR', 'CVR', '우선'];
   let trs = '';
   let highCount = 0, midCount = 0, lowCount = 0, newCount = 0;
+
+  // 갭 인라인 텍스트 (배지 대체)
+  const gapInline = (gap) => {
+    if (gap === null || gap === undefined) return '';
+    const cls = gap >= 0 ? 'up' : (gap >= -10 ? 'flat' : 'down');
+    const sign = gap > 0 ? '+' : '';
+    return ` <span class="gap-txt ${cls}">${sign}${gap.toFixed(1)}%</span>`;
+  };
+  // 퍼널 상태 셀 (양호는 색·시각 강조 없음, 부진만 시인성)
+  const fcell2 = (s) => {
+    const status = (s && s.status) || 'na';
+    const label = {good:'양호',mid:'평균',warn:'주의',bad:'우려',na:'—',new:'신규'}[status] || status;
+    return `<span class="bd bd-${status}">${label}</span>`;
+  };
+
   branches.forEach(b => {
     const bs = cs[b] || {};
     const ar = rowByBranch[b] || {};
@@ -593,22 +801,19 @@ document.querySelectorAll('.tb').forEach(btn => {
     else if (pri === 'Mid') midCount++;
     else if (pri === 'Low') lowCount++;
     else newCount++;
-    trs += `<tr>
-      <td class="lbl">${b}</td>
-      <td>${groupBadge(grp)}</td>
-      <td>${tg.conversions ? tg.conversions.value + '건' : '-'}</td>
-      <td>${gapBadge(pg.conversions && pg.conversions.gap_pct)}</td>
-      <td>${tg.cpa ? fmt(tg.cpa.value) + '원' : '-'}</td>
-      <td>${gapBadge(pg.cpa && pg.cpa.gap_pct)}</td>
-      <td>${fs.cpm ? statusBadge(fs.cpm.status) : statusBadge('na')}</td>
-      <td>${fs.ctr ? statusBadge(fs.ctr.status) : statusBadge('na')}</td>
-      <td>${fs.cvr ? statusBadge(fs.cvr.status) : statusBadge('na')}</td>
+    trs += `<tr class="r-${grp}">
+      <td class="lbl">${b} <span class="bd bd-${grp}" style="font-size:10px;margin-left:4px">${grp}</span></td>
+      <td>${tg.conversions ? tg.conversions.value.toLocaleString() + '건' : '—'}${gapInline(pg.conversions && pg.conversions.gap_pct)}</td>
+      <td>${tg.cpa ? fmt(tg.cpa.value) + '원' : '—'}${gapInline(pg.cpa && pg.cpa.gap_pct)}</td>
+      <td>${fcell2(fs.cpm)}</td>
+      <td>${fcell2(fs.ctr)}</td>
+      <td>${fcell2(fs.cvr)}</td>
       <td>${priorityBadge(pri)}</td>
     </tr>`;
   });
   document.getElementById('plan-master-tbl').innerHTML = `<thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody>`;
   const leadEl = document.getElementById('plan-lead-31');
-  if (leadEl) leadEl.innerHTML = `9개 지점의 운영 우선순위 분포는 High ${highCount}개 · Mid ${midCount}개 · Low ${lowCount}개 · New ${newCount}개입니다. 전환 갭 또는 CPA 갭이 음수(개선 필요)인 지점은 6월 처방 우선 대상입니다.`;
+  if (leadEl) leadEl.innerHTML = `9개 지점의 운영 우선순위 분포는 High ${highCount}개 · Mid ${midCount}개 · Low ${lowCount}개 · New ${newCount}개입니다. 행 좌측 컬러바는 그룹(<span style="color:var(--red)">A 효율 개선</span> · <span style="color:var(--t1)">B 예산 확대</span> · <span style="color:var(--pur)">C 신규 안정화</span>)을 의미하며, 전환 또는 CPA 갭이 음수(개선 필요)인 지점이 6월 처방 우선 대상입니다.`;
 
   // 3.2 Funnel Action Cards
   const peer = (DATA.root_cause && DATA.root_cause.peer_avg) || {};
@@ -760,8 +965,8 @@ document.querySelectorAll('.tb').forEach(btn => {
     </div>`;
   }).join('');
 
-  // 지점별 권장 예산 표
-  const recHeads = ['지점', '그룹', '평균 월 집행 (정상월)', '6월 권장', '증감 %', '근거'];
+  // 지점별 권장 예산 표 — 색상 다이어트 적용 + 행 좌측 컬러바
+  const recHeads = ['지점', '평균 월 집행 (정상월)', '6월 권장', '증감', '근거'];
   let recTrs = '';
   branches.forEach(b => {
     const ar = rowByBranch[b] || {};
@@ -769,19 +974,27 @@ document.querySelectorAll('.tb').forEach(btn => {
     const r = recAll[b];
     if (!r) return;
     const deltaPct = r.delta_pct;
-    const deltaSign = deltaPct > 0 ? '+' : (deltaPct < 0 ? '' : '±');
-    const deltaCls = deltaPct > 0 ? 'good' : (deltaPct < 0 ? 'bad' : 'na');
-    recTrs += `<tr>
-      <td class="lbl">${b}</td>
-      <td>${groupBadge(grp)}</td>
+    const deltaInline = (deltaPct !== null && deltaPct !== undefined)
+      ? `<span class="gap-txt ${deltaPct > 0 ? 'up' : (deltaPct < 0 ? 'down' : 'flat')}" style="margin-left:0">${deltaPct > 0 ? '+' : ''}${deltaPct.toFixed(1)}%</span>`
+      : '<span class="muted">—</span>';
+    recTrs += `<tr class="r-${grp}">
+      <td class="lbl">${b} <span class="bd bd-${grp}" style="font-size:10px;margin-left:4px">${grp}</span></td>
       <td>${fmt(r.base_avg_monthly_cost)}원</td>
       <td><strong>${fmt(r.recommended_june_budget)}원</strong></td>
-      <td>${deltaPct !== null && deltaPct !== undefined ? `<span class="bd bd-${deltaCls}">${deltaSign}${deltaPct.toFixed(1)}%</span>` : '-'}</td>
-      <td class="txt">${r.reason}</td>
+      <td>${deltaInline}</td>
+      <td class="txt muted">${r.reason}</td>
     </tr>`;
   });
-  recTrs += `<tr style="background:rgba(129,140,248,.05);font-weight:800"><td class="lbl">합계</td><td>-</td><td>${fmt(bb.avg_monthly_cost)}원</td><td><strong>${fmt(sumRec)}원</strong></td><td><span class="bd bd-${sumDelta > 0 ? 'good' : (sumDelta < 0 ? 'bad' : 'na')}">${sumDelta > 0 ? '+' : ''}${sumDelta.toFixed(1)}%</span></td><td class="txt">정상월 평균 ${fmt(bb.avg_monthly_cost)}원 → 6월 ${fmt(sumRec)}원</td></tr>`;
-  document.getElementById('budget-rec-tbl').innerHTML = `<thead><tr>${recHeads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${recTrs}</tbody>`;
+  const sumDeltaInline = `<span class="gap-txt ${sumDelta > 0 ? 'up' : (sumDelta < 0 ? 'down' : 'flat')}" style="margin-left:0">${sumDelta > 0 ? '+' : ''}${sumDelta.toFixed(1)}%</span>`;
+  recTrs += `<tr style="background:rgba(255,255,255,.025);border-top:2px solid var(--bd)">
+    <td class="lbl">합계</td>
+    <td>${fmt(bb.avg_monthly_cost)}원</td>
+    <td><strong>${fmt(sumRec)}원</strong></td>
+    <td>${sumDeltaInline}</td>
+    <td class="txt muted">정상월 평균 ${fmt(bb.avg_monthly_cost)}원 → 6월 ${fmt(sumRec)}원</td>
+  </tr>`;
+  document.getElementById('budget-rec-tbl').innerHTML = `<thead><tr>${recHeads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody class="tbl-master">${recTrs}</tbody>`;
+  // tbl-master는 첫 칸 좌측 컬러바 표시용. 헤더 클래스 대신 tbody에 적용.
 
   // 3.5 A/B 우선 추천 지점 — budget 효율 양호 + 학습 모수(전환수 ≥ 50건/월) 충족
   const bbyB = (DATA.budget && DATA.budget.by_branch) || {};
@@ -823,7 +1036,7 @@ document.querySelectorAll('.tb').forEach(btn => {
   };
 
   // 4.1 통합 실행 매트릭스
-  const heads = ['지점', '그룹', '우선', 'CPM', 'CTR', 'CVR', '소재 역할', '6월 콘텐츠'];
+  const heads = ['지점', '우선', 'CPM', 'CTR', 'CVR', '소재 역할', '6월 콘텐츠'];
   let trs = '';
   const fcellHtml = (branch, funnel) => {
     const bs = cs[branch] || {};
@@ -856,18 +1069,17 @@ document.querySelectorAll('.tb').forEach(btn => {
     if (rec.keep && rec.keep[0]) contentBrief.push(`유지: ${rec.keep[0].creative_name.slice(0, 16)}`);
     if (rec.expand && rec.expand[0]) contentBrief.push(`확대: ${rec.expand[0].creative_name.slice(0, 16)}`);
     if (rec.new_intro && rec.new_intro[0]) contentBrief.push(`신규: ${rec.new_intro[0].creative_name.slice(0, 16)}`);
-    trs += `<tr>
-      <td class="lbl">${b}</td>
-      <td>${groupBadge(grp)}</td>
+    trs += `<tr class="r-${grp}">
+      <td class="lbl">${b} <span class="bd bd-${grp}" style="font-size:10px;margin-left:4px">${grp}</span></td>
       <td>${priorityBadge(bs.priority_level || 'Mid')}</td>
       ${fcellHtml(b, 'cpm')}
       ${fcellHtml(b, 'ctr')}
       ${fcellHtml(b, 'cvr')}
-      <td class="txt"><strong style="color:var(--pur)">${role.role || '-'}</strong><div style="font-size:10px;color:var(--tx2);margin-top:2px;font-weight:400">${role.reason || ''}</div></td>
-      <td class="txt" style="font-size:10.5px;font-family:'DM Mono',monospace">${contentBrief.join('<br>') || '-'}</td>
+      <td class="txt"><strong style="color:var(--pur)">${role.role || '—'}</strong><div style="font-size:11px;color:var(--tx2);margin-top:3px;font-weight:400;line-height:1.5">${role.reason || ''}</div></td>
+      <td class="txt" style="font-size:11px;color:var(--tx2)">${contentBrief.join('<br>') || '—'}</td>
     </tr>`;
   });
-  document.getElementById('exec-matrix').innerHTML = `<thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody>`;
+  document.getElementById('exec-matrix').innerHTML = `<thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody class="tbl-master">${trs}</tbody>`;
   const leadEl = document.getElementById('ep-lead-41');
   if (leadEl) leadEl.innerHTML = `각 셀은 다음 순서로 정보를 제공합니다 — 상태 배지(양호 / 주의 / 우려) · 운영 액션 한 줄 · 권고 소재 역할 · 추천 소재. 주의 및 우려 셀에 대해서만 소재 역할과 추천 소재가 표시되며, 양호 셀은 현 상태 유지가 기본 처방입니다.`;
 
@@ -1161,7 +1373,7 @@ document.querySelectorAll('.tb').forEach(btn => {
   new Chart(document.getElementById('addonOverallChart'), {
     type: 'bar',
     data: { labels: chartLabels, datasets: [{ data: chartVals, backgroundColor: chartColors }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#a1a1aa'},grid:{color:'#27272a'}}, y:{ticks:{color:'#a1a1aa',callback:v => v+'%'},grid:{color:'#27272a'}}} },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:CHART_TEXT},grid:{color:CHART_GRID}}, y:{ticks:{color:CHART_TEXT,callback:v => v+'%'},grid:{color:CHART_GRID}}} },
   });
 
   // 5.3 branch tbl

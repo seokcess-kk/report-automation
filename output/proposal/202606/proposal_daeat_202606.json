@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-19 18:47",
+    "generated_at": "2026-05-19 23:49",
     "data_period": "2026-02 ~ 2026-05 (마지막: 2026-05-15)",
     "branches": [
       "서울",
@@ -14372,6 +14372,939 @@
       "bad": 0.85
     },
     "note": "평균 월간 집행 = 정상월 2~4월 합계 ÷ 3. 5월은 부분 데이터로 평균 산정에서 제외. 효율 점수 = 지점 전환 비중 ÷ 비용 비중. 비용 비중 대비 전환 비중이 클수록 예산 효율 우수. 6월 권장 예산은 정상월 평균 × 효율 가중 (우수 +10% / 평균 유지 / 부진 -10%)."
+  },
+  "funnel_variance": {
+    "overall_trend": {
+      "cpm": {
+        "first_month": "2026-02",
+        "first_value": 8597.77,
+        "last_month": "2026-05",
+        "last_value": 12642.92,
+        "delta_pct": 47.0,
+        "delta_abs": 4045.16,
+        "partial_flag_last": true,
+        "by_month": {
+          "2026-02": 8597.77,
+          "2026-03": 10315.02,
+          "2026-04": 11198.15,
+          "2026-05": 12642.92
+        }
+      },
+      "ctr": {
+        "first_month": "2026-02",
+        "first_value": 0.62,
+        "last_month": "2026-05",
+        "last_value": 0.97,
+        "delta_pct": 57.0,
+        "delta_abs": 0.35,
+        "partial_flag_last": true,
+        "by_month": {
+          "2026-02": 0.62,
+          "2026-03": 0.5,
+          "2026-04": 0.57,
+          "2026-05": 0.97
+        }
+      },
+      "cvr": {
+        "first_month": "2026-02",
+        "first_value": 5.08,
+        "last_month": "2026-05",
+        "last_value": 6.25,
+        "delta_pct": 23.1,
+        "delta_abs": 1.17,
+        "partial_flag_last": true,
+        "by_month": {
+          "2026-02": 5.08,
+          "2026-03": 6.9,
+          "2026-04": 6.45,
+          "2026-05": 6.25
+        }
+      }
+    },
+    "cards": [
+      {
+        "branch": "대전",
+        "metric": "cvr",
+        "direction": "down",
+        "month": "2026-05",
+        "month_value": 4.14,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 7.97,
+          "months": [
+            "2026-04"
+          ],
+          "months_count": 1
+        },
+        "delta_pct": -48.0,
+        "delta_abs": -3.83,
+        "vs_prev_month_pct": -48.0,
+        "vs_first_month_pct": -48.0,
+        "partial_month_flag": true,
+        "sample_size": {
+          "spend": 824781,
+          "impressions": 60947,
+          "clicks": 628,
+          "conversions": 26
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": 0.31,
+          "within_delta_abs": -4.14,
+          "interaction_delta_abs": 0.0,
+          "mix_contribution_pct": 7.0,
+          "within_contribution_pct": 93.0,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 98.1,
+            "baseline_share_pct": 83.9,
+            "share_delta_pp": 14.2,
+            "type_metric_value": 4.22,
+            "basket_metric_value": 7.97,
+            "vs_basket_pct": -47.0
+          },
+          {
+            "type": "인플방문후기",
+            "current_share_pct": 1.9,
+            "baseline_share_pct": 16.1,
+            "share_delta_pp": -14.2,
+            "type_metric_value": null,
+            "basket_metric_value": 7.97,
+            "vs_basket_pct": -100.0
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": -3.77,
+            "metric_delta_pct": -47.2
+          },
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": -7.83,
+            "metric_delta_pct": -100.0
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "avg_daily_cost",
+            "value_pct": -31.3,
+            "threshold_pct": 20.0,
+            "current_daily_cost": 54985,
+            "baseline_daily_cost": 79986
+          }
+        ],
+        "policy_rule_id": "cvr_down_within_dominant",
+        "policy_inputs": {
+          "within_contribution_pct": 93
+        },
+        "operation_implication": "5월은 부분월입니다 — 집행일수·비용이 정상월의 70% 미만으로 정책 적용 강도를 낮춥니다. 광고 mix 변화로 설명되는 비중은 7% 수준입니다. 클릭 이후 단계(랜딩·5단계 폼·상담 응대) 로그 대조를 우선 권장합니다.",
+        "implication_strength": "soft"
+      },
+      {
+        "branch": "부평",
+        "metric": "cvr",
+        "direction": "up",
+        "month": "2026-04",
+        "month_value": 6.03,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 5.38,
+          "months": [
+            "2026-02",
+            "2026-03"
+          ],
+          "months_count": 2
+        },
+        "delta_pct": 12.2,
+        "delta_abs": 0.65,
+        "vs_prev_month_pct": -9.6,
+        "vs_first_month_pct": 33.7,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 5046033,
+          "impressions": 423213,
+          "clicks": 2221,
+          "conversions": 134
+        },
+        "thresholds_passed": {
+          "relative": false,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "mix_dominant",
+        "decomposition": {
+          "mix_delta_abs": 0.29,
+          "within_delta_abs": 0.36,
+          "interaction_delta_abs": -0.0,
+          "mix_contribution_pct": 44.3,
+          "within_contribution_pct": 55.7,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "의료진정보",
+            "current_share_pct": 3.5,
+            "baseline_share_pct": 22.5,
+            "share_delta_pp": -19.0,
+            "type_metric_value": 3.85,
+            "basket_metric_value": 5.38,
+            "vs_basket_pct": -28.5
+          },
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 60.0,
+            "baseline_share_pct": 48.6,
+            "share_delta_pp": 11.3,
+            "type_metric_value": 6.68,
+            "basket_metric_value": 5.38,
+            "vs_basket_pct": 24.2
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 0.45,
+            "metric_delta_pct": 7.2
+          },
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": 0.69,
+            "metric_delta_pct": 15.3
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 87.8,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 371642,
+            "denominator_impressions": 423213,
+            "new_ad_count": 11,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "avg_daily_cost",
+            "value_pct": 46.3,
+            "threshold_pct": 20.0,
+            "current_daily_cost": 168201,
+            "baseline_daily_cost": 114989
+          }
+        ],
+        "policy_rule_id": "cvr_up_mix_dominant",
+        "policy_inputs": {
+          "mix_top": "의료진정보",
+          "mix_contribution_pct": 44
+        },
+        "operation_implication": "전환 효율이 높은 유입 mix 증가가 변동의 44%를 설명합니다. 해당 배분 유지 또는 확대를 검토해 주십시오.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "서울",
+        "metric": "cvr",
+        "direction": "up",
+        "month": "2026-03",
+        "month_value": 10.52,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 6.68,
+          "months": [
+            "2026-02"
+          ],
+          "months_count": 1
+        },
+        "delta_pct": 57.6,
+        "delta_abs": 3.84,
+        "vs_prev_month_pct": 57.6,
+        "vs_first_month_pct": 57.6,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 2000117,
+          "impressions": 172106,
+          "clicks": 1131,
+          "conversions": 119
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": 1.06,
+          "within_delta_abs": 2.79,
+          "interaction_delta_abs": 0.0,
+          "mix_contribution_pct": 27.5,
+          "within_contribution_pct": 72.5,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 64.7,
+            "baseline_share_pct": 35.3,
+            "share_delta_pp": 29.4,
+            "type_metric_value": 11.48,
+            "basket_metric_value": 6.68,
+            "vs_basket_pct": 71.9
+          },
+          {
+            "type": "의료진정보",
+            "current_share_pct": 15.6,
+            "baseline_share_pct": 40.7,
+            "share_delta_pp": -25.2,
+            "type_metric_value": 6.25,
+            "basket_metric_value": 6.68,
+            "vs_basket_pct": -6.4
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 3.14,
+            "metric_delta_pct": 37.7
+          },
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": 6.35,
+            "metric_delta_pct": 136.7
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 60.3,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 103761,
+            "denominator_impressions": 172106,
+            "new_ad_count": 15,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "avg_daily_cost",
+            "value_pct": -39.6,
+            "threshold_pct": 20.0,
+            "current_daily_cost": 64520,
+            "baseline_daily_cost": 106831
+          },
+          {
+            "key": "active_ad_count",
+            "value_pct": 175.0,
+            "threshold_pct": 30.0,
+            "current_count": 22,
+            "baseline_count": 8
+          }
+        ],
+        "policy_rule_id": "cvr_up_within_dominant",
+        "policy_inputs": {},
+        "operation_implication": "동일 소재유형 내 전환 성과가 개선되었습니다. 랜딩·상담·예약 응대 개선 요인과의 대조를 권장합니다.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "부평",
+        "metric": "cvr",
+        "direction": "up",
+        "month": "2026-03",
+        "month_value": 6.67,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 4.51,
+          "months": [
+            "2026-02"
+          ],
+          "months_count": 1
+        },
+        "delta_pct": 47.8,
+        "delta_abs": 2.16,
+        "vs_prev_month_pct": 47.8,
+        "vs_first_month_pct": 47.8,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 2999329,
+          "impressions": 287897,
+          "clicks": 1589,
+          "conversions": 106
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": -0.08,
+          "within_delta_abs": 2.23,
+          "interaction_delta_abs": 0.0,
+          "mix_contribution_pct": 3.3,
+          "within_contribution_pct": 96.7,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "의료진정보",
+            "current_share_pct": 9.9,
+            "baseline_share_pct": 30.9,
+            "share_delta_pp": -21.0,
+            "type_metric_value": 7.64,
+            "basket_metric_value": 4.51,
+            "vs_basket_pct": 69.4
+          },
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 53.6,
+            "baseline_share_pct": 45.3,
+            "share_delta_pp": 8.3,
+            "type_metric_value": 8.57,
+            "basket_metric_value": 4.51,
+            "vs_basket_pct": 89.9
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 4.19,
+            "metric_delta_pct": 95.8
+          },
+          {
+            "type": "의료진정보",
+            "metric_delta_abs": 3.69,
+            "metric_delta_pct": 93.2
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 49.0,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 141134,
+            "denominator_impressions": 287897,
+            "new_ad_count": 17,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "avg_daily_cost",
+            "value_pct": -29.2,
+            "threshold_pct": 20.0,
+            "current_daily_cost": 96753,
+            "baseline_daily_cost": 136732
+          },
+          {
+            "key": "active_ad_count",
+            "value_pct": 170.0,
+            "threshold_pct": 30.0,
+            "current_count": 27,
+            "baseline_count": 10
+          }
+        ],
+        "policy_rule_id": "cvr_up_within_dominant",
+        "policy_inputs": {},
+        "operation_implication": "동일 소재유형 내 전환 성과가 개선되었습니다. 랜딩·상담·예약 응대 개선 요인과의 대조를 권장합니다.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "수원",
+        "metric": "cvr",
+        "direction": "up",
+        "month": "2026-03",
+        "month_value": 4.93,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 3.53,
+          "months": [
+            "2026-02"
+          ],
+          "months_count": 1
+        },
+        "delta_pct": 39.9,
+        "delta_abs": 1.41,
+        "vs_prev_month_pct": 39.9,
+        "vs_first_month_pct": 39.9,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 2998510,
+          "impressions": 303280,
+          "clicks": 1115,
+          "conversions": 55
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": 0.33,
+          "within_delta_abs": 1.08,
+          "interaction_delta_abs": 0.0,
+          "mix_contribution_pct": 23.5,
+          "within_contribution_pct": 76.5,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "인플방문후기",
+            "current_share_pct": 45.0,
+            "baseline_share_pct": 22.6,
+            "share_delta_pp": 22.4,
+            "type_metric_value": 5.38,
+            "basket_metric_value": 3.53,
+            "vs_basket_pct": 52.5
+          },
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 41.7,
+            "baseline_share_pct": 52.5,
+            "share_delta_pp": -10.8,
+            "type_metric_value": 5.38,
+            "basket_metric_value": 3.53,
+            "vs_basket_pct": 52.4
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 2.07,
+            "metric_delta_pct": 62.5
+          },
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": 1.78,
+            "metric_delta_pct": 49.5
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 76.4,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 231767,
+            "denominator_impressions": 303280,
+            "new_ad_count": 21,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "active_ad_count",
+            "value_pct": 200.0,
+            "threshold_pct": 30.0,
+            "current_count": 30,
+            "baseline_count": 10
+          }
+        ],
+        "policy_rule_id": "cvr_up_within_dominant",
+        "policy_inputs": {},
+        "operation_implication": "동일 소재유형 내 전환 성과가 개선되었습니다. 랜딩·상담·예약 응대 개선 요인과의 대조를 권장합니다.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "창원",
+        "metric": "cpm",
+        "direction": "up",
+        "month": "2026-04",
+        "month_value": 11782.48,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 8519.11,
+          "months": [
+            "2026-02",
+            "2026-03"
+          ],
+          "months_count": 2
+        },
+        "delta_pct": 38.3,
+        "delta_abs": 3263.37,
+        "vs_prev_month_pct": 26.0,
+        "vs_first_month_pct": 50.7,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 2994777,
+          "impressions": 254172,
+          "clicks": 1356,
+          "conversions": 69
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": 418.63,
+          "within_delta_abs": 2844.75,
+          "interaction_delta_abs": 0.0,
+          "mix_contribution_pct": 12.8,
+          "within_contribution_pct": 87.2,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 63.8,
+            "baseline_share_pct": 43.3,
+            "share_delta_pp": 20.5,
+            "type_metric_value": 12609.8,
+            "basket_metric_value": 8519.11,
+            "vs_basket_pct": 48.0
+          },
+          {
+            "type": "인플방문후기",
+            "current_share_pct": 33.2,
+            "baseline_share_pct": 42.1,
+            "share_delta_pp": -8.9,
+            "type_metric_value": 10524.98,
+            "basket_metric_value": 8519.11,
+            "vs_basket_pct": 23.5
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 4307.24,
+            "metric_delta_pct": 51.9
+          },
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": 1286.61,
+            "metric_delta_pct": 13.9
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 91.0,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 231233,
+            "denominator_impressions": 254172,
+            "new_ad_count": 12,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "off_impact",
+            "prev_conversion_share_pct": 21.6,
+            "prev_spend_share_pct": 9.6,
+            "off_creative_count": 3,
+            "threshold_pct": 15.0
+          },
+          {
+            "key": "avg_daily_cost",
+            "value_pct": 43.2,
+            "threshold_pct": 20.0,
+            "current_daily_cost": 99826,
+            "baseline_daily_cost": 69726
+          }
+        ],
+        "policy_rule_id": "cpm_up_within_dominant",
+        "policy_inputs": {
+          "within_top": "진료셀프캠"
+        },
+        "operation_implication": "동일 소재 단가가 자체적으로 상승했습니다. 입찰 경쟁·타겟 풀 포화·노출 지면 변화 등 광고 데이터 외부 요인 점검이 필요합니다.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "일산",
+        "metric": "ctr",
+        "direction": "down",
+        "month": "2026-03",
+        "month_value": 0.72,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 0.88,
+          "months": [
+            "2026-02"
+          ],
+          "months_count": 1
+        },
+        "delta_pct": -18.1,
+        "delta_abs": -0.16,
+        "vs_prev_month_pct": -18.1,
+        "vs_first_month_pct": -18.1,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 998021,
+          "impressions": 84732,
+          "clicks": 610,
+          "conversions": 55
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": false,
+          "sample_size": true
+        },
+        "pattern": "mix_dominant",
+        "decomposition": {
+          "mix_delta_abs": -0.06,
+          "within_delta_abs": -0.09,
+          "interaction_delta_abs": -0.0,
+          "mix_contribution_pct": 40.2,
+          "within_contribution_pct": 59.8,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "의료진정보",
+            "current_share_pct": 6.3,
+            "baseline_share_pct": 39.2,
+            "share_delta_pp": -32.8,
+            "type_metric_value": 1.02,
+            "basket_metric_value": 0.88,
+            "vs_basket_pct": 16.6
+          },
+          {
+            "type": "인플방문후기",
+            "current_share_pct": 37.9,
+            "baseline_share_pct": 19.8,
+            "share_delta_pp": 18.1,
+            "type_metric_value": 0.69,
+            "basket_metric_value": 0.88,
+            "vs_basket_pct": -20.9
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": -0.29,
+            "metric_delta_pct": -29.2
+          },
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": -0.1,
+            "metric_delta_pct": -12.3
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 64.1,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 54351,
+            "denominator_impressions": 84732,
+            "new_ad_count": 13,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "active_ad_count",
+            "value_pct": 133.3,
+            "threshold_pct": 30.0,
+            "current_count": 21,
+            "baseline_count": 9
+          }
+        ],
+        "policy_rule_id": "ctr_down_mix_dominant",
+        "policy_inputs": {
+          "mix_top": "의료진정보"
+        },
+        "operation_implication": "저CTR 소재유형 비중 증가가 주원인입니다. 고반응 유형 비중 회복 또는 저반응 유형 교체를 검토해 주십시오.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "대구",
+        "metric": "cpm",
+        "direction": "up",
+        "month": "2026-04",
+        "month_value": 11624.43,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 8498.28,
+          "months": [
+            "2026-02",
+            "2026-03"
+          ],
+          "months_count": 2
+        },
+        "delta_pct": 36.8,
+        "delta_abs": 3126.15,
+        "vs_prev_month_pct": 17.9,
+        "vs_first_month_pct": 59.9,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 2995196,
+          "impressions": 257664,
+          "clicks": 1661,
+          "conversions": 135
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": 805.64,
+          "within_delta_abs": 2320.51,
+          "interaction_delta_abs": 0.0,
+          "mix_contribution_pct": 25.8,
+          "within_contribution_pct": 74.2,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 66.3,
+            "baseline_share_pct": 25.4,
+            "share_delta_pp": 40.9,
+            "type_metric_value": 12593.66,
+            "basket_metric_value": 8498.28,
+            "vs_basket_pct": 48.2
+          },
+          {
+            "type": "인플방문후기",
+            "current_share_pct": 30.8,
+            "baseline_share_pct": 66.8,
+            "share_delta_pp": -36.0,
+            "type_metric_value": 9608.12,
+            "basket_metric_value": 8498.28,
+            "vs_basket_pct": 13.1
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 3356.35,
+            "metric_delta_pct": 36.3
+          },
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": 1430.53,
+            "metric_delta_pct": 17.5
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 57.9,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 149238,
+            "denominator_impressions": 257664,
+            "new_ad_count": 11,
+            "resumed_ad_count": 0
+          }
+        ],
+        "policy_rule_id": "cpm_up_within_dominant",
+        "policy_inputs": {
+          "within_top": "진료셀프캠"
+        },
+        "operation_implication": "동일 소재 단가가 자체적으로 상승했습니다. 입찰 경쟁·타겟 풀 포화·노출 지면 변화 등 광고 데이터 외부 요인 점검이 필요합니다.",
+        "implication_strength": "strong"
+      },
+      {
+        "branch": "대구",
+        "metric": "cvr",
+        "direction": "up",
+        "month": "2026-03",
+        "month_value": 7.52,
+        "baseline": {
+          "type": "branch_mean",
+          "value": 5.51,
+          "months": [
+            "2026-02"
+          ],
+          "months_count": 1
+        },
+        "delta_pct": 36.5,
+        "delta_abs": 2.01,
+        "vs_prev_month_pct": 36.5,
+        "vs_first_month_pct": 36.5,
+        "partial_month_flag": false,
+        "sample_size": {
+          "spend": 2994896,
+          "impressions": 303806,
+          "clicks": 1556,
+          "conversions": 117
+        },
+        "thresholds_passed": {
+          "relative": true,
+          "absolute": true,
+          "sample_size": true
+        },
+        "pattern": "within_dominant",
+        "decomposition": {
+          "mix_delta_abs": -0.08,
+          "within_delta_abs": 2.09,
+          "interaction_delta_abs": -0.0,
+          "mix_contribution_pct": 3.7,
+          "within_contribution_pct": 96.3,
+          "interaction_contribution_pct": 0.0,
+          "interaction_hidden": true
+        },
+        "mix_drivers": [
+          {
+            "type": "진료셀프캠",
+            "current_share_pct": 32.8,
+            "baseline_share_pct": 25.6,
+            "share_delta_pp": 7.2,
+            "type_metric_value": 7.06,
+            "basket_metric_value": 5.51,
+            "vs_basket_pct": 28.1
+          },
+          {
+            "type": "인플방문후기",
+            "current_share_pct": 60.8,
+            "baseline_share_pct": 66.0,
+            "share_delta_pp": -5.2,
+            "type_metric_value": 7.72,
+            "basket_metric_value": 5.51,
+            "vs_basket_pct": 40.1
+          }
+        ],
+        "within_drivers": [
+          {
+            "type": "인플방문후기",
+            "metric_delta_abs": 2.37,
+            "metric_delta_pct": 44.4
+          },
+          {
+            "type": "진료셀프캠",
+            "metric_delta_abs": 1.04,
+            "metric_delta_pct": 17.2
+          }
+        ],
+        "aux_signals": [
+          {
+            "key": "new_resumed_share",
+            "value_pct": 39.6,
+            "threshold_pct": 25.0,
+            "numerator_impressions": 120374,
+            "denominator_impressions": 303806,
+            "new_ad_count": 16,
+            "resumed_ad_count": 0
+          },
+          {
+            "key": "active_ad_count",
+            "value_pct": 175.0,
+            "threshold_pct": 30.0,
+            "current_count": 22,
+            "baseline_count": 8
+          }
+        ],
+        "policy_rule_id": "cvr_up_within_dominant",
+        "policy_inputs": {},
+        "operation_implication": "동일 소재유형 내 전환 성과가 개선되었습니다. 랜딩·상담·예약 응대 개선 요인과의 대조를 권장합니다.",
+        "implication_strength": "strong"
+      }
+    ],
+    "appendix_weak_cells": [],
+    "partial_flags_by_month": {
+      "2026-02": false,
+      "2026-03": false,
+      "2026-04": false,
+      "2026-05": true
+    },
+    "computed_at": "2026-05-19T23:49:14"
   },
   "consulting_signals": {
     "by_branch": {

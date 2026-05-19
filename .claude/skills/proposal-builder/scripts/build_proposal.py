@@ -28,6 +28,7 @@ from analyze_lifecycle import analyze as analyze_lifecycle
 from analyze_off_creatives import analyze as analyze_off
 from analyze_cross_branch_variance import analyze as analyze_cross_var
 from analyze_budget import analyze as analyze_budget
+from analyze_funnel_variance import analyze as analyze_variance
 from derive_consulting_signals import derive as derive_signals
 
 
@@ -111,6 +112,7 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
     cross_variance = analyze_cross_var(parsed_path)
     weekday_performance = analyze_weekday_performance(parsed_path)
     budget = analyze_budget(parsed_path)
+    funnel_variance = analyze_variance(parsed_path)
 
     # 컨설팅 보조 지표 (codex Round 2 권장)
     consulting_signals = derive_signals(
@@ -147,6 +149,7 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
         'cross_variance': cross_variance,
         'weekday_performance': weekday_performance,
         'budget': budget,
+        'funnel_variance': funnel_variance,
         'consulting_signals': consulting_signals,
     }
     payload = clean(payload)

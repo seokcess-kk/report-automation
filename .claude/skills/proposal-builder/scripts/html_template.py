@@ -14,30 +14,79 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>다이트한의원 TikTok 6월 운영 제안서</title>
+<script>
+(function(){
+  try{
+    var t = localStorage.getItem('proposal-theme');
+    if(t === 'dark') document.documentElement.setAttribute('data-theme','dark');
+    var z = localStorage.getItem('proposal-zoom');
+    if(z === 'lg') document.documentElement.setAttribute('data-zoom','lg');
+  }catch(e){}
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
+  /* Light theme (default) */
+  --bg:#ffffff;--s1:#ffffff;--s2:#f4f4f5;--s3:#e4e4e7;--bd:#e4e4e7;--bd2:#d4d4d8;
+  --acc:#4f46e5;--blue:#0284c7;--pur:#7c3aed;--warn:#d97706;--red:#dc2626;
+  --tx:#18181b;--tx2:#52525b;--tx3:#a1a1aa;
+  --t1:#059669;--t2:#0284c7;--t3:#7c3aed;--t4:#dc2626;
+  --primary:#d97706;     /* Primary KPI 강조 */
+  --funnel:#4f46e5;      /* Funnel KPI 보조 */
+  --insight:#4f46e5;
+  --evidence:#e4e4e7;
+  --action:#059669;
+  --appendix:#a1a1aa;
+  /* Surface helpers */
+  --nav-bg:rgba(255,255,255,.92);
+  --hover-bg:rgba(15,23,42,.035);
+  --appx-open-bg:rgba(244,244,245,.7);
+  --lead-bg:rgba(79,70,229,.06);
+  --kpi-stretch-bg:rgba(217,119,6,.10);
+  /* Chart-specific */
+  --chart-text:#52525b;
+  --chart-grid:#e4e4e7;
+  --chart-strong:#18181b;
+  color-scheme:light;
+}
+[data-theme="dark"]{
   --bg:#0a0a0c;--s1:#15151a;--s2:#1f1f25;--s3:#27272f;--bd:#2a2a32;--bd2:#3a3a45;
   --acc:#818cf8;--blue:#38bdf8;--pur:#a78bfa;--warn:#fbbf24;--red:#f87171;
   --tx:#f4f4f5;--tx2:#a1a1aa;--tx3:#6b6b75;
   --t1:#34d399;--t2:#38bdf8;--t3:#a78bfa;--t4:#f87171;
-  --primary:#fbbf24;     /* Primary KPI 강조 */
-  --funnel:#818cf8;      /* Funnel KPI 보조 */
+  --primary:#fbbf24;
+  --funnel:#818cf8;
   --insight:#818cf8;
   --evidence:#3a3a45;
   --action:#34d399;
   --appendix:#52525b;
+  --nav-bg:rgba(10,10,12,.96);
+  --hover-bg:rgba(255,255,255,.02);
+  --appx-open-bg:rgba(31,31,37,.55);
+  --lead-bg:rgba(129,140,248,.05);
+  --kpi-stretch-bg:rgba(251,191,36,.10);
+  --chart-text:#a1a1aa;
+  --chart-grid:#27272a;
+  --chart-strong:#f4f4f5;
+  color-scheme:dark;
 }
+html{transition:background-color .2s ease,color .2s ease}
+[data-zoom="lg"]{zoom:1.25}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--tx);
   font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Noto Sans KR',sans-serif;
   font-size:13px;line-height:1.65;letter-spacing:-0.003em;
-  -webkit-font-smoothing:antialiased}
+  -webkit-font-smoothing:antialiased;
+  word-break:keep-all;overflow-wrap:break-word}
+/* DM Mono 숫자/영문은 어절 단위 keep-all이 불필요 — break-word만 유지 */
+.num,td.num,.kpi-primary-val,.kpi-funnel-val,.gap-txt,.t3-val,.t3-sub,.bp-meta,.rm-week{word-break:normal}
 h1,h2,h3,h4{letter-spacing:-0.025em}
 
 /* ==================== Cover & Nav ==================== */
-.cover{background:var(--bg);border-bottom:1px solid var(--bd);padding:42px 32px 28px}
+.cover{background:var(--s2);border-bottom:1px solid var(--bd);padding:42px 32px 28px}
+[data-theme="dark"] .cover{background:var(--bg)}
 .cover-inner{max-width:1200px;margin:0 auto}
 .cover-brand{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--acc);margin-bottom:14px;text-transform:uppercase}
 .cover-title{font-size:32px;font-weight:900;letter-spacing:-.03em;margin-bottom:10px;line-height:1.2}
@@ -46,9 +95,31 @@ h1,h2,h3,h4{letter-spacing:-0.025em}
 .chip{background:var(--s2);border:1px solid var(--bd);border-radius:5px;padding:5px 12px;font-size:11px;color:var(--tx2);font-weight:500}
 .chip span{color:var(--tx);font-weight:700}
 
-nav{position:sticky;top:0;z-index:100;background:rgba(10,10,12,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
-.nav-inner{max-width:1200px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none}
+nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--bd)}
+.nav-bar{max-width:1200px;margin:0 auto;display:flex;align-items:stretch;gap:0}
+.nav-inner{flex:1;display:flex;overflow-x:auto;scrollbar-width:none;min-width:0}
 .nav-inner::-webkit-scrollbar{display:none}
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:transparent;border:none;
+  cursor:pointer;color:var(--tx2);padding:0 18px;height:52px;font-size:12px;font-weight:600;
+  font-family:inherit;letter-spacing:-.01em;transition:color .2s;flex-shrink:0;border-left:1px solid var(--bd)}
+.theme-toggle:hover{color:var(--tx)}
+.theme-toggle svg{width:16px;height:16px;flex-shrink:0}
+.theme-toggle .ti-dark{display:inline-flex}
+.theme-toggle .ti-light{display:none}
+.theme-toggle .tl-dark{display:inline}
+.theme-toggle .tl-light{display:none}
+[data-theme="dark"] .theme-toggle .ti-dark{display:none}
+[data-theme="dark"] .theme-toggle .ti-light{display:inline-flex}
+[data-theme="dark"] .theme-toggle .tl-dark{display:none}
+[data-theme="dark"] .theme-toggle .tl-light{display:inline}
+.zoom-toggle{display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;
+  cursor:pointer;color:var(--tx2);padding:0 16px;height:52px;font-size:11px;font-weight:700;
+  font-family:"DM Mono",monospace;letter-spacing:.04em;transition:color .2s;flex-shrink:0;border-left:1px solid var(--bd)}
+.zoom-toggle:hover{color:var(--tx)}
+.zoom-toggle .zl-sm{display:inline}
+.zoom-toggle .zl-lg{display:none}
+[data-zoom="lg"] .zoom-toggle .zl-sm{display:none}
+[data-zoom="lg"] .zoom-toggle .zl-lg{display:inline}
 .tb{background:none;border:none;color:var(--tx2);cursor:pointer;font-family:inherit;font-size:13px;
   font-weight:600;padding:0 24px;height:52px;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s;letter-spacing:-0.01em;
   display:flex;align-items:center;gap:8px}
@@ -78,7 +149,7 @@ nav{position:sticky;top:0;z-index:100;background:rgba(10,10,12,.96);backdrop-fil
 .sec-hd-sub{font-size:12px;color:var(--tx2);font-weight:500;margin-left:auto}
 
 .lead{font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:14px;padding:12px 16px;
-  background:rgba(129,140,248,.05);border-left:3px solid var(--acc);border-radius:0 6px 6px 0}
+  background:var(--lead-bg);border-left:3px solid var(--acc);border-radius:0 6px 6px 0}
 .lead strong{color:var(--acc);font-weight:700}
 
 /* ==================== Card Hierarchy ==================== */
@@ -86,84 +157,151 @@ nav{position:sticky;top:0;z-index:100;background:rgba(10,10,12,.96);backdrop-fil
   border:1px solid rgba(129,140,248,.25);border-left:4px solid var(--insight);border-radius:8px;padding:18px 22px}
 .evidence-card{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:18px 22px}
 .action-card{background:var(--s1);border:1px solid var(--bd);border-left:4px solid var(--action);border-radius:8px;padding:18px 22px}
-.appendix-card{background:rgba(31,31,37,.4);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;color:var(--tx2)}
+.appendix-card{background:var(--appx-open-bg);border:1px solid var(--bd);border-radius:8px;padding:14px 18px;color:var(--tx2)}
 
 .card-title{font-size:14px;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;color:var(--tx)}
 .card-sub{font-size:11px;color:var(--tx2);margin-bottom:14px;line-height:1.6;font-weight:500}
+.card-body{font-size:11px;color:var(--tx);line-height:1.65;margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.step-list,.bullet-list{font-size:11px;color:var(--tx);line-height:1.6;margin-top:8px;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.step-list{counter-reset:step}
+.step-list>li{position:relative;padding-left:22px;counter-increment:step}
+.step-list>li::before{content:counter(step);position:absolute;left:0;top:1px;width:16px;height:16px;border-radius:50%;
+  background:var(--s2);color:var(--tx2);font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;
+  font-family:"DM Mono",monospace;border:1px solid var(--bd)}
+.bullet-list>li{position:relative;padding-left:14px}
+.bullet-list>li::before{content:"";position:absolute;left:3px;top:9px;width:4px;height:4px;border-radius:50%;background:var(--tx3)}
+.kv-row{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.kv-row strong{color:var(--tx);font-weight:700}
 
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
 
-/* ==================== Badges ==================== */
-.bd{display:inline-flex;align-items:center;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:800;letter-spacing:.01em;line-height:1.4;text-transform:uppercase;font-family:inherit}
-.bd-good{background:rgba(52,211,153,.14);color:var(--t1);border:1px solid rgba(52,211,153,.3)}
-.bd-warn{background:rgba(251,191,36,.14);color:var(--warn);border:1px solid rgba(251,191,36,.3)}
-.bd-bad {background:rgba(248,113,113,.14);color:var(--red);border:1px solid rgba(248,113,113,.3)}
-.bd-new {background:rgba(167,139,250,.14);color:var(--pur);border:1px solid rgba(167,139,250,.3)}
-.bd-mid {background:rgba(56,189,248,.10);color:var(--blue);border:1px solid rgba(56,189,248,.25)}
-.bd-na  {background:rgba(82,82,91,.14);color:var(--tx3);border:1px solid var(--bd)}
+/* ==================== Aligned card grids (subgrid 정렬) ====================
+   동일 행 카드들의 같은 인덱스 자식이 같은 row line에 정렬되도록 부모 grid-template-rows
+   + 자식 카드의 grid-template-rows:subgrid 패턴. 자식 수에 따라 .aligned-{N} 변형.
+   주의: 자식 개수가 카드마다 동일해야 함. 결손 시 빈 자식으로 채울 것. */
+.aligned-2{grid-template-rows:repeat(2,auto)}
+.aligned-2 > *{display:grid;grid-template-rows:subgrid;grid-row:span 2;row-gap:0;align-content:start}
+.aligned-3{grid-template-rows:repeat(3,auto)}
+.aligned-3 > *{display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:0;align-content:start}
+.aligned-4{grid-template-rows:repeat(4,auto)}
+.aligned-4 > *{display:grid;grid-template-rows:subgrid;grid-row:span 4;row-gap:0;align-content:start}
+.aligned-5{grid-template-rows:repeat(5,auto)}
+.aligned-5 > *{display:grid;grid-template-rows:subgrid;grid-row:span 5;row-gap:0;align-content:start}
+.aligned-6{grid-template-rows:repeat(6,auto)}
+.aligned-6 > *{display:grid;grid-template-rows:subgrid;grid-row:span 6;row-gap:0;align-content:start}
+.aligned-7{grid-template-rows:repeat(7,auto)}
+.aligned-7 > *{display:grid;grid-template-rows:subgrid;grid-row:span 7;row-gap:0;align-content:start}
+@media(max-width:900px){
+  .aligned-2,.aligned-3,.aligned-4,.aligned-5,.aligned-6,.aligned-7{grid-template-rows:none}
+  .aligned-2 > *,.aligned-3 > *,.aligned-4 > *,.aligned-5 > *,.aligned-6 > *,.aligned-7 > *{display:block;row-gap:0}
+}
 
-.bd-A{background:rgba(248,113,113,.14);color:var(--red);border:1px solid rgba(248,113,113,.3)}
-.bd-B{background:rgba(52,211,153,.14);color:var(--t1);border:1px solid rgba(52,211,153,.3)}
-.bd-C{background:rgba(167,139,250,.14);color:var(--pur);border:1px solid rgba(167,139,250,.3)}
+/* ==================== Badges (다이어트 후) ==================== */
+/* 양호·평균은 배경 없고 가벼운 텍스트로 / 주의·부진만 옅은 배경 */
+.bd{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-size:11px;font-weight:600;letter-spacing:0;line-height:1.4;font-family:inherit}
+.bd-good{color:var(--t1);background:transparent}
+.bd-mid {color:var(--tx2);background:transparent}
+.bd-warn{color:var(--warn);background:rgba(251,191,36,.10)}
+.bd-bad {color:var(--red);background:rgba(248,113,113,.10)}
+.bd-new {color:var(--pur);background:transparent}
+.bd-na  {color:var(--tx3);background:transparent}
 
-.bd-pri-high{background:rgba(248,113,113,.16);color:var(--red);border:1px solid rgba(248,113,113,.35)}
-.bd-pri-mid {background:rgba(251,191,36,.14);color:var(--warn);border:1px solid rgba(251,191,36,.3)}
-.bd-pri-low {background:rgba(52,211,153,.10);color:var(--t1);border:1px solid rgba(52,211,153,.25)}
-.bd-pri-new {background:rgba(167,139,250,.14);color:var(--pur);border:1px solid rgba(167,139,250,.3)}
+/* 그룹 배지 - 행 좌측 컬러바로 대체되므로 텍스트만 (선택적 사용) */
+.bd-A{color:var(--red);background:transparent;font-weight:700}
+.bd-B{color:var(--t1);background:transparent;font-weight:700}
+.bd-C{color:var(--pur);background:transparent;font-weight:700}
 
-/* ==================== KPI Cards (P0) ==================== */
-.kpi-primary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
-@media(max-width:700px){.kpi-primary-row{grid-template-columns:1fr}}
+/* 우선순위 배지 - High만 시인성 ↑, 나머지는 옅게 */
+.bd-pri-high{color:var(--red);background:rgba(248,113,113,.10);font-weight:700}
+.bd-pri-mid {color:var(--warn);background:transparent}
+.bd-pri-low {color:var(--tx2);background:transparent}
+.bd-pri-new {color:var(--pur);background:transparent}
+
+/* ==================== KPI Cards (P0) ====================
+   subgrid 정렬: lbl · val · sub 3개 자식 (kpi-stretch는 absolute라 grid item에서 제외) */
+.kpi-primary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;grid-template-rows:repeat(3,auto)}
 .kpi-primary{background:var(--s1);border:1px solid var(--bd);border-top:4px solid var(--primary);
-  border-radius:8px;padding:20px 22px;position:relative}
-.kpi-primary-lbl{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--primary);margin-bottom:8px;text-transform:uppercase}
+  border-radius:8px;padding:20px 22px;position:relative;
+  display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:8px;align-content:start}
+.kpi-primary-lbl{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--primary);text-transform:uppercase}
 .kpi-primary-val{font-size:30px;font-weight:900;font-family:"DM Mono",monospace;letter-spacing:-.025em;color:var(--tx);line-height:1.1}
 .kpi-primary-unit{font-size:14px;font-weight:600;color:var(--tx2);margin-left:4px}
-.kpi-primary-sub{font-size:11px;color:var(--tx2);margin-top:8px;line-height:1.5}
+.kpi-primary-sub{font-size:11px;color:var(--tx2);line-height:1.5;align-self:end}
 .kpi-primary-sub strong{color:var(--tx);font-weight:700}
-.kpi-stretch{position:absolute;top:14px;right:18px;font-size:10px;font-weight:800;color:var(--warn);background:rgba(251,191,36,.10);padding:3px 8px;border-radius:4px;letter-spacing:.04em}
+.kpi-stretch{position:absolute;top:14px;right:18px;font-size:10px;font-weight:800;color:var(--warn);background:var(--kpi-stretch-bg);padding:3px 8px;border-radius:4px;letter-spacing:.04em}
 
-.kpi-funnel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-@media(max-width:700px){.kpi-funnel-row{grid-template-columns:1fr}}
+.kpi-funnel-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;grid-template-rows:repeat(3,auto)}
 .kpi-funnel{background:var(--s1);border:1px solid var(--bd);border-left:3px solid var(--funnel);
-  border-radius:6px;padding:14px 16px}
-.kpi-funnel-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--funnel);margin-bottom:6px;text-transform:uppercase}
+  border-radius:6px;padding:14px 16px;
+  display:grid;grid-template-rows:subgrid;grid-row:span 3;row-gap:6px;align-content:start}
+.kpi-funnel-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--funnel);text-transform:uppercase}
 .kpi-funnel-val{font-size:20px;font-weight:800;font-family:"DM Mono",monospace;letter-spacing:-.02em;color:var(--tx)}
-.kpi-funnel-sub{font-size:10px;color:var(--tx2);margin-top:4px}
+.kpi-funnel-sub{font-size:10px;color:var(--tx2);align-self:end}
+@media(max-width:700px){
+  .kpi-primary-row,.kpi-funnel-row{grid-template-columns:1fr;grid-template-rows:none}
+  .kpi-primary,.kpi-funnel{display:block;row-gap:0}
+  .kpi-primary-lbl{margin-bottom:8px}
+  .kpi-primary-sub{margin-top:8px}
+  .kpi-funnel-lbl{margin-bottom:6px}
+  .kpi-funnel-sub{margin-top:4px}
+}
 
-/* ==================== Judgement Cards (P0 3대 판단) ==================== */
-.judg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-@media(max-width:900px){.judg-grid{grid-template-columns:1fr}}
-.judg{background:var(--s1);border:1px solid var(--bd);border-left:4px solid var(--cl);border-radius:8px;padding:18px 22px}
+/* ==================== Judgement Cards (P0 3대 판단) ====================
+   동일 행 카드의 같은 인덱스 자식이 같은 row line에 맞춰지도록 CSS subgrid 사용.
+   카드 안 7개 자식: tag · decision · target · row×3 · impact (kpi-stretch는 absolute라 grid item에서 제외) */
+.judg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;grid-template-rows:repeat(7,auto)}
+.judg{background:var(--s1);border:1px solid var(--bd);border-left:4px solid var(--cl);border-radius:8px;padding:18px 22px;
+  display:grid;grid-template-rows:subgrid;grid-row:span 7;row-gap:8px;align-content:start}
 .judg.expand{--cl:var(--t1)}
 .judg.improve{--cl:var(--red)}
 .judg.stabilize{--cl:var(--pur)}
-.judg-tag{display:inline-block;font-size:10px;font-weight:800;color:var(--cl);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:4px;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase}
-.judg-decision{font-size:15px;font-weight:800;color:var(--tx);margin-bottom:6px;letter-spacing:-.01em}
-.judg-target{font-size:12px;color:var(--tx2);margin-bottom:10px;line-height:1.5}
+.judg-tag{justify-self:start;font-size:10px;font-weight:800;color:var(--cl);background:rgba(255,255,255,.04);padding:2px 8px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase}
+.judg-decision{font-size:15px;font-weight:800;color:var(--tx);letter-spacing:-.01em}
+.judg-target{font-size:12px;color:var(--tx2);line-height:1.5}
 .judg-target strong{color:var(--tx);font-weight:700}
-.judg-row{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--tx2);line-height:1.55;margin-top:6px}
-.judg-row-lbl{font-weight:700;color:var(--tx);min-width:48px}
-.judg-impact{margin-top:12px;padding-top:10px;border-top:1px dashed var(--bd);font-size:11px;color:var(--cl);font-weight:700}
+.judg-row{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:var(--tx2);line-height:1.55}
+.judg-row-lbl{font-weight:700;color:var(--tx);min-width:48px;flex-shrink:0}
+.judg-impact{align-self:end;padding-top:10px;border-top:1px dashed var(--bd);font-size:11px;color:var(--cl);font-weight:700}
 .judg-impact span{color:var(--tx2);font-weight:500;margin-left:4px}
+@media(max-width:900px){
+  .judg-grid{grid-template-columns:1fr;grid-template-rows:none}
+  .judg{display:block;row-gap:0}
+  .judg-tag{display:inline-block;margin-bottom:10px}
+  .judg-decision,.judg-target{margin-bottom:6px}
+  .judg-row{margin-top:6px}
+  .judg-impact{margin-top:12px}
+}
 
 /* ==================== Tables ==================== */
 .tw{overflow-x:auto;border-radius:8px;border:1px solid var(--bd)}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{background:var(--s2);color:var(--tx2);font-weight:700;font-size:10px;letter-spacing:.05em;
-  padding:11px 12px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap;line-height:1.4;text-transform:uppercase}
-td{padding:11px 12px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle;white-space:nowrap;font-family:"DM Mono",monospace;font-size:12px}
-td.lbl{font-family:inherit;color:var(--tx);font-size:12px;font-weight:700}
-td.txt{font-family:inherit;color:var(--tx);font-size:11.5px;font-weight:500;white-space:normal;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--s2);color:var(--tx2);font-weight:700;font-size:11px;letter-spacing:.04em;
+  padding:12px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap;line-height:1.4;text-transform:uppercase}
+td{padding:13px 14px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle;white-space:nowrap;
+  font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;font-size:13px;
+  font-variant-numeric:tabular-nums;line-height:1.5}
+td.lbl{color:var(--tx);font-size:13px;font-weight:700}
+td.txt{color:var(--tx);font-size:12px;font-weight:500;white-space:normal;line-height:1.55}
+td.num{font-family:"DM Mono",monospace;font-variant-numeric:tabular-nums}
 td.muted{color:var(--tx2)}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:rgba(255,255,255,.015)}
+tr:hover td{background:var(--hover-bg)}
 
-/* Master matrix - 지점별 행 강조 */
-.tbl-master tr td:first-child{font-weight:800}
+/* Master matrix - 지점별 행 좌측 컬러바로 그룹·우선순위 표시 */
+.tbl-master tr td:first-child{font-weight:700;position:relative}
+.tbl-master tr td:first-child::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--row-cl,transparent)}
+.tbl-master tr.r-A td:first-child{--row-cl:var(--red)}
+.tbl-master tr.r-B td:first-child{--row-cl:var(--t1)}
+.tbl-master tr.r-C td:first-child{--row-cl:var(--pur)}
+
+/* 인라인 갭% 텍스트 - 배지 대신 */
+.gap-txt{font-size:11px;font-weight:600;margin-left:6px;font-family:"DM Mono",monospace}
+.gap-txt.up{color:var(--t1)}
+.gap-txt.down{color:var(--red)}
+.gap-txt.flat{color:var(--tx3)}
 
 /* ==================== Heatmap ==================== */
 .hm-row{display:grid;align-items:stretch;border-bottom:1px solid var(--bd)}
@@ -177,17 +315,17 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .h-na{color:var(--tx3)}
 
 /* ==================== Funnel Cell (P3 매트릭스) ==================== */
-.fcell{padding:8px 10px;border-radius:5px;background:rgba(255,255,255,.015);border:1px solid var(--bd);
-  font-size:11px;line-height:1.5;min-width:140px;white-space:normal;vertical-align:top}
-.fcell.good{background:transparent;border-color:transparent;opacity:.55}
-.fcell.warn{background:rgba(251,191,36,.04);border-color:rgba(251,191,36,.2)}
-.fcell.bad{background:rgba(248,113,113,.05);border-color:rgba(248,113,113,.25)}
-.fcell-row{display:flex;align-items:center;gap:5px;margin-bottom:3px}
-.fcell-action{color:var(--tx);font-weight:600;font-size:11px;line-height:1.45;margin:4px 0}
+.fcell{padding:10px 12px;border-radius:5px;background:transparent;border:1px solid transparent;
+  font-family:'Pretendard Variable',Pretendard,sans-serif;font-size:12px;line-height:1.55;min-width:150px;white-space:normal;vertical-align:top}
+.fcell.good{background:transparent;border-color:transparent;opacity:.65}
+.fcell.warn{background:rgba(251,191,36,.05);border-color:rgba(251,191,36,.18)}
+.fcell.bad{background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.22)}
+.fcell-row{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.fcell-action{color:var(--tx);font-weight:600;font-size:12px;line-height:1.5;margin:4px 0}
 .fcell.good .fcell-action{color:var(--tx2);font-weight:500}
-.fcell-role{color:var(--tx2);font-size:10px;line-height:1.4;margin-bottom:3px}
+.fcell-role{color:var(--tx2);font-size:11px;line-height:1.4;margin-bottom:3px}
 .fcell-role strong{color:var(--pur);font-weight:700}
-.fcell-kpi{color:var(--tx3);font-size:10px;font-family:"DM Mono",monospace;letter-spacing:-.01em}
+.fcell-kpi{color:var(--tx3);font-size:11px;letter-spacing:-.01em}
 
 /* ==================== Quadrant chart container ==================== */
 .quad-wrap{position:relative;height:360px;background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:14px}
@@ -247,7 +385,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 /* ==================== Appendix ==================== */
 .appendix-stack{display:flex;flex-direction:column;gap:8px}
 .appx{background:var(--s1);border:1px solid var(--bd);border-radius:6px;overflow:hidden}
-.appx[open]{background:rgba(31,31,37,.55)}
+.appx[open]{background:var(--appx-open-bg)}
 .appx summary{cursor:pointer;padding:12px 18px;font-size:12px;font-weight:700;color:var(--tx2);list-style:none;
   display:flex;align-items:center;justify-content:space-between;transition:background .15s}
 .appx summary:hover{background:var(--s2);color:var(--tx)}
@@ -274,6 +412,39 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+/* ==================== 2.3.1 Funnel variance cards ====================
+   각 카드는 헤더 · 메타 · 분해 묶음 · 보조 시그널 · 운영 함의 5개 자식 — subgrid 정렬 */
+.fv-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;grid-template-rows:repeat(5,auto)}
+.fv-card{background:var(--s1);border:1px solid var(--bd);border-left:4px solid var(--cl);border-radius:8px;
+  padding:16px 18px;display:grid;grid-template-rows:subgrid;grid-row:span 5;row-gap:0;align-content:start}
+.fv-card.cpm{--cl:var(--red)}
+.fv-card.ctr{--cl:var(--blue)}
+.fv-card.cvr{--cl:var(--pur)}
+.fv-card.cvr-down{--cl:var(--warn)}
+.fv-hdr{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.fv-hdr-branch{font-size:14px;font-weight:800;color:var(--tx)}
+.fv-hdr-metric{font-size:12px;font-weight:700;color:var(--cl);letter-spacing:.04em;text-transform:uppercase}
+.fv-hdr-delta{font-size:13px;font-weight:800;font-family:"DM Mono",monospace;color:var(--cl);margin-left:auto}
+.fv-hdr-partial{font-size:9px;font-weight:800;color:var(--warn);background:var(--kpi-stretch-bg);padding:1px 6px;border-radius:3px;letter-spacing:.04em}
+.fv-meta{font-size:10.5px;color:var(--tx2);margin-bottom:10px;font-family:"DM Mono",monospace;line-height:1.5}
+.fv-meta-trend{margin-left:6px;color:var(--tx3)}
+.fv-decomp{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;padding:10px 12px;background:var(--s2);border-radius:5px}
+.fv-decomp-row{display:flex;align-items:baseline;gap:8px;font-size:11px;line-height:1.5}
+.fv-decomp-lbl{font-weight:700;color:var(--tx);min-width:88px;flex-shrink:0}
+.fv-decomp-val{font-family:"DM Mono",monospace;font-weight:700;color:var(--cl);min-width:48px}
+.fv-decomp-detail{color:var(--tx2);font-size:10.5px;flex:1;line-height:1.5}
+.fv-aux{display:flex;flex-direction:column;gap:3px;margin-bottom:10px;font-size:10.5px;color:var(--tx2);line-height:1.5}
+.fv-aux-row{padding-left:10px;border-left:2px solid var(--bd2)}
+.fv-aux-row strong{color:var(--tx);font-weight:700}
+.fv-imp{padding-top:10px;border-top:1px dashed var(--bd);font-size:11.5px;color:var(--tx);line-height:1.65}
+.fv-imp strong{color:var(--cl);font-weight:700}
+.fv-imp.soft{color:var(--tx2)}
+.fv-imp.soft strong{color:var(--warn)}
+@media(max-width:900px){
+  .fv-grid{grid-template-columns:1fr;grid-template-rows:none}
+  .fv-card{display:block;row-gap:0}
+}
 </style>
 </head>
 <body>
@@ -285,12 +456,22 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="cover-meta" id="cover-meta"></div>
 </div></div>
 
-<nav><div class="nav-inner">
-  <button class="tb on" data-tab="exec"><span class="tb-num">01</span>Executive Summary</button>
-  <button class="tb" data-tab="diag"><span class="tb-num">02</span>성과 진단</button>
-  <button class="tb" data-tab="plan"><span class="tb-num">03</span>6월 목표·액션</button>
-  <button class="tb" data-tab="exec_plan"><span class="tb-num">04</span>타겟팅·콘텐츠 실행안</button>
-  <button class="tb" data-tab="addon"><span class="tb-num">05</span>애드온 판단</button>
+<nav><div class="nav-bar">
+  <div class="nav-inner">
+    <button class="tb on" data-tab="exec"><span class="tb-num">01</span>Executive Summary</button>
+    <button class="tb" data-tab="diag"><span class="tb-num">02</span>성과 진단</button>
+    <button class="tb" data-tab="plan"><span class="tb-num">03</span>6월 목표·액션</button>
+    <button class="tb" data-tab="exec_plan"><span class="tb-num">04</span>타겟팅·콘텐츠 실행안</button>
+    <button class="tb" data-tab="addon"><span class="tb-num">05</span>애드온 판단</button>
+  </div>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="테마 전환" title="라이트/다크 전환">
+    <span class="ti-dark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+    <span class="ti-light" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></span>
+    <span class="tl-dark">다크</span><span class="tl-light">라이트</span>
+  </button>
+  <button class="zoom-toggle" id="zoomToggle" type="button" aria-label="배율 전환" title="100% / 125% 전환">
+    <span class="zl-sm">100%</span><span class="zl-lg">125%</span>
+  </button>
 </div></nav>
 
 <!-- ========================= 01 Executive Summary ========================= -->
@@ -379,6 +560,28 @@ tr:hover td{background:rgba(255,255,255,.015)}
         <div id="hm-cvr" class="tw"></div>
       </div>
     </div>
+
+    <!-- 2.3.1 변동 주원인 (히트맵 변동의 산술 분해 + 운영 정책) -->
+    <div class="subsec" style="margin-top:24px">
+      <div class="sec-hd" style="margin-bottom:10px">
+        <span class="sec-hd-num">2.3.1</span>
+        <span class="sec-hd-title">히트맵 변동 주원인 — 구성비 · 단위성과 효과 분해</span>
+        <span class="sec-hd-sub">creative_type 기준 Shapley 분해</span>
+      </div>
+      <div class="lead" id="fv-trend"></div>
+      <div id="fv-cards"></div>
+      <details class="appx" id="fv-weak-wrap" style="margin-top:10px;display:none">
+        <summary><span><span class="appx-num">2.3.1·W</span>설명력 부족 셀 (mix·within 모두 &lt;20%) — 자연 변동 가능성</span></summary>
+        <div class="appx-body"><div id="fv-weak"></div></div>
+      </details>
+      <div class="appendix-card" style="margin-top:10px;font-size:11px;color:var(--tx2);line-height:1.6">
+        <strong style="color:var(--tx)">분해 방법 안내.</strong>
+        월별 KPI 변동을 (1) <strong>구성비 효과</strong>(소재유형 비중 변화) (2) <strong>단위성과 효과</strong>(같은 유형 내 단가·반응률 변화)로 산술 분해합니다.
+        구성비 효과가 우세하면 소재 비중 조정으로 즉시 회복 가능하고,
+        단위성과 효과가 우세하면 입찰 경쟁·랜딩·상담 응대 등 광고 외부 요인 점검이 필요합니다.
+        분해 합은 정의상 변화량과 정확히 일치합니다.
+      </div>
+    </div>
   </div>
 
   <div class="sec">
@@ -446,7 +649,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">3.2</span><span class="sec-hd-title">퍼널별 원인 분석 및 실행 액션</span></div>
     <div class="lead">CPM · CTR · CVR 각각에 대해 본 데이터에서 관측된 시그널을 바탕으로 원인을 해석하고, 6월에 즉시 실행할 운영 액션과 검증 KPI를 정리하였습니다.</div>
-    <div class="g3" id="funnel-action-cards"></div>
+    <div class="g3 aligned-6" id="funnel-action-cards"></div>
   </div>
 
   <div class="sec">
@@ -458,40 +661,42 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">3.4</span><span class="sec-hd-title">6월 예산 시나리오</span></div>
     <div class="lead" id="budget-lead-34"></div>
-    <div class="g3" style="margin-bottom:16px" id="budget-scenarios"></div>
+    <div class="g3 aligned-6" style="margin-bottom:16px" id="budget-scenarios"></div>
     <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="budget-rec-tbl"></table></div></div>
   </div>
 
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">3.5</span><span class="sec-hd-title">A/B 테스트 운영 가이드</span></div>
     <div class="lead">TikTok Ads는 예산이 캠페인 또는 광고 그룹(지점) 단위로 설정되며, 소재는 광고 단위 ON/OFF만 가능합니다. 따라서 A/B 검증은 <strong>광고 그룹을 복제하여 두 그룹에서 1개 변수만 다르게 운영</strong>하는 방식을 권고드립니다.</div>
-    <div class="g3" style="margin-bottom:14px">
+    <div class="g3 aligned-2" id="ab-test-guide" style="margin-bottom:14px">
       <div class="action-card">
         <div class="card-title" style="font-size:14px;color:var(--action)">진행 방식</div>
-        <div style="font-size:11px;color:var(--tx);line-height:1.65;margin-top:8px">
-          ① 효율 양호 지점의 광고 그룹을 복제하여 두 그룹으로 분리합니다.<br>
-          ② 한 번에 <strong>1개 변수만</strong> 변경합니다 (소재 묶음 또는 입찰 전략).<br>
-          ③ 다른 변수는 모두 동일하게 통제합니다 (예산 · 타겟 · 시간대).<br>
-          ④ 학습 종료 후 두 그룹의 결과를 비교하여 우세 변수를 채택합니다.
-        </div>
+        <ol class="step-list">
+          <li>효율 양호 지점의 광고 그룹을 복제하여 두 그룹으로 분리합니다.</li>
+          <li>한 번에 <strong>1개 변수만</strong> 변경합니다 (소재 묶음 또는 입찰 전략).</li>
+          <li>다른 변수는 모두 동일하게 통제합니다 (예산 · 타겟 · 시간대).</li>
+          <li>학습 종료 후 두 그룹의 결과를 비교하여 우세 변수를 채택합니다.</li>
+        </ol>
       </div>
       <div class="action-card">
         <div class="card-title" style="font-size:14px;color:var(--action)">학습 조건</div>
-        <div style="font-size:11px;color:var(--tx);line-height:1.65;margin-top:8px">
-          · 학습 기간 <strong>최소 2주</strong> 이상 확보 (알고리즘 안정화 목적)<br>
-          · 그룹별 누적 <strong>전환 30건 이상</strong> 확보 시 유의미한 비교 가능<br>
-          · 미달 시 추세 참고에 한정하고 확정 판단은 보류합니다.<br>
-          · 학습 모수 부족 시 그룹 통합 후 재시작을 권고드립니다.
-        </div>
+        <ul class="bullet-list">
+          <li>학습 기간 <strong>최소 2주</strong> 이상 확보 (알고리즘 안정화 목적)</li>
+          <li>그룹별 누적 <strong>전환 30건 이상</strong> 확보 시 유의미한 비교 가능</li>
+          <li>미달 시 추세 참고에 한정하고 확정 판단은 보류합니다.</li>
+          <li>학습 모수 부족 시 그룹 통합 후 재시작을 권고드립니다.</li>
+        </ul>
       </div>
       <div class="action-card">
         <div class="card-title" style="font-size:14px;color:var(--action)">우선 추천 지점 및 변수</div>
-        <div style="font-size:11px;color:var(--tx);line-height:1.65;margin-top:8px">
-          <strong>지점 후보</strong> · <span id="ab-priority-branches">효율 양호 및 학습 모수 충분 지점</span><br>
-          <strong>검증 변수 후보</strong><br>
-          ① 소재 묶음 A(후기형) vs B(상담전환형)<br>
-          ② 입찰 전략 (최대 전환 vs 비용 한도)<br>
-          ③ 노출 시간대 (전일 vs 피크 회피)
+        <div class="card-body">
+          <div class="kv-row"><strong>지점 후보</strong><span id="ab-priority-branches">효율 양호 및 학습 모수 충분 지점</span></div>
+          <div class="kv-row"><strong>검증 변수 후보</strong></div>
+          <ol class="step-list" style="margin-top:0">
+            <li>소재 묶음 A(후기형) vs B(상담전환형)</li>
+            <li>입찰 전략 (최대 전환 vs 비용 한도)</li>
+            <li>노출 시간대 (전일 vs 피크 회피)</li>
+          </ol>
         </div>
       </div>
     </div>
@@ -667,7 +872,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">5.5</span><span class="sec-hd-title">6월 애드온 실행 가이드</span></div>
-    <div class="g3">
+    <div class="g3 aligned-2" id="addon-execution-guide">
       <div class="action-card">
         <div class="card-title">1주차 — 통제된 A/B 진행</div>
         <div class="card-sub" style="margin-bottom:0">효율 양호 지점(서울 · 일산 · 대구) 중 1~2개 매칭키를 선정하여 애드온 적용·비적용 광고를 동시 집행합니다. 예산과 타겟은 동일하게 통제합니다.</div>

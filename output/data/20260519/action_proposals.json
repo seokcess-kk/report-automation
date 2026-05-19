@@ -1,0 +1,68 @@
+{
+  "updated": "2026-05-19 23:46:57",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "부산",
+      "action_type": "budget_increase",
+      "title": "부산 예산 +20% 제안",
+      "reason": "소진률 19.0% vs 일자진행 35.5% (-16%p), CPA 16,526원은 목표 내 — 여력 있음",
+      "recommended_value": {
+        "current": 2000000,
+        "proposed": 2400000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "budget_pct": 19.0,
+        "date_progress": 35.5,
+        "cpa": 16526,
+        "target_cpa": 19375
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "medium",
+      "scope": "hour",
+      "target": "7시",
+      "action_type": "dayparting",
+      "title": "07시 시간대 송출 축소 검토",
+      "reason": "CPA 44,680원 (평균 29,089원의 1.5배), 비용비중 5.3%",
+      "recommended_value": {
+        "action": "reduce_hour_dayparting",
+        "hour": 7
+      },
+      "evidence": {
+        "hour_cpa": 44680,
+        "avg_cpa": 29089,
+        "cost_share": 5.3
+      }
+    },
+    {
+      "id": "p003",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "금",
+      "action_type": "weekday_boost",
+      "title": "금요일 예산 가중 검토",
+      "reason": "금요일 효율점수 1.29 (편차 0.65) — CPA 14,954원, 전환비중 26.8%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "금"
+      },
+      "evidence": {
+        "weekday": "금",
+        "eff_score": 1.29,
+        "variance": 0.65
+      }
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "high": 0,
+    "medium": 3,
+    "low": 0
+  }
+}

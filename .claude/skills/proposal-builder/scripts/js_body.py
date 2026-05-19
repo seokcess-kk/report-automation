@@ -102,15 +102,12 @@ document.querySelectorAll('.tb').forEach(btn => {
     <div class="chip">데이터 기간 <span>${m.data_period}</span></div>
     <div class="chip">분석 지점 <span>${m.branches.length}개</span></div>
     <div class="chip">캠페인 목적 <span>${m.campaign_objective}</span></div>
-    <div class="chip">생성 <span>${m.generated_at}</span></div>
   `;
   const period = m.data_period.split(' ')[0] + '~' + (m.data_period.match(/마지막: ([\d-]+)/) ? m.data_period.match(/마지막: ([\d-]+)/)[1] : '');
   const periodEl = document.getElementById('meta-period');
   if (periodEl) periodEl.textContent = m.data_period;
   const brEl = document.getElementById('meta-branches');
   if (brEl) brEl.textContent = m.branches.length + '개 지점 (' + m.branches.join('·') + ')';
-  const genEl = document.getElementById('meta-generated');
-  if (genEl) genEl.textContent = m.generated_at;
 })();
 
 // ==================== 01 Executive Summary ====================

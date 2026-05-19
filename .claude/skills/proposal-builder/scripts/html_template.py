@@ -484,7 +484,6 @@ tr:hover td{background:var(--hover-bg)}
       <span>분석 기간 <strong id="meta-period"></strong></span>
       <span>대상 <strong id="meta-branches"></strong></span>
       <span>누적 KPI 베이스라인 <strong>전 기간 2~5월</strong> · 베스트월 비교 <strong>2~4월</strong></span>
-      <span>생성 <strong id="meta-generated"></strong></span>
     </div>
   </div>
 

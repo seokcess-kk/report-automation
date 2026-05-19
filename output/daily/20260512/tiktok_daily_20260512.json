@@ -1,0 +1,144 @@
+{
+  "date": "2026-05-12",
+  "date_label": "05/12",
+  "goal": {
+    "conv_current": 287,
+    "conv_target": 891,
+    "conv_pct": 32.2,
+    "remaining_days": 19,
+    "budget_pct": 31.2,
+    "budget_total": 18000000
+  },
+  "kpi_daily": {
+    "cost": 650183,
+    "conv": 27,
+    "clicks": 477,
+    "cpa": 24080,
+    "ctr": 1.05,
+    "cvr": 5.66
+  },
+  "kpi_cum": {
+    "cost": 5616586,
+    "conv": 287,
+    "clicks": 4622,
+    "cpa": 19569,
+    "ctr": 0.96,
+    "cvr": 6.21
+  },
+  "kpi_prev": {
+    "cost": 614003,
+    "conv": 26,
+    "cpa": 23615,
+    "ctr": 1.06,
+    "cvr": 5.52
+  },
+  "branches": [
+    {
+      "branch": "서울",
+      "daily_conv": 8,
+      "cum_cvr": 9.23,
+      "cum_cpa": 12032,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 0.61
+    },
+    {
+      "branch": "부평",
+      "daily_conv": 2,
+      "cum_cvr": 7.18,
+      "cum_cpa": 19906,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 1.02
+    },
+    {
+      "branch": "수원",
+      "daily_conv": 3,
+      "cum_cvr": 5.46,
+      "cum_cpa": 23600,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 1.21
+    },
+    {
+      "branch": "일산",
+      "daily_conv": 2,
+      "cum_cvr": 4.81,
+      "cum_cpa": 19139,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 0.98
+    },
+    {
+      "branch": "대구",
+      "daily_conv": 4,
+      "cum_cvr": 7.1,
+      "cum_cpa": 17905,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 0.91
+    },
+    {
+      "branch": "천안",
+      "daily_conv": 2,
+      "cum_cvr": 5.14,
+      "cum_cpa": 25308,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 1.29
+    },
+    {
+      "branch": "부산",
+      "daily_conv": 2,
+      "cum_cvr": 9.81,
+      "cum_cpa": 17076,
+      "target": 19569,
+      "tag": "best",
+      "ratio": 0.87
+    },
+    {
+      "branch": "창원",
+      "daily_conv": 3,
+      "cum_cvr": 4.23,
+      "cum_cpa": 27492,
+      "target": 19569,
+      "tag": "focus",
+      "ratio": 1.4
+    },
+    {
+      "branch": "대전",
+      "daily_conv": 1,
+      "cum_cvr": 3.85,
+      "cum_cpa": 31121,
+      "target": 19569,
+      "tag": "focus",
+      "ratio": 1.59
+    }
+  ],
+  "zero_conv_lines": [],
+  "anomaly_lines": [],
+  "notable_lines": [
+    "⚡ 급변동 소재",
+    "  다이어트의적 밥빵면: 전환 +4건 | CPA 3.5만→1.1만",
+    "  주사형 비만치료제보다 더중요한이것: 전환 +3건 | CPA 2.4만→1.9만",
+    "  주사형비만치료제 고민끝에 50대부부 -32kg: 전환 -2건 | CPA 1.9만→4.5만",
+    "",
+    "🔔 전환 이상",
+    "  [서울] 3건→8건 (+5) ↑급증",
+    "  [부산] 6건→2건 (-4) ↓급감",
+    "  주사형비만치료제(the.hyunniverse): 평균 1.7건→어제 0건 (공백)",
+    "",
+    "🎯 이상치 소재",
+    "  다이어트의적 밥빵면: CPA 1.1만 / 5건 ★ 확산 검토",
+    "",
+    "📊 지점 간 편차",
+    "  식욕억제주사실패 마지막: 서울 0.6만 vs 대구 6.1만 (10.3배)",
+    "  다이어트의적 밥빵면: 서울 1.1만 vs 대전 6.1만 (5.6배)",
+    "  주사형 비만치료제보다 더중요한이것: 서울 1.2만 vs 대전 3.3만 (2.8배)"
+  ],
+  "checkpoints": [
+    "[CVR 분석] 창원, 대전 지점 CVR 낮음 - 랜딩 페이지 이탈 확인",
+    "[소재 점검] 서울, 부산 지점 고효율 소재 소구점 분석 및 확산",
+    "[예산 조정] 서울, 부평 지점으로 예산 비중 증대 검토"
+  ]
+}

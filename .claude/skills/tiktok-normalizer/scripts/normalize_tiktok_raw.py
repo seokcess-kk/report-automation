@@ -26,11 +26,26 @@ def normalize(input_path: str, output_path: str):
         '랜딩 페이지 조회(웹사이트)': 'landing_views',
         '일별': 'date',
         '나이': 'age_group',
+        '성별': 'gender',
         '시간': 'hour',
+        'province_id': 'province_id',
         '광고 이름': 'ad_name',
         '광고 ID': 'ad_id',
         '도달': 'reach',
         '동영상 조회수': 'video_views',
+        '2초 시청': 'video_watched_2s',
+        '6초 시청': 'video_watched_6s',
+        '25% 시청 완료': 'video_p25',
+        '50% 시청 완료': 'video_p50',
+        '75% 시청 완료': 'video_p75',
+        '100% 시청 완료': 'video_p100',
+        '평균 재생 시간': 'avg_video_play_sec',
+        '좋아요': 'likes',
+        '댓글': 'comments',
+        '공유': 'shares',
+        '팔로우': 'follows',
+        '프로필 방문': 'profile_visits',
+        '15초 시청': 'engaged_view_15s',
         # 영문 헤더
         'Clicks (destination)': 'clicks',
         'Impressions': 'impressions',
@@ -47,7 +62,10 @@ def normalize(input_path: str, output_path: str):
     df = df.rename(columns={k: v for k, v in COLUMN_ALIAS.items() if k in df.columns})
 
     # 3. 숫자형 강제 변환
-    NUM_COLS = ['clicks', 'impressions', 'conversions', 'cost', 'landing_views', 'reach']
+    NUM_COLS = ['clicks', 'impressions', 'conversions', 'cost', 'landing_views', 'reach',
+                'video_views', 'video_watched_2s', 'video_watched_6s',
+                'video_p25', 'video_p50', 'video_p75', 'video_p100', 'avg_video_play_sec',
+                'likes', 'comments', 'shares', 'follows', 'profile_visits', 'engaged_view_15s']
     for col in NUM_COLS:
         if col in df.columns:
             df[col] = pd.to_numeric(
@@ -73,6 +91,43 @@ def normalize(input_path: str, output_path: str):
         }
         df['age_group'] = df['age_group'].astype(str).map(lambda v: AGE_MAP.get(v, v))
 
+    # 3-d. 성별 정규화 (TikTok API: MALE/FEMALE/UNKNOWN → 한글)
+    if 'gender' in df.columns:
+        GENDER_MAP = {
+            'MALE': '남성',
+            'FEMALE': '여성',
+            'UNKNOWN': '미상',
+            'NONE': '미상',
+            '': '미상',
+        }
+        df['gender'] = df['gender'].astype(str).map(lambda v: GENDER_MAP.get(v, v))
+
+    # 3-e. 지역(province_id) 정규화 — TikTok 자체 numeric ID → 한국 광역 한글명
+    if 'province_id' in df.columns:
+        PROVINCE_MAP = {
+            '1835847': '서울',
+            '1843561': '인천',
+            '1841610': '경기',
+            '1843125': '강원',
+            '1835224': '대전',
+            '1845106': '충북',
+            '1845105': '충남',
+            '8394437': '세종',
+            '1845789': '전북',
+            '1845788': '전남',
+            '1841808': '광주',
+            '1841597': '경북',
+            '1902028': '경남',
+            '1835327': '대구',
+            '1833742': '울산',
+            '1838519': '부산',
+            '1846265': '제주',
+            'NONE': '미상',
+            '': '미상',
+        }
+        df['province_id'] = df['province_id'].astype(str)
+        df['province'] = df['province_id'].map(lambda v: PROVINCE_MAP.get(v, f'미매핑({v})'))
+
     # 4. KPI 재계산 (_calc 컬럼만 이후 분석에 사용)
     df['CTR_calc'] = (df['clicks'] / df['impressions'].replace(0, np.nan) * 100).round(4)
     df['CVR_calc'] = (df['conversions'] / df['clicks'].replace(0, np.nan) * 100).round(4)
@@ -95,12 +150,14 @@ def normalize(input_path: str, output_path: str):
         if len(currencies) > 1:
             print(f"[WARNING] 통화 혼재 감지: {currencies}")
 
-    # 8. 중복 행 감지
-    dup_key = ['ad_id', 'date', 'age_group']
-    if all(k in df.columns for k in dup_key):
-        dupes = df[df.duplicated(dup_key, keep=False)]
-        if len(dupes) > 0:
-            print(f"[WARNING] 중복 행 {len(dupes)}건 감지")
+    # 8. 중복 행 감지 (디멘션에 따라 키 자동 구성)
+    dup_key = ['ad_id', 'date']
+    for extra in ('age_group', 'gender', 'hour', 'province_id'):
+        if extra in df.columns:
+            dup_key.append(extra)
+    dupes = df[df.duplicated(dup_key, keep=False)]
+    if len(dupes) > 0:
+        print(f"[WARNING] 중복 행 {len(dupes)}건 감지 (키: {dup_key})")
 
     # 9. 저장
     out_dir = os.path.dirname(output_path)

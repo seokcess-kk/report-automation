@@ -504,6 +504,8 @@ tr:hover td{background:var(--hover-bg)}
     <button class="tb" data-tab="plan"><span class="tb-num">03</span>6월 목표·액션</button>
     <button class="tb" data-tab="exec_plan"><span class="tb-num">04</span>타겟팅·콘텐츠 실행안</button>
     <button class="tb" data-tab="addon"><span class="tb-num">05</span>애드온 판단</button>
+    <button class="tb" data-tab="targeting"><span class="tb-num">06</span>타겟팅 정합성</button>
+    <button class="tb" data-tab="geo"><span class="tb-num">07</span>지역 도달</button>
   </div>
   <button class="theme-toggle" id="themeToggle" type="button" aria-label="테마 전환" title="라이트/다크 전환">
     <span class="ti-dark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
@@ -520,7 +522,7 @@ tr:hover td{background:var(--hover-bg)}
   <div class="page-hd">
     <div class="page-hd-num">01 · Executive Summary</div>
     <h2 class="page-hd-title">6월 운영 방향 요약</h2>
-    <div class="page-hd-msg">6월 다이트한의원 TikTok 운영은 지점별 퍼널 병목에 따라 <strong style="color:var(--red)">A 효율 개선</strong> · <strong style="color:var(--t1)">B 예산 확대</strong> · <strong style="color:var(--pur)">C 신규 안정화</strong> 세 방향으로 분리 적용을 권고드립니다. 전환 목표는 <strong style="color:var(--primary)">762건(Stretch 822건)</strong>으로 설정하였습니다.</div>
+    <div class="page-hd-msg">6월 다이트한의원 TikTok 운영은 지점·소재 단위 효율만이 아니라 <strong style="color:var(--t1)">성별·지역별 노출 품질</strong>까지 함께 검증하여, CPA 변동의 원인을 <strong>소재 문제</strong>와 <strong>타겟 도달 문제</strong>로 분리 진단합니다. 지점별 퍼널 병목에 따라 <strong style="color:var(--red)">A 효율 개선</strong> · <strong style="color:var(--t1)">B 예산 확대</strong> · <strong style="color:var(--pur)">C 신규 안정화</strong> 세 방향으로 분리 적용하며, 전환 목표는 <strong style="color:var(--primary)">762건(Stretch 822건)</strong>으로 설정하였습니다.</div>
     <div class="page-hd-meta">
       <span>분석 기간 <strong id="meta-period"></strong></span>
       <span>대상 <strong id="meta-branches"></strong></span>
@@ -758,7 +760,7 @@ tr:hover td{background:var(--hover-bg)}
           <div class="rm-row"><div class="rm-week">1주차<br>06/01-07</div><div class="rm-body"><strong>효율 부진 지점 진단 착수.</strong> 수원 · 창원 · 천안의 CVR 원인을 점검하겠습니다 (소재 ↔ 랜딩 hero "9만원" 정합성, 5단계 폼 이탈률 확인). CPA가 평균 대비 높은 지점은 광고 그룹 예산 증액을 보류하고, CVR 회복 이후 단계적으로 증액합니다. 부산은 학습 기간 안정화 모니터링을 진행합니다.</div></div>
           <div class="rm-row"><div class="rm-week">2주차<br>06/08-14</div><div class="rm-body"><strong>효율 양호 지점 확대 및 CPM 가드라인 적용.</strong> 서울 · 일산 · 대구 · 대전 광고 그룹 예산을 +5~10% 점진 증액합니다. CPM이 지속 상승 중인 부평 · 대구 · 창원은 신규 광고 그룹 복제(OR 분리)로 노출 효율을 함께 확보합니다. 1주차 부진 지점의 회복 추이도 함께 평가하겠습니다.</div></div>
           <div class="rm-row"><div class="rm-week">3주차<br>06/15-21</div><div class="rm-body"><strong>콘텐츠 다양화 및 신규 소재 투입.</strong> P3에서 정의한 신규 도입 소재를 지점별로 광고 단위 ON 처리합니다. 전환수 · CPA 우수 소재는 동일 지점에서 확대 운영하고, OFF된 우수 소재 중 재활용 후보를 검토하겠습니다.</div></div>
-          <div class="rm-row"><div class="rm-week">4주차<br>06/22-30</div><div class="rm-body"><strong>중간 점검 및 7월 방향 정리.</strong> 검증 KPI를 기준으로 지점별 회복 여부를 확인합니다. 6월 운영 결과를 토대로 7월 운영 방향을 조정하겠습니다. 애드온 전면 확대는 통제된 A/B 결과 확인 후 결정합니다.</div></div>
+          <div class="rm-row"><div class="rm-week">4주차<br>06/22-30</div><div class="rm-body"><strong>중간 점검 및 7월 방향 정리.</strong> 검증 KPI를 기준으로 지점별 회복 여부를 확인합니다. 6월 운영 결과를 토대로 7월 운영 방향을 조정하겠습니다. 5월 신 디자인(v2)은 부산 일부 미적용으로 동기간 비애드온 비교가 불가능했던 만큼, 6월 누적 데이터로 디자인 효과를 재측정하고 ① v2 표준화 ② v1 일부 복원 ③ 디자인 부분 변경 중 한 가지로 7월 표준 디자인을 결정합니다. 부산은 R10 학습 룰 결과를 별도 평가.</div></div>
         </div>
       </details>
       <details class="appx">
@@ -883,30 +885,43 @@ tr:hover td{background:var(--hover-bg)}
 <div id="pg-addon" class="pg"><div class="wrap">
   <div class="page-hd">
     <div class="page-hd-num">05 · Add-on Judgement</div>
-    <h2 class="page-hd-title">애드온 운영 판단</h2>
-    <div class="page-hd-msg">6월 애드온 운영은 전면 확대가 아니라 <strong style="color:var(--t1)">소재유형별</strong>로 조건부 적용을 권고드립니다. 본 판단은 전 기간 누적 관찰에 통계적 유의성 검정(z-test on CVR proportions)을 결합한 결과이며, 표본이 충분한 소재유형 중심으로만 확대·보류 결정을 제시합니다.</div>
+    <h2 class="page-hd-title">애드온 운영 판단 — 디자인 변경 반영</h2>
+    <div class="page-hd-msg">3~4월의 <strong>구 디자인(v1)</strong>과 5월의 <strong style="color:var(--t1)">신 디자인(v2)</strong>은 별개 소재로 보아 분리 분석합니다. 단, 5월에는 원래 전 캠페인·소재에 애드온을 적용할 예정이었으나 <strong style="color:var(--warn)">부산점만 운영 사유로 일부 미적용</strong>되어 5월 비애드온이 사실상 부산 단일 지점 데이터에 해당합니다. 따라서 본 5장은 <strong>부산을 제외</strong>한 8개 지점만을 대상으로, 평가축을 <strong>(1) v1 vs 3~4월 비애드온</strong>과 <strong>(2) v2 vs v1 직접 비교</strong>로 이원화하였습니다.</div>
     <div class="page-hd-meta">
-      <span>판단 기준 <strong>CVR Δ + p-value (z-test)</strong></span>
-      <span>최소 표본 <strong>소재유형 클릭 ≥ 50</strong></span>
-      <span>해석 한계 <strong>선택 편향 가능성 존재</strong></span>
+      <span>v1 (구 디자인) <strong>2026-02 ~ 2026-04 노출</strong></span>
+      <span>v2 (신 디자인) <strong>2026-05 ~ 노출 (cutoff 05-01)</strong></span>
+      <span>분석 대상 <strong>부산 제외 8개 지점</strong></span>
     </div>
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.1</span><span class="sec-hd-title">6월 애드온 운영 판단</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">5.1</span><span class="sec-hd-title">6월 운영 권고</span><span class="sec-hd-sub">디자인 변경 효과 + 소재유형 처방</span></div>
     <div id="addon-judgement"></div>
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.2</span><span class="sec-hd-title">판단 근거</span><span class="sec-hd-sub">전체 합산 + 소재유형별</span></div>
-    <div class="lead" id="addon-lead-52">아래 수치는 관찰값입니다. 적용 광고가 비적용 광고보다 우수한 결과를 보이는 배경에는 선택 편향(애드온 적용 광고가 운영 관심이 높은 우수 소재일 가능성)이 포함될 수 있음을 함께 고려해 주시기 바랍니다.</div>
-    <div class="g4" id="addon-overall" style="margin-bottom:14px"></div>
-    <div class="evidence-card" style="margin-bottom:14px"><div class="card-title">전체 KPI 차이 (관찰값)</div><div class="card-sub">CPM 및 CPA는 부호를 반전하여 표기하였습니다 (낮을수록 양호하므로 양수 = 우세).</div><div style="position:relative;height:220px"><canvas id="addonOverallChart"></canvas></div></div>
+    <div class="sec-hd"><span class="sec-hd-num">5.2</span><span class="sec-hd-title">판단 근거 — 두 평가축</span></div>
+    <div class="lead" id="addon-lead-52">평가축 1은 애드온 자체의 효과(v1 시기, 양쪽 표본 충분)를, 평가축 2는 디자인 변경의 순효과(v2 vs v1 직접 비교)를 측정합니다. 5월 부산 일부 미적용으로 인해 v2를 동기간 비애드온과 직접 비교하는 것은 불가능합니다.</div>
+    <div class="g2" id="addon-version-cards" style="margin-bottom:14px"></div>
+    <div id="addon-v2-unmeasurable-box" style="margin-bottom:14px"></div>
+    <div class="evidence-card" style="margin-bottom:14px"><div class="card-title">디자인 변경 효과 차트 (v2 vs v1)</div><div class="card-sub">동일 그룹(애드온 적용) 내 디자인 변경 전후 비교. CPM/CPA는 부호 반전(양수 = 신 디자인 우세). 시기 차이에 따른 시즌 효과가 일부 포함됩니다.</div><div style="position:relative;height:220px"><canvas id="addonOverallChart"></canvas></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">5.3</span><span class="sec-hd-title">소재유형별 디자인 효과 (v1 → v2)</span></div>
+    <div class="lead">동일 소재유형에서 v1 디자인과 v2 디자인의 절대 KPI를 비교한 결과입니다. 디자인 변경이 소재유형마다 다른 방향으로 작용했음을 보여줍니다. p-value는 v1·v2 CVR 비율 z-test 기준이며, v2 표본이 작은 유형은 신호로만 해석해야 합니다.</div>
     <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="addon-creative-type-tbl"></table></div></div>
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.3</span><span class="sec-hd-title">6월 애드온 실행 가이드</span><span class="sec-hd-sub">데이터 기반 처방</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">5.4</span><span class="sec-hd-title">시청 깔때기 기반 가설 검증</span><span class="sec-hd-sub">애드온 3초+ 노출 가정</span></div>
+    <div class="lead">TikTok 애드온은 영상 재생 후 3초+ 시점부터 노출되므로 <strong>6초 시청률(video_watched_6s/impressions)</strong>이 애드온 도달률에 가장 근접한 지표입니다. 소재유형별 시청 깊이와 클릭자→전환율(CVR)의 변화를 함께 보면 "오래 보는 콘텐츠" vs "적합한 사용자가 클릭하는 콘텐츠"의 차이가 드러납니다.</div>
+    <div id="addon-hypothesis-box" style="margin-bottom:14px"></div>
+    <div class="evidence-card" style="padding:0;overflow:hidden;margin-bottom:14px"><div class="card-title" style="padding:12px 14px 0 14px">소재유형별 시청 깔때기 (v1 → v2)</div><div class="card-sub" style="padding:0 14px 8px 14px">6s 시청률 = 애드온 노출 시점 도달률 추정. p25/p50/p75/p100은 영상 25/50/75/100% 시점 도달.</div><div class="tw"><table id="addon-watch-funnel-tbl"></table></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">5.5</span><span class="sec-hd-title">6월 애드온 실행 가이드</span><span class="sec-hd-sub">디자인 변경 검증 처방</span></div>
     <div id="addon-execution-guide"></div>
   </div>
 
@@ -914,20 +929,17 @@ tr:hover td{background:var(--hover-bg)}
     <div class="sec-hd"><span class="sec-hd-num">5.A</span><span class="sec-hd-title">Appendix · 디테일 자료</span></div>
     <div id="addon-appendix">
       <details class="appx">
-        <summary><span><span class="appx-num">A.1</span>지점별 관찰 차이</span></summary>
-        <div class="appx-body"><div class="tw"><table id="addon-branch-tbl"></table></div></div>
-      </details>
-      <details class="appx">
-        <summary><span><span class="appx-num">A.2</span>동일 매칭키 페어 비교 (selection bias 제거)</span></summary>
+        <summary><span><span class="appx-num">A.1</span>지점별 관찰 차이 (부산 제외 8개 지점)</span></summary>
         <div class="appx-body">
-          <div class="lead" style="margin-bottom:10px;font-size:12px">동일 소재(매칭키) 내 애드온/비애드온 동시 운영 케이스만 비교. 양쪽 클릭 ≥100 필터.</div>
-          <div class="tw"><table id="addon-pair-tbl"></table></div>
+          <div class="lead" style="margin-bottom:10px;font-size:12px">v1 시기에는 동기간 비애드온이 충분하여 비교가 가능하나, v2 시기에는 동기간 비애드온이 사실상 부재하여 v2 vs v1 디자인 직접 비교 표로 대체합니다.</div>
+          <div style="margin-bottom:14px"><div style="font-size:11px;color:var(--tx);margin-bottom:6px;font-weight:700">v1 vs 3~4월 비애드온 (지점별)</div><div class="tw"><table id="addon-branch-tbl-v1"></table></div></div>
+          <div><div style="font-size:11px;color:var(--tx);margin-bottom:6px;font-weight:700">v2 vs v1 디자인 직접 비교 (지점별)</div><div class="tw"><table id="addon-branch-tbl-v2"></table></div></div>
         </div>
       </details>
       <details class="appx">
-        <summary><span><span class="appx-num">A.3</span>월별 추세 (시점별 효과 변화)</span></summary>
+        <summary><span><span class="appx-num">A.2</span>월별 추세 (디자인 변경 시점, 부산 제외)</span></summary>
         <div class="appx-body">
-          <div class="lead" style="margin-bottom:10px;font-size:12px">월별 애드온 vs 비애드온 CVR 차이. 표본 부족 월(클릭 &lt;100)은 ⚠ 표시.</div>
+          <div class="lead" style="margin-bottom:10px;font-size:12px">부산 제외 8개 지점 기준 월별 애드온 vs 비애드온 CVR. <strong>2026-05부터 신 디자인(v2)</strong>. 표본 부족 월(클릭 &lt;100)은 ⚠ 표시. 5월 비애드온이 거의 부재함이 시각적으로 확인됩니다.</div>
           <div class="tw"><table id="addon-monthly-tbl"></table></div>
         </div>
       </details>
@@ -943,6 +955,92 @@ tr:hover td{background:var(--hover-bg)}
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">5.E</span><span class="sec-hd-title">Appendix E · 추정 기반 캐비엇</span></div>
     <div id="seasonality-caveat"></div>
+  </div>
+</div></div>
+
+<!-- ========================= 06 타겟팅 정합성 진단 (Phase 1A) ========================= -->
+<div id="pg-targeting" class="pg"><div class="wrap">
+  <div class="page-hd">
+    <div class="page-hd-num">06 · Targeting Health</div>
+    <h2 class="page-hd-title">타겟팅 정합성 진단</h2>
+    <div class="page-hd-msg">6월 운영은 지점·소재 단위 효율만이 아니라 <strong style="color:var(--t1)">성별·연령별 노출 품질</strong>까지 검증하여, CPA 변동의 원인을 <strong>소재 문제</strong>와 <strong>타겟 도달 문제</strong>로 분리합니다. 본 6장은 TikTok Audience report API로 수집한 성별·연령별 디멘션 데이터를 기반으로 타겟팅 적용이 의도대로 작동하는지, 노출 품질에 누수가 있는지 진단합니다.</div>
+    <div class="page-hd-meta">
+      <span>분석 단위 <strong>광고 × 일 × 나이 × 성별</strong></span>
+      <span>운영 상수 <strong>성별 타겟팅 = 여성 고정</strong></span>
+      <span>검증 축 <strong>의도 정합성 + 누수 진단</strong></span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">6.1</span><span class="sec-hd-title">타겟팅 진단 결과</span></div>
+    <div id="targeting-judgement"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">6.2</span><span class="sec-hd-title">성별 노출 정합성</span><span class="sec-hd-sub">의도(여성)대로 작동하는가</span></div>
+    <div class="lead">캠페인 운영 상수 "성별=여성"이 실제 노출에 반영되는지 확인합니다. 남성 노출 누수는 0이어야 정상이며, 미상(NONE) 분류는 노출 비중 대비 전환 비중이 비대칭이면 어트리뷰션 비식별 정황입니다.</div>
+    <div id="targeting-gender-cards" style="margin-bottom:12px"></div>
+    <div id="targeting-none-anomaly"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">6.3</span><span class="sec-hd-title">여성 연령별 효율 분포</span></div>
+    <div class="lead">여성 한정 연령별 노출 비중과 효율을 비교합니다. 노출 비중이 낮은 연령대도 CVR이 양호하면 확대 기회, CVR이 비효율적이면 노출 축소 검토 신호입니다.</div>
+    <div class="evidence-card" style="padding:0;overflow:hidden;margin-bottom:12px"><div class="tw"><table id="targeting-age-tbl"></table></div></div>
+    <div id="targeting-age-signal"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">6.4</span><span class="sec-hd-title">지점별 노출 품질</span></div>
+    <div class="lead">지점별로 여성 노출 비중과 미상 분류 전환 비중을 확인합니다. 의도와 다른 노출 패턴이 보이면 해당 지점의 타겟팅 설정 점검 필요.</div>
+    <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="targeting-branch-tbl"></table></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">6.A</span><span class="sec-hd-title">Appendix · 분석 기준 안내</span></div>
+    <div id="targeting-note"></div>
+  </div>
+</div></div>
+
+<!-- ========================= 07 지역 도달 (Phase 1B) ========================= -->
+<div id="pg-geo" class="pg"><div class="wrap">
+  <div class="page-hd">
+    <div class="page-hd-num">07 · Geo Reach</div>
+    <h2 class="page-hd-title">지역 도달 정합성</h2>
+    <div class="page-hd-msg">9개 지점 광고가 <strong style="color:var(--t1)">의도한 생활권</strong>에 닿고 있는지 진단합니다. 지점별로 핵심 광역(정합) · 인접 생활권 · 매칭권 밖(누수)으로 노출을 분류하여, CPA 변동의 원인을 <strong>소재 문제</strong>와 <strong>지역 도달 문제</strong>로 분리합니다. TikTok province 메트릭은 추정·샘플링 성격이 있어 본 진단은 <strong>단정형이 아닌 누수 진단형</strong>으로만 사용합니다.</div>
+    <div class="page-hd-meta">
+      <span>분석 단위 <strong>광고 × 일 × 광역(province_id)</strong></span>
+      <span>분류 기준 <strong>정합 · 생활권 · 누수</strong></span>
+      <span>해석 한계 <strong>추정 메트릭, 단정형 금지</strong></span>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">7.1</span><span class="sec-hd-title">지역 정합성 진단</span></div>
+    <div id="geo-judgement"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">7.2</span><span class="sec-hd-title">전체 노출 분포 (정합/생활권/누수)</span></div>
+    <div class="lead">9개 지점 광고의 전체 노출을 정합·생활권·누수 3개 그룹으로 분류한 결과입니다.</div>
+    <div id="geo-overall-cards" style="margin-bottom:12px"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">7.3</span><span class="sec-hd-title">지점별 누수 진단</span></div>
+    <div class="lead">지점별 노출의 정합·생활권·누수 비중을 한눈에 비교합니다. 누수 15% 이상은 타겟팅 설정 점검 필요 신호로 분류합니다.</div>
+    <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="geo-branch-tbl"></table></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">7.4</span><span class="sec-hd-title">누수 노출 지역 TOP</span></div>
+    <div class="lead">지점 매칭권 밖에서 발생한 노출의 상위 지역. 다이트 지점이 없는 지역에 노출이 발생한다면 운영 측 설정·시드(부정확한 광역 선택) 점검 필요.</div>
+    <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="geo-leakage-tbl"></table></div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">7.A</span><span class="sec-hd-title">Appendix · 매칭 룰 및 분석 기준</span></div>
+    <div id="geo-note"></div>
   </div>
 </div></div>
 

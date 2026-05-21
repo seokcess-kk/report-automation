@@ -96,7 +96,14 @@ def aggregate_creatives(df_on: pd.DataFrame) -> pd.DataFrame:
     """
     GROUP_KEY = ['소재구분', '소재유형', '소재명']
 
-    creative_df = df_on.groupby(GROUP_KEY).agg(
+    # 시청 깊이 메트릭 — 신규 수집 데이터에만 있어 컬럼 존재 시에만 집계
+    depth_cols = ['video_watched_2s', 'video_watched_6s', 'video_p25', 'video_p50',
+                  'video_p75', 'video_p100']
+    avg_col_present = 'avg_video_play_sec' in df_on.columns
+    eng_cols = ['likes', 'comments', 'shares', 'follows', 'profile_visits', 'engaged_view_15s']
+    has_eng = all(c in df_on.columns for c in eng_cols)
+
+    agg_spec = dict(
         집행지점목록=('지점', lambda x: sorted(x.dropna().unique().tolist())),
         집행지점분포=('지점', lambda x: x.value_counts().to_dict()),
         집행지점수=('지점', 'nunique'),
@@ -108,13 +115,57 @@ def aggregate_creatives(df_on: pd.DataFrame) -> pd.DataFrame:
         집행일수=('date', 'nunique'),
         귀속주의건수=('attribution_caution', 'sum'),
         매칭키=('매칭키', 'first'),
-    ).reset_index()
+    )
+    if all(c in df_on.columns for c in depth_cols):
+        agg_spec.update({
+            '총2초시청': ('video_watched_2s', 'sum'),
+            '총6초시청': ('video_watched_6s', 'sum'),
+            '총p25': ('video_p25', 'sum'),
+            '총p50': ('video_p50', 'sum'),
+            '총p75': ('video_p75', 'sum'),
+            '총p100': ('video_p100', 'sum'),
+        })
+    if avg_col_present:
+        agg_spec['평균재생초'] = ('avg_video_play_sec', 'mean')
+    if has_eng:
+        agg_spec.update({
+            '총좋아요': ('likes', 'sum'),
+            '총댓글': ('comments', 'sum'),
+            '총공유': ('shares', 'sum'),
+            '총팔로우': ('follows', 'sum'),
+            '총프로필방문': ('profile_visits', 'sum'),
+            '총15초시청': ('engaged_view_15s', 'sum'),
+        })
+
+    creative_df = df_on.groupby(GROUP_KEY).agg(**agg_spec).reset_index()
 
     # KPI 재계산 (집계 후 재계산 — 행 단위 CVR 사용 금지)
     creative_df['CPA'] = (creative_df['총비용'] / creative_df['총전환'].replace(0, np.nan)).round(0)
     creative_df['CTR'] = (creative_df['총클릭'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
     creative_df['CVR'] = (creative_df['총전환'] / creative_df['총클릭'].replace(0, np.nan) * 100).round(2)
     creative_df['랜딩률'] = (creative_df['총랜딩'] / creative_df['총클릭'].replace(0, np.nan) * 100).round(1)
+
+    # 시청 깊이 비율 (집계 후 재계산)
+    if '총6초시청' in creative_df.columns:
+        creative_df['2s시청률'] = (creative_df['총2초시청'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        creative_df['6s시청률'] = (creative_df['총6초시청'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        creative_df['p25시청률'] = (creative_df['총p25'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        creative_df['p50시청률'] = (creative_df['총p50'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        creative_df['p75시청률'] = (creative_df['총p75'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        creative_df['p100완료율'] = (creative_df['총p100'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        if '평균재생초' in creative_df.columns:
+            creative_df['평균재생초'] = creative_df['평균재생초'].round(2)
+
+    # 인게이지먼트 비율 (집계 후 재계산)
+    if '총공유' in creative_df.columns:
+        creative_df['좋아요율'] = (creative_df['총좋아요'] / creative_df['총노출'].replace(0, np.nan) * 100).round(3)
+        creative_df['댓글율'] = (creative_df['총댓글'] / creative_df['총노출'].replace(0, np.nan) * 100).round(3)
+        creative_df['공유율'] = (creative_df['총공유'] / creative_df['총노출'].replace(0, np.nan) * 100).round(3)
+        creative_df['15s시청률'] = (creative_df['총15초시청'] / creative_df['총노출'].replace(0, np.nan) * 100).round(2)
+        creative_df['인게이지먼트율'] = (
+            (creative_df['총좋아요'] + creative_df['총댓글'] + creative_df['총공유'])
+            / creative_df['총노출'].replace(0, np.nan) * 100
+        ).round(3)
 
     return creative_df
 

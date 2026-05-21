@@ -44,7 +44,7 @@ from config import (
 METRIC_LANDING = os.getenv('TIKTOK_METRIC_LANDING', 'total_pageview')
 METRIC_REACH = os.getenv('TIKTOK_METRIC_REACH', 'reach')
 
-# 수동 export CSV 컬럼 순서 (절대 변경 금지 — 하류 파이프라인이 이 스키마 기대)
+# 수동 export CSV 컬럼 순서 (하류 파이프라인이 이 스키마 기대 — 끝에 추가만 허용)
 CSV_COLUMNS = [
     '캠페인 이름', '광고 이름', '광고 ID', '일별',
     '비용', '노출수', 'CPM',
@@ -52,9 +52,16 @@ CSV_COLUMNS = [
     '전환수', '전환당 비용', '전환율(CVR)',
     '빈도', '동영상 조회수', '통화',
     '랜딩 페이지 조회(웹사이트)', '도달',
+    # 시청 깊이 메트릭 (R12 — 인플방문후기 가설 검증)
+    '2초 시청', '6초 시청',
+    '25% 시청 완료', '50% 시청 완료', '75% 시청 완료', '100% 시청 완료',
+    '평균 재생 시간',
+    # 인게이지먼트 메트릭 (Phase 1C — 바이럴 지수, 5.4 가설 정밀화)
+    '좋아요', '댓글', '공유', '팔로우', '프로필 방문',
+    '15초 시청',
 ]
 
-# API metric 이름 → CSV 컬럼 (순서 = CSV 뒤쪽 수치 컬럼 순서)
+# API metric 이름 → CSV 컬럼
 METRIC_TO_CSV = {
     'spend': '비용',
     'impressions': '노출수',
@@ -69,11 +76,44 @@ METRIC_TO_CSV = {
     'video_play_actions': '동영상 조회수',
     METRIC_LANDING: '랜딩 페이지 조회(웹사이트)',
     METRIC_REACH: '도달',
+    # 시청 깊이 메트릭
+    'video_watched_2s': '2초 시청',
+    'video_watched_6s': '6초 시청',
+    'video_views_p25': '25% 시청 완료',
+    'video_views_p50': '50% 시청 완료',
+    'video_views_p75': '75% 시청 완료',
+    'video_views_p100': '100% 시청 완료',
+    'average_video_play': '평균 재생 시간',
+    # 인게이지먼트 메트릭 (Phase 1C)
+    'likes': '좋아요',
+    'comments': '댓글',
+    'shares': '공유',
+    'follows': '팔로우',
+    'profile_visits': '프로필 방문',
+    'engaged_view_15s': '15초 시청',
 }
 
 # 나이대 CSV (별도 파일)
 CSV_COLUMNS_BY_AGE = [
     '캠페인 이름', '광고 이름', '광고 ID', '일별', '나이',
+    '비용', '노출수',
+    '클릭수(목적지)', 'CTR(목적지)',
+    '전환수', '전환당 비용', '전환율(CVR)',
+    '랜딩 페이지 조회(웹사이트)', '도달', '통화',
+]
+
+# 오디언스(나이+성별) CSV — Phase 1A
+CSV_COLUMNS_BY_AUDIENCE = [
+    '캠페인 이름', '광고 이름', '광고 ID', '일별', '나이', '성별',
+    '비용', '노출수',
+    '클릭수(목적지)', 'CTR(목적지)',
+    '전환수', '전환당 비용', '전환율(CVR)',
+    '랜딩 페이지 조회(웹사이트)', '도달', '통화',
+]
+
+# 지역(province_id) CSV — Phase 1B
+CSV_COLUMNS_BY_PROVINCE = [
+    '캠페인 이름', '광고 이름', '광고 ID', '일별', 'province_id',
     '비용', '노출수',
     '클릭수(목적지)', 'CTR(목적지)',
     '전환수', '전환당 비용', '전환율(CVR)',
@@ -185,21 +225,21 @@ def fetch_report(
     return all_rows
 
 
-def api_row_to_csv_row(api_row: dict, include_age: bool = False, include_hour: bool = False) -> dict:
+def api_row_to_csv_row(api_row: dict, include_age: bool = False,
+                       include_hour: bool = False, include_audience: bool = False,
+                       include_province: bool = False) -> dict:
     """API 응답 1 row → CSV 1 row"""
     dims = api_row.get('dimensions') or {}
     mets = api_row.get('metrics') or {}
 
     stat_day = dims.get('stat_time_day', '')
     date_str = stat_day[:10] if stat_day else ''
+    hour_str = ''
     if include_hour:
-        # stat_time_hour 는 'YYYY-MM-DD HH:00:00' 형식
         stat_hour = dims.get('stat_time_hour', '')
         if stat_hour:
             date_str = stat_hour[:10]
             hour_str = stat_hour[11:13] if len(stat_hour) >= 13 else ''
-        else:
-            hour_str = ''
 
     row = {
         '캠페인 이름': mets.get('campaign_name', ''),
@@ -208,10 +248,14 @@ def api_row_to_csv_row(api_row: dict, include_age: bool = False, include_hour: b
         '일별': date_str,
         '통화': mets.get('currency', 'KRW'),
     }
-    if include_age:
+    if include_age or include_audience:
         row['나이'] = dims.get('age', '')
+    if include_audience:
+        row['성별'] = dims.get('gender', '')
     if include_hour:
         row['시간'] = hour_str
+    if include_province:
+        row['province_id'] = str(dims.get('province_id', ''))
     for api_key, csv_key in METRIC_TO_CSV.items():
         row[csv_key] = mets.get(api_key, 0)
     return row
@@ -260,13 +304,37 @@ def fetch_and_save(
     output_path: str,
     include_age: bool = False,
     include_hour: bool = False,
+    include_audience: bool = False,
+    include_province: bool = False,
 ):
     dimensions = ['ad_id', 'stat_time_day']
     columns = CSV_COLUMNS
     report_type = 'BASIC'
     metrics = None
     label = '일별 × 광고'
-    if include_age:
+    if include_province:
+        dimensions = ['ad_id', 'stat_time_day', 'province_id']
+        columns = CSV_COLUMNS_BY_PROVINCE
+        report_type = 'AUDIENCE'
+        audience_metrics = [
+            'spend', 'impressions', 'clicks', 'ctr',
+            'conversion', 'cost_per_conversion', 'conversion_rate',
+            METRIC_LANDING, METRIC_REACH,
+        ]
+        metrics = audience_metrics + META_FIELDS
+        label = '일별 × 광고 × 지역 (AUDIENCE)'
+    elif include_audience:
+        dimensions = ['ad_id', 'stat_time_day', 'age', 'gender']
+        columns = CSV_COLUMNS_BY_AUDIENCE
+        report_type = 'AUDIENCE'
+        audience_metrics = [
+            'spend', 'impressions', 'clicks', 'ctr',
+            'conversion', 'cost_per_conversion', 'conversion_rate',
+            METRIC_LANDING, METRIC_REACH,
+        ]
+        metrics = audience_metrics + META_FIELDS
+        label = '일별 × 광고 × 나이 × 성별 (AUDIENCE)'
+    elif include_age:
         dimensions = ['ad_id', 'stat_time_day', 'age']
         columns = CSV_COLUMNS_BY_AGE
         report_type = 'AUDIENCE'
@@ -314,7 +382,7 @@ def fetch_and_save(
         return
 
     new_df = pd.DataFrame([
-        api_row_to_csv_row(r, include_age=include_age, include_hour=include_hour) for r in all_rows
+        api_row_to_csv_row(r, include_age=include_age, include_hour=include_hour, include_audience=include_audience, include_province=include_province) for r in all_rows
     ])
     for col in columns:
         if col not in new_df.columns:
@@ -337,10 +405,16 @@ def main():
     parser.add_argument('--output', default='input/tiktok_raw.csv')
     parser.add_argument('--age-output', default='input/tiktok_raw_by_age.csv')
     parser.add_argument('--hour-output', default='input/tiktok_raw_by_hour.csv')
+    parser.add_argument('--audience-output', default='input/tiktok_raw_by_audience.csv')
+    parser.add_argument('--province-output', default='input/tiktok_raw_by_province.csv')
     parser.add_argument('--include-age', action='store_true', help='나이대 breakdown도 함께 수집')
     parser.add_argument('--only-age', action='store_true', help='나이대 수집만 실행')
     parser.add_argument('--include-hour', action='store_true', help='시간대 breakdown도 함께 수집')
     parser.add_argument('--only-hour', action='store_true', help='시간대 수집만 실행')
+    parser.add_argument('--include-audience', action='store_true', help='나이+성별 breakdown 수집')
+    parser.add_argument('--only-audience', action='store_true', help='오디언스(나이+성별) 수집만 실행')
+    parser.add_argument('--include-province', action='store_true', help='지역(province_id) breakdown 수집')
+    parser.add_argument('--only-province', action='store_true', help='지역 수집만 실행')
     args = parser.parse_args()
 
     access_token = require('TIKTOK_ACCESS_TOKEN', TIKTOK_ACCESS_TOKEN)
@@ -355,7 +429,8 @@ def main():
     else:
         start_date = end_date - timedelta(days=args.days - 1)
 
-    if not args.only_age and not args.only_hour:
+    only_any = args.only_age or args.only_hour or args.only_audience or args.only_province
+    if not only_any:
         fetch_and_save(start_date, end_date, advertiser_id, access_token, args.output)
 
     if args.include_age or args.only_age:
@@ -363,6 +438,12 @@ def main():
 
     if args.include_hour or args.only_hour:
         fetch_and_save(start_date, end_date, advertiser_id, access_token, args.hour_output, include_hour=True)
+
+    if args.include_audience or args.only_audience:
+        fetch_and_save(start_date, end_date, advertiser_id, access_token, args.audience_output, include_audience=True)
+
+    if args.include_province or args.only_province:
+        fetch_and_save(start_date, end_date, advertiser_id, access_token, args.province_output, include_province=True)
 
 
 if __name__ == '__main__':

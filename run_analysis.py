@@ -103,6 +103,20 @@ def run_phase_0(input_csv: str) -> str:
         module.normalize(by_hour_csv, by_hour_out)
         print(f"[OK] 시간대 정규화: {by_hour_out}")
 
+    # 오디언스(나이+성별) CSV 있으면 함께 정규화
+    by_aud_csv = os.path.join(PROJECT_ROOT, "input", "tiktok_raw_by_audience.csv")
+    if os.path.exists(by_aud_csv):
+        by_aud_out = os.path.join(OUTPUT_DIR, "normalized_by_audience.parquet")
+        module.normalize(by_aud_csv, by_aud_out)
+        print(f"[OK] 오디언스 정규화: {by_aud_out}")
+
+    # 지역(province) CSV 있으면 함께 정규화
+    by_prov_csv = os.path.join(PROJECT_ROOT, "input", "tiktok_raw_by_province.csv")
+    if os.path.exists(by_prov_csv):
+        by_prov_out = os.path.join(OUTPUT_DIR, "normalized_by_province.parquet")
+        module.normalize(by_prov_csv, by_prov_out)
+        print(f"[OK] 지역 정규화: {by_prov_out}")
+
     print_phase(0, "원본 정규화", "OK")
     return output_path
 

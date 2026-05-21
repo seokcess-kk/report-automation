@@ -77,6 +77,14 @@ def build(parsed_path: str) -> dict:
     conv_col = '총전환' if '총전환' in df.columns else ('conversions' if 'conversions' in df.columns else None)
     days_col = '집행일수' if '집행일수' in df.columns else ('days_active' if 'days_active' in df.columns else None)
     branches_col = '집행지점목록' if '집행지점목록' in df.columns else None
+    # 시청 깊이 컬럼 (있을 때만 활용)
+    v6s_col = '6s시청률' if '6s시청률' in df.columns else None
+    p100_col = 'p100완료율' if 'p100완료율' in df.columns else None
+    avg_sec_col = '평균재생초' if '평균재생초' in df.columns else None
+    # 인게이지먼트 컬럼 (Phase 1C)
+    share_col = '공유율' if '공유율' in df.columns else None
+    like_col = '좋아요율' if '좋아요율' in df.columns else None
+    eng15s_col = '15s시청률' if '15s시청률' in df.columns else None
     if not name_col or not tier_col or not branches_col:
         return {'branches': {}, 'tier_rationale': TIER_RATIONALE, 'note': '컬럼 누락'}
 
@@ -107,6 +115,12 @@ def build(parsed_path: str) -> dict:
             cost = r.get(cost_col) if cost_col else None
             conv = r.get(conv_col) if conv_col else None
             days = r.get(days_col) if days_col else None
+            v6s = r.get(v6s_col) if v6s_col else None
+            p100 = r.get(p100_col) if p100_col else None
+            avg_sec = r.get(avg_sec_col) if avg_sec_col else None
+            share = r.get(share_col) if share_col else None
+            like = r.get(like_col) if like_col else None
+            eng15s = r.get(eng15s_col) if eng15s_col else None
             evidence_parts = []
             if cpa is not None and not pd.isna(cpa):
                 evidence_parts.append(f"CPA {int(cpa):,}원")
@@ -114,6 +128,8 @@ def build(parsed_path: str) -> dict:
                 evidence_parts.append(f"CVR {float(cvr):.2f}%")
             if ctr is not None and not pd.isna(ctr):
                 evidence_parts.append(f"CTR {float(ctr):.2f}%")
+            if v6s is not None and not pd.isna(v6s):
+                evidence_parts.append(f"6s시청 {float(v6s):.1f}%")
             items.append({
                 'name': str(r[name_col]),
                 'tier': tier,
@@ -123,6 +139,12 @@ def build(parsed_path: str) -> dict:
                 'cost': _to_int(cost),
                 'conversions': _to_int(conv),
                 'days_active': _to_int(days),
+                'v6s_rate': _to_float(v6s),
+                'p100_rate': _to_float(p100),
+                'avg_video_sec': _to_float(avg_sec),
+                'share_rate': _to_float(share),
+                'like_rate': _to_float(like),
+                'eng15s_rate': _to_float(eng15s),
                 'evidence': ' / '.join(evidence_parts),
                 'recommended_action': TIER_ACTION.get(tier, ''),
             })

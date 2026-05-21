@@ -31,6 +31,8 @@ from analyze_budget import analyze as analyze_budget
 from analyze_funnel_variance import analyze as analyze_variance
 from derive_consulting_signals import derive as derive_signals
 from build_creative_appendix import build as build_creative_appendix
+from analyze_targeting_health import analyze as analyze_targeting
+from analyze_geo_leakage import analyze as analyze_geo
 
 
 def _build_meta_caveats(targets: dict, budget: dict) -> dict:
@@ -148,6 +150,14 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
     funnel_variance = analyze_variance(parsed_path)
     creative_appendix = build_creative_appendix(parsed_path)
 
+    # Phase 1A — 타겟팅 정합성 (오디언스 데이터 있으면)
+    aud_path = Path(parsed_path).parent / 'normalized_by_audience.parquet'
+    targeting_health = analyze_targeting(str(aud_path), parsed_path) if aud_path.exists() else {'available': False, 'note': 'audience parquet 없음'}
+
+    # Phase 1B — 지역 정합성 (province 데이터 있으면)
+    prov_path = Path(parsed_path).parent / 'normalized_by_province.parquet'
+    geo_leakage = analyze_geo(str(prov_path), parsed_path) if prov_path.exists() else {'available': False, 'note': 'province parquet 없음'}
+
     # 캐비엇 (codex R9·R10)
     meta_caveats = _build_meta_caveats(targets, budget)
 
@@ -189,6 +199,8 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
         'funnel_variance': funnel_variance,
         'consulting_signals': consulting_signals,
         'creative_appendix': creative_appendix,
+        'targeting_health': targeting_health,
+        'geo_leakage': geo_leakage,
         'meta_caveats': meta_caveats,
     }
     payload = clean(payload)

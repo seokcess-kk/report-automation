@@ -1336,157 +1336,340 @@ document.querySelectorAll('.tb').forEach(btn => {
   }
 })();
 
-// ==================== 05 애드온 판단 ====================
+// ==================== 05 애드온 판단 (R12 — 부산 제외 + v2 vs v1 메인 비교) ====================
 (function renderAddon() {
   const A = DATA.addon_effect || {};
-  const ov = A.overall || {};
   const ms = A.meta_summary || {};
-  const dp = ov.delta_pct || {};
   const judge = A.judgement || {};
-  const byType = A.by_creative_type || {};
+  const v1Block = A.v1_vs_period || {};
+  const v2Block = A.v2_vs_period || {};
+  const v2v1Block = A.v2_vs_v1 || {};
+  const designByType = A.design_by_type || {};
 
   const cls = (v, dir) => v === null || v === undefined ? '' : (dir === 'low' ? (v < 0 ? 'delta-up' : 'delta-down') : (v > 0 ? 'delta-up' : 'delta-down'));
   const sigBadge = (p) => (p !== null && p !== undefined && p < 0.05) ? '<span style="color:var(--t1);font-weight:800;margin-left:4px" title="통계적으로 유의 (p<0.05)">★</span>' : '';
+  const verdictColorMap = {
+    v2_expand:'var(--t1)', v1_partial_restore:'var(--red)', mixed:'var(--warn)', verify:'var(--warn)',
+    positive:'var(--t1)', negative:'var(--red)', noop:'var(--warn)',
+    v2_better:'var(--t1)', v1_better:'var(--red)', unmeasurable:'var(--tx3)', low_sample:'var(--tx3)',
+  };
 
-  // ============ 5.1 운영 판단 (소재유형별 처방) ============
-  const expand = judge.expand || [];
-  const hold = judge.hold || [];
-  const noop = judge.noop || [];
-  const low = judge.low_sample || [];
-  const verdictCard = (label, items, color, icon) => `
-    <div style="background:var(--s2);border-left:4px solid ${color};border-radius:6px;padding:12px 14px">
-      <div style="font-size:10px;font-weight:800;color:${color};letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">${icon} ${label}</div>
-      <div style="font-size:13px;color:var(--tx);font-weight:700;line-height:1.55">${items.length > 0 ? items.join(' · ') : '<span class="muted">해당 없음</span>'}</div>
-    </div>`;
+  // ============ 5.1 6월 운영 권고 ============
+  const rec = judge.recommended_action || {};
+  const recColor = verdictColorMap[rec.verdict] || 'var(--tx2)';
+  const v1Verdict = judge.v1_vs_non || {};
+  const dcVerdict = judge.design_change || {};
+  const v1c = verdictColorMap[v1Verdict.verdict] || 'var(--tx2)';
+  const dcc = verdictColorMap[dcVerdict.verdict] || 'var(--tx2)';
+  const dt = judge.by_design_type || {};
+  const v2Better = dt.v2_better || [];
+  const v1Better = dt.v1_better || [];
+  const dtNoop = dt.noop || [];
+  const dtLow = dt.low_sample || [];
+
   document.getElementById('addon-judgement').innerHTML = `
-    <div class="g3" style="gap:10px;margin-bottom:14px">
-      ${verdictCard('6월 확대', expand, 'var(--t1)', '▲')}
-      ${verdictCard('6월 보류', hold, 'var(--red)', '✕')}
-      ${verdictCard('직관 운영 (유의성 부족)', noop, 'var(--warn)', '◦')}
+    <div class="gap-caveat" style="margin-bottom:12px;border-left-color:var(--warn);background:rgba(248,191,79,.06);font-size:12px;line-height:1.6">
+      <strong>분석 범위 안내 — 부산 제외.</strong> ${ms.exclusion_reason || ''}
     </div>
-    ${low.length > 0 ? `<div class="gap-caveat" style="border-left-color:var(--tx3);background:rgba(148,163,184,.05);font-size:11.5px">표본 부족으로 판단 보류: <strong>${low.join(' · ')}</strong> (각 소재유형 클릭 &lt; 50)</div>` : ''}
-    <div style="margin-top:10px;font-size:10.5px;color:var(--tx2);line-height:1.55">판단 기준: CVR Δ &gt; 0 AND z-test p &lt; 0.05 → 확대 / CVR Δ &lt; 0 OR CPA Δ &gt; +10% → 보류 / 그 외 → 직관 운영. 적용 광고 ${ms.addon_ads_in_data}/${ms.total_ads_in_data}개 (적용률 ${ms.addon_ratio}%).</div>
+    <div style="background:linear-gradient(135deg, var(--s2) 0%, var(--s1) 100%);border-left:5px solid ${recColor};border-radius:8px;padding:16px 20px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:${recColor};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">6월 운영 권고</div>
+      <div style="font-size:16px;font-weight:900;color:var(--tx);margin-bottom:8px">${rec.label || '-'}</div>
+      <div style="font-size:12.5px;color:var(--tx);line-height:1.6;margin-bottom:8px">${rec.summary || ''}</div>
+      ${rec.bullets && rec.bullets.length > 0 ? `<ul style="margin:6px 0 0 0;padding-left:18px;font-size:12px;color:var(--tx);line-height:1.7">${rec.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+    </div>
+    <div class="g2" style="gap:10px;margin-bottom:12px">
+      <div style="background:var(--s2);border-left:4px solid ${v1c};border-radius:6px;padding:12px 14px">
+        <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">평가축 1 — v1 vs 3~4월 비애드온</div>
+        <div style="font-size:12.5px;color:${v1c};font-weight:800;margin-bottom:4px">${v1Verdict.label || '-'}</div>
+        <div style="font-size:10.5px;color:var(--tx2);line-height:1.5">${v1Verdict.rationale || '-'}</div>
+      </div>
+      <div style="background:var(--s2);border-left:4px solid ${dcc};border-radius:6px;padding:12px 14px">
+        <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">평가축 2 — v2 vs v1 (디자인 변경)</div>
+        <div style="font-size:12.5px;color:${dcc};font-weight:800;margin-bottom:4px">${dcVerdict.label || '-'}</div>
+        <div style="font-size:10.5px;color:var(--tx2);line-height:1.5">${dcVerdict.rationale || '-'}</div>
+      </div>
+    </div>
+    <div class="g3" style="gap:8px;margin-bottom:10px">
+      ${[
+        { lbl: 'v2 디자인 우세', items: v2Better, color: 'var(--t1)', icon: '▲' },
+        { lbl: 'v1 디자인 우세', items: v1Better, color: 'var(--red)', icon: '▼' },
+        { lbl: '미미·표본부족', items: [...dtNoop, ...dtLow], color: 'var(--tx3)', icon: '◦' },
+      ].map(c => `<div style="background:var(--s2);border-left:3px solid ${c.color};border-radius:5px;padding:8px 12px">
+        <div style="font-size:9px;font-weight:800;color:${c.color};letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">${c.icon} ${c.lbl} (소재유형)</div>
+        <div style="font-size:11.5px;color:var(--tx);font-weight:700;line-height:1.5">${c.items.length > 0 ? c.items.join(' · ') : '<span class="muted">해당 없음</span>'}</div>
+      </div>`).join('')}
+    </div>
+    <div style="margin-top:8px;font-size:10.5px;color:var(--tx2);line-height:1.6">${ms.design_note || ''} 적용 광고 v1 ${ms.addon_ads_v1}개 / v2 ${ms.addon_ads_v2}개 (부산 제외 전체 ${ms.total_ads_in_data}개).</div>
   `;
 
-  // ============ 5.2 판단 근거 — 전체 합산 KPI 카드 ============
-  const summary = [
-    { lbl: '적용 광고 수', val: `${ms.addon_ads_in_data}/${ms.total_ads_in_data}`, sub: `${ms.addon_ratio}%` },
-    { lbl: 'CPM Δ', val: fmtSigned(dp.cpm), good: dp.cpm !== null && dp.cpm < 0 },
-    { lbl: 'CTR Δ', val: fmtSigned(dp.ctr), good: dp.ctr !== null && dp.ctr > 0 },
-    { lbl: 'CVR Δ', val: fmtSigned(dp.cvr) + (dp.cvr_significant ? ' ★' : ''), good: dp.cvr !== null && dp.cvr > 0, sub: dp.cvr_p !== null ? `p=${dp.cvr_p}` : '' },
-  ];
-  document.getElementById('addon-overall').innerHTML = summary.map(s => {
-    const c = s.good === undefined ? '' : (s.good ? 'delta-up' : 'delta-down');
-    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:14px 16px"><div style="font-size:10px;font-weight:700;color:var(--tx2);letter-spacing:.06em;margin-bottom:5px">${s.lbl}</div><div style="font-size:22px;font-weight:900;font-family:'DM Mono',monospace" class="${c}">${s.val}</div>${s.sub ? `<div style="font-size:10px;color:var(--tx2);margin-top:3px">${s.sub}</div>` : ''}</div>`;
-  }).join('');
+  // ============ 5.2 평가축 카드 ============
+  const v1d = v1Block.delta_pct || {};
+  const v2v1d = v2v1Block.delta_pct || {};
 
-  // chart
+  const kpiCell = (lbl, val, dirClass, sub) => `<div style="background:var(--s2);border-radius:4px;padding:6px 8px">
+    <div style="font-size:9px;color:var(--tx2);font-weight:700">${lbl}</div>
+    <div style="font-size:13px;font-weight:800;font-family:'DM Mono',monospace" class="${dirClass}">${val}</div>
+    ${sub ? `<div style="font-size:9px;color:var(--tx2);margin-top:2px">${sub}</div>` : ''}
+  </div>`;
+
+  // 평가축 1 카드: v1 vs 3~4월 비애드온
+  const v1a = v1Block.addon || {}; const v1n = v1Block.non_addon || {};
+  const card1 = `<div style="background:var(--s1);border:1px solid var(--bd);border-left:4px solid #94a3b8;border-radius:7px;padding:14px 16px">
+    <div style="margin-bottom:8px">
+      <div style="font-size:9.5px;font-weight:800;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase">평가축 1 · v1 (구 디자인) vs 3~4월 비애드온</div>
+      <div style="font-size:10.5px;color:var(--tx2);margin-top:2px">애드온 자체의 효과 — 양쪽 표본 충분</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div><div style="font-size:9px;color:var(--tx2);font-weight:700">v1 애드온 (클릭/전환)</div><div style="font-size:11.5px;font-weight:800;font-family:'DM Mono',monospace">${(v1a.clicks||0).toLocaleString()} / ${v1a.conversions||0}</div><div style="font-size:9.5px;color:var(--tx2)">CVR ${v1a.cvr || '-'}% · CPA ${v1a.cpa ? fmt(v1a.cpa) : '-'}원</div></div>
+      <div><div style="font-size:9px;color:var(--tx2);font-weight:700">3~4월 비애드온 (클릭/전환)</div><div style="font-size:11.5px;font-weight:800;font-family:'DM Mono',monospace">${(v1n.clicks||0).toLocaleString()} / ${v1n.conversions||0}</div><div style="font-size:9.5px;color:var(--tx2)">CVR ${v1n.cvr || '-'}% · CPA ${v1n.cpa ? fmt(v1n.cpa) : '-'}원</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      ${kpiCell('CTR Δ', fmtSigned(v1d.ctr), cls(v1d.ctr, 'high'))}
+      ${kpiCell('CVR Δ', fmtSigned(v1d.cvr) + sigBadge(v1d.cvr_p), cls(v1d.cvr, 'high'))}
+      ${kpiCell('CPA Δ', fmtSigned(v1d.cpa), cls(v1d.cpa, 'low'))}
+      ${kpiCell('p-value', v1d.cvr_p !== null && v1d.cvr_p !== undefined ? v1d.cvr_p : '-', 'muted')}
+    </div>
+  </div>`;
+
+  // 평가축 2 카드: v2 vs v1
+  const v2k = v2v1Block.v2 || {}; const v1k = v2v1Block.v1 || {};
+  const card2 = `<div style="background:var(--s1);border:1px solid var(--bd);border-left:4px solid #a78bfa;border-radius:7px;padding:14px 16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div>
+        <div style="font-size:9.5px;font-weight:800;color:#a78bfa;letter-spacing:.08em;text-transform:uppercase">평가축 2 · v2 (신 디자인) vs v1 (구 디자인)</div>
+        <div style="font-size:10.5px;color:var(--tx2);margin-top:2px">디자인 변경의 직접 효과 — 시즌 confound 일부 포함</div>
+      </div>
+      <div style="font-size:9px;font-weight:800;background:rgba(167,139,250,.18);color:#a78bfa;padding:3px 8px;border-radius:3px">디자인 효과</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div><div style="font-size:9px;color:var(--tx2);font-weight:700">v2 신 디자인 (클릭/전환)</div><div style="font-size:11.5px;font-weight:800;font-family:'DM Mono',monospace">${(v2k.clicks||0).toLocaleString()} / ${v2k.conversions||0}</div><div style="font-size:9.5px;color:var(--tx2)">CVR ${v2k.cvr || '-'}% · CPA ${v2k.cpa ? fmt(v2k.cpa) : '-'}원</div></div>
+      <div><div style="font-size:9px;color:var(--tx2);font-weight:700">v1 구 디자인 (클릭/전환)</div><div style="font-size:11.5px;font-weight:800;font-family:'DM Mono',monospace">${(v1k.clicks||0).toLocaleString()} / ${v1k.conversions||0}</div><div style="font-size:9.5px;color:var(--tx2)">CVR ${v1k.cvr || '-'}% · CPA ${v1k.cpa ? fmt(v1k.cpa) : '-'}원</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+      ${kpiCell('CTR Δ', fmtSigned(v2v1d.ctr), cls(v2v1d.ctr, 'high'))}
+      ${kpiCell('CVR Δ', fmtSigned(v2v1d.cvr) + sigBadge(v2v1d.cvr_p), cls(v2v1d.cvr, 'high'))}
+      ${kpiCell('CPA Δ', fmtSigned(v2v1d.cpa), cls(v2v1d.cpa, 'low'))}
+      ${kpiCell('p-value', v2v1d.cvr_p !== null && v2v1d.cvr_p !== undefined ? v2v1d.cvr_p : '-', 'muted')}
+    </div>
+  </div>`;
+
+  document.getElementById('addon-version-cards').innerHTML = card1 + card2;
+
+  // v2 vs 5월 비애드온 비교 불가 안내 박스
+  const v2nonClicks = (v2Block.non_addon || {}).clicks || 0;
+  document.getElementById('addon-v2-unmeasurable-box').innerHTML = `
+    <div class="gap-caveat" style="border-left-color:var(--tx3);background:rgba(148,163,184,.06);font-size:11.5px;line-height:1.6">
+      <strong>v2 vs 5월 비애드온 — 동기간 비교 불가.</strong> 부산 제외 후 5월 비애드온 클릭은 <strong>${v2nonClicks.toLocaleString()}건</strong>에 불과하여 (창원 일부 잔여만 존재) 동기간 비교는 통계적으로 의미가 없습니다. ${v2Block.note || ''}
+    </div>
+  `;
+
+  // 디자인 변경 효과 차트 (v2 vs v1)
   const chartLabels = ['CPM (낮을수록 ↑)','CTR','CVR','CPA (낮을수록 ↑)'];
-  const chartVals = [dp.cpm === null ? 0 : -dp.cpm, dp.ctr === null ? 0 : dp.ctr, dp.cvr === null ? 0 : dp.cvr, dp.cpa === null ? 0 : -dp.cpa];
+  const chartVals = [v2v1d.cpm === null || v2v1d.cpm === undefined ? 0 : -v2v1d.cpm,
+                     v2v1d.ctr === null || v2v1d.ctr === undefined ? 0 : v2v1d.ctr,
+                     v2v1d.cvr === null || v2v1d.cvr === undefined ? 0 : v2v1d.cvr,
+                     v2v1d.cpa === null || v2v1d.cpa === undefined ? 0 : -v2v1d.cpa];
   const chartColors = chartVals.map(v => v >= 0 ? 'rgba(52,211,153,.85)' : 'rgba(248,113,113,.85)');
   new Chart(document.getElementById('addonOverallChart'), {
     type: 'bar',
     data: { labels: chartLabels, datasets: [{ data: chartVals, backgroundColor: chartColors }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:CHART_TEXT},grid:{color:CHART_GRID}}, y:{ticks:{color:CHART_TEXT,callback:v => v+'%'},grid:{color:CHART_GRID}}} },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{callbacks:{label: (ctx) => `${ctx.label}: ${ctx.parsed.y.toFixed(1)}%`}}}, scales:{x:{ticks:{color:CHART_TEXT},grid:{color:CHART_GRID}}, y:{ticks:{color:CHART_TEXT,callback:v => v+'%'},grid:{color:CHART_GRID}}} },
   });
 
-  // 5.2 소재유형별 inline 표
-  const ctOrder = Object.keys(byType).sort((a, b) => {
-    // 확대 > 보류 > 직관 > 표본부족 순
-    const order = { expand:0, hold:1, noop:2, low_sample:3 };
-    return (order[byType[a].verdict.verdict] || 9) - (order[byType[b].verdict.verdict] || 9);
+  // ============ 5.3 소재유형별 디자인 효과 (v1 → v2) ============
+  const ctOrder = Object.keys(designByType).sort((a, b) => {
+    const order = { v2_better:0, v1_better:1, noop:2, low_sample:3, unmeasurable:3 };
+    return (order[designByType[a].verdict.verdict] ?? 9) - (order[designByType[b].verdict.verdict] ?? 9);
   });
-  const verdictColor = { expand:'var(--t1)', hold:'var(--red)', noop:'var(--warn)', low_sample:'var(--tx3)' };
   let ctRows = '';
   ctOrder.forEach(ct => {
-    const b = byType[ct];
+    const b = designByType[ct];
     const v = b.verdict || {};
     const d = b.delta_pct || {};
-    const vc = verdictColor[v.verdict] || 'var(--tx2)';
+    const v1 = b.v1 || {}; const v2 = b.v2 || {};
+    const vc = verdictColorMap[v.verdict] || 'var(--tx2)';
     ctRows += `<tr>
       <td class="lbl">${ct}</td>
       <td><strong style="color:${vc}">${v.label || '-'}</strong></td>
-      <td>${b.addon.clicks.toLocaleString()} / ${b.non_addon.clicks.toLocaleString()}</td>
+      <td>${(v1.clicks||0).toLocaleString()} / ${(v2.clicks||0).toLocaleString()}</td>
+      <td>${v1.cvr !== null && v1.cvr !== undefined ? v1.cvr + '%' : '-'} → ${v2.cvr !== null && v2.cvr !== undefined ? v2.cvr + '%' : '-'}</td>
+      <td>${v1.cpa ? fmt(v1.cpa) + '원' : '-'} → ${v2.cpa ? fmt(v2.cpa) + '원' : '-'}</td>
       <td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td>
       <td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td>
       <td class="muted">${d.cvr_p !== null && d.cvr_p !== undefined ? 'p=' + d.cvr_p : '-'}</td>
     </tr>`;
   });
   document.getElementById('addon-creative-type-tbl').innerHTML =
-    `<thead><tr><th>소재유형</th><th>판단</th><th>클릭 (애드/비)</th><th>CVR Δ</th><th>CPA Δ</th><th>p-value</th></tr></thead><tbody>${ctRows}</tbody>`;
+    `<thead><tr><th>소재유형</th><th>디자인 효과 판단</th><th>v1/v2 클릭</th><th>v1 → v2 CVR</th><th>v1 → v2 CPA</th><th>CVR Δ</th><th>CPA Δ</th><th>p-value</th></tr></thead><tbody>${ctRows}</tbody>`;
 
-  // ============ 5.3 실행 가이드 — 데이터 기반 처방 (W1~W4) ============
-  const expandStr = expand.length > 0 ? expand.join(' · ') : '없음';
-  const holdStr = hold.length > 0 ? hold.join(' · ') : '없음';
-  const noopStr = noop.length > 0 ? noop.join(' · ') : '없음';
+  // ============ 5.4 시청 깔때기 가설 검증 (R12 신규) ============
+  const wf = A.watch_funnel || {};
+  const hyp = wf.hypothesis || null;
+  if (hyp) {
+    const infl = hyp.infl || {};
+    const self = hyp.self || {};
+    const inflDepth = infl.v6s_v2 !== null && infl.v6s_v1 !== null ? (infl.v6s_v2 - infl.v6s_v1) : null;
+    const selfDepth = self.v6s_v2 !== null && self.v6s_v1 !== null ? (self.v6s_v2 - self.v6s_v1) : null;
+    const inflCvr = infl.cvr_v2 !== null && infl.cvr_v1 !== null ? (infl.cvr_v2 - infl.cvr_v1) : null;
+    const selfCvr = self.cvr_v2 !== null && self.cvr_v1 !== null ? (self.cvr_v2 - self.cvr_v1) : null;
+    const dirArrow = (v, unit) => v === null ? '-' : (v >= 0 ? `<span class="delta-up">▲ ${Math.abs(v).toFixed(2)}${unit||'pp'}</span>` : `<span class="delta-down">▼ ${Math.abs(v).toFixed(2)}${unit||'pp'}</span>`);
+    const depthTop3 = (hyp.depth_ranking_by_v6s || []).slice(0, 3);
+    const shareTop3 = (hyp.share_ranking || []).slice(0, 3);
+    const archetype = hyp.archetype || {};
+
+    document.getElementById('addon-hypothesis-box').innerHTML = `
+      <div style="background:var(--s1);border:1px solid var(--bd);border-left:4px solid #a78bfa;border-radius:8px;padding:14px 18px">
+        <div style="font-size:10px;font-weight:800;color:#a78bfa;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">가설 검증 · 시청 깊이 + 인게이지먼트 동시 검증</div>
+        <div style="font-size:12px;color:var(--tx);line-height:1.65;margin-bottom:12px">${hyp.hypothesis}</div>
+        <div class="g2" style="gap:10px;margin-bottom:12px">
+          <div style="background:var(--s2);border-radius:6px;padding:10px 12px">
+            <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">시청 깊이 1위 (6초 시청률)</div>
+            <div style="font-size:11.5px;color:var(--tx);line-height:1.5">${depthTop3.map((t, i) => `${i+1}. <strong>${t[0]}</strong> ${t[1]}%`).join(' · ')}</div>
+          </div>
+          <div style="background:var(--s2);border-radius:6px;padding:10px 12px">
+            <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">공유율 1위 (바이럴 지수)</div>
+            <div style="font-size:11.5px;color:var(--tx);line-height:1.5">${shareTop3.map((t, i) => `${i+1}. <strong>${t[0]}</strong> ${(t[1] || 0).toFixed(4)}%`).join(' · ')}</div>
+          </div>
+        </div>
+        <div style="background:var(--s2);border-radius:6px;padding:12px 14px;margin-bottom:12px">
+          <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px">두 콘텐츠 깔때기 비교 (디자인 변경 v1 → v2)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="border-left:3px solid var(--blue, #60a5fa);padding-left:10px">
+              <div style="font-size:11px;font-weight:800;color:var(--tx);margin-bottom:4px">진료셀프캠 — ${archetype['진료셀프캠'] || ''}</div>
+              <div style="font-size:10.5px;color:var(--tx2);line-height:1.7;font-family:'DM Mono',monospace">
+                공유율: ${(self.share_v1 || 0).toFixed(4)}% → ${(self.share_v2 || 0).toFixed(4)}%<br>
+                6s 시청률: ${self.v6s_v1}% → ${self.v6s_v2}% ${dirArrow(selfDepth)}<br>
+                15s 시청률: ${self.eng15s_v1}% → ${self.eng15s_v2}%<br>
+                CVR(클릭→전환): ${self.cvr_v1}% → ${self.cvr_v2}% ${dirArrow(selfCvr)}
+              </div>
+            </div>
+            <div style="border-left:3px solid var(--t1);padding-left:10px">
+              <div style="font-size:11px;font-weight:800;color:var(--tx);margin-bottom:4px">인플방문후기 — ${archetype['인플방문후기'] || ''}</div>
+              <div style="font-size:10.5px;color:var(--tx2);line-height:1.7;font-family:'DM Mono',monospace">
+                공유율: ${(infl.share_v1 || 0).toFixed(4)}% → ${(infl.share_v2 || 0).toFixed(4)}%<br>
+                6s 시청률: ${infl.v6s_v1}% → ${infl.v6s_v2}% ${dirArrow(inflDepth)}<br>
+                15s 시청률: ${infl.eng15s_v1}% → ${infl.eng15s_v2}%<br>
+                CVR(클릭→전환): ${infl.cvr_v1}% → ${infl.cvr_v2}% ${dirArrow(inflCvr)}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(167,139,250,.08);border-left:3px solid #a78bfa;border-radius:4px;padding:10px 12px">
+          <div style="font-size:9.5px;font-weight:800;color:#a78bfa;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">결론 — 바이럴형 vs 전환형</div>
+          <div style="font-size:12px;color:var(--tx);line-height:1.6">${hyp.finding}</div>
+        </div>
+        <div style="font-size:9.5px;color:var(--tx2);margin-top:8px;line-height:1.5">${wf.note || ''}</div>
+      </div>
+    `;
+  } else {
+    document.getElementById('addon-hypothesis-box').innerHTML = '';
+  }
+
+  // 시청 깔때기 테이블 (인게이지먼트 컬럼 포함)
+  const wfByType = wf.by_creative_type || {};
+  let wfRows = '';
+  const wfOrder = Object.keys(wfByType).sort((a, b) => ((wfByType[b].v2 || wfByType[b].v1 || {}).v6s_rate || 0) - ((wfByType[a].v2 || wfByType[a].v1 || {}).v6s_rate || 0));
+  wfOrder.forEach(ct => {
+    const b = wfByType[ct];
+    [['v1', b.v1, '구 v1'], ['v2', b.v2, '신 v2']].forEach(([key, k, lbl]) => {
+      if (!k || !k.impressions) return;
+      const badge = key === 'v2' ? '<span style="font-size:8.5px;font-weight:800;background:rgba(52,211,153,.15);color:var(--t1);padding:2px 6px;border-radius:3px;margin-left:4px">신 v2</span>' : '<span style="font-size:8.5px;font-weight:800;background:rgba(148,163,184,.15);color:var(--tx2);padding:2px 6px;border-radius:3px;margin-left:4px">구 v1</span>';
+      wfRows += `<tr>
+        <td class="lbl">${ct}${badge}</td>
+        <td>${k.impressions.toLocaleString()}</td>
+        <td>${k.v6s_rate !== null && k.v6s_rate !== undefined ? k.v6s_rate + '%' : '-'}</td>
+        <td>${k.eng15s_rate !== null && k.eng15s_rate !== undefined ? k.eng15s_rate + '%' : '-'}</td>
+        <td>${k.p50_rate !== null && k.p50_rate !== undefined ? k.p50_rate + '%' : '-'}</td>
+        <td>${k.p100_rate !== null && k.p100_rate !== undefined ? k.p100_rate + '%' : '-'}</td>
+        <td>${k.avg_video_sec !== null && k.avg_video_sec !== undefined ? k.avg_video_sec + 's' : '-'}</td>
+        <td>${k.like_rate !== null && k.like_rate !== undefined ? k.like_rate + '%' : '-'}</td>
+        <td>${k.share_rate !== null && k.share_rate !== undefined ? k.share_rate.toFixed(4) + '%' : '-'}</td>
+        <td>${k.cvr !== null && k.cvr !== undefined ? k.cvr + '%' : '-'}</td>
+      </tr>`;
+    });
+  });
+  document.getElementById('addon-watch-funnel-tbl').innerHTML =
+    `<thead><tr><th>소재유형 (디자인)</th><th>노출수</th><th>6s 시청</th><th>15s 시청</th><th>50% 도달</th><th>100% 완료</th><th>평균 시청</th><th>좋아요율</th><th>공유율</th><th>CVR</th></tr></thead><tbody>${wfRows}</tbody>`;
+
+  // ============ 5.5 실행 가이드 — 부산 제외 + 디자인 변경 반영 ============
+  const v1RatioNote = v1Verdict.verdict === 'positive'
+    ? '구 디자인 시기의 애드온 효과는 명확하게 검증됨 (CVR 우위 + 통계적 유의)'
+    : '구 디자인 시기 효과도 명확하지 않으므로 디자인 외 요인 점검 필요';
+  const designV = dcVerdict.verdict;
   const guideHtml = `
     <div class="g4 aligned-2" style="gap:10px">
       <div class="action-card">
-        <div class="card-title">W1 (6/1~6/7) — 즉시 적용</div>
+        <div class="card-title">W1 (6/1~6/7) — 소재유형 처방 적용</div>
         <div class="card-sub" style="margin-bottom:0">
-          ${expand.length > 0
-            ? `<strong style="color:var(--t1)">${expandStr}</strong> 소재유형에 애드온을 광고 단위 신규 ON 또는 확대. 기존 비애드온 광고는 OFF 전환하여 동일 매칭키 안에서 애드온으로 교체.`
-            : '확대 대상 없음 — 현 운영 유지하며 다음 평가 주기까지 표본 누적'}
+          ${v2Better.length > 0 ? `<strong style="color:var(--t1)">${v2Better.join(' · ')}</strong>는 v2 신 디자인 계속·확대 운영.<br>` : ''}
+          ${v1Better.length > 0 ? `<strong style="color:var(--red)">${v1Better.join(' · ')}</strong>는 v2 → v1 일부 복원 또는 디자인 콘셉트 재검토.<br>` : ''}
+          ${(dtNoop.length > 0 || dtLow.length > 0) ? `<span class="muted">${[...dtNoop, ...dtLow].join('·')}은 광고 단위 누적 후 다음 라운드 재판단.</span>` : ''}
         </div>
       </div>
       <div class="action-card">
-        <div class="card-title">W1 (6/1~6/7) — 즉시 보류</div>
+        <div class="card-title">W1 (6/1~6/7) — 부산 단독 학습 룰</div>
         <div class="card-sub" style="margin-bottom:0">
-          ${hold.length > 0
-            ? `<strong style="color:var(--red)">${holdStr}</strong> 소재유형에 신규 애드온 적용 중단. 기존 애드온은 OFF 또는 비애드온 버전으로 교체 검토 (CPA 악화 신호).`
-            : '보류 대상 없음'}
+          부산은 5월 일부 미적용 + R10 학습 룰 대상이므로 본 5장 분석에서 분리. 부산 학습 안정화는 3.4 부산 학습 박스 기준으로 별도 모니터링하며, 6월 안정화 이후 표준 디자인 통합 검토.
         </div>
       </div>
       <div class="action-card">
-        <div class="card-title">W2~W3 (6/8~6/21) — 검증</div>
+        <div class="card-title">W2~W3 (6/8~6/21) — 디자인 효과 재측정</div>
         <div class="card-sub" style="margin-bottom:0">
-          확대된 ${expandStr} 소재의 CVR·CPA를 위클리 리포트(6/8, 6/15)로 점검. 6월 평균 CVR이 5월 비애드온 수준(9.76%) 대비 ±10% 이내면 효과 지속 판정.
-          ${noop.length > 0 ? `직관 운영 그룹 <strong>${noopStr}</strong>은 운영자가 광고 단위로 별도 판단.` : ''}
+          ${designV === 'v1_better'
+            ? '디자인 변경이 전체 CVR에 부정적 영향을 준 신호. v1 복원 그룹과 v2 유지 그룹의 6월 추가 데이터로 재검정. v1 복원 그룹이 v2 유지 그룹보다 CVR 우세하면 7월 전면 v1 복원.'
+            : (designV === 'v2_better'
+              ? 'v2 신 디자인 우세 — 7월 표준화를 위해 6월 누적 표본 확보. p-value가 0.05 이하로 안정되면 표준화 결정.'
+              : '디자인 효과 미미 — 소재유형 처방을 우선시하며 디자인 변경 자체에는 결정 보류.')}
         </div>
       </div>
       <div class="action-card">
-        <div class="card-title">W4 (6/22~6/30) — 7월 방향 확정</div>
+        <div class="card-title">W4 (6/22~6/30) — 7월 디자인 결정</div>
         <div class="card-sub" style="margin-bottom:0">
-          확대 그룹 CVR 유지·개선 시 7월 전 지점 표준화. 미달 시 매칭키별 페어 재검증(부록 A.2 참조).
-          ${low.length > 0 ? `<br><span class="muted">표본 부족 그룹(${low.join('·')})은 광고 단위 누적 확보 후 다음 라운드 재판단.</span>` : ''}
+          ${v1RatioNote}. 6월 데이터를 누적하여 ① v2 표준화 ② v1 부분 복원 ③ v2 디자인 부분 변경(클릭 vs 전환 트레이드오프 조정) 중 택일.
+          ${dtLow.length > 0 ? `<br><span class="muted">표본 부족 그룹(${dtLow.join('·')})은 다음 라운드 재판단.</span>` : ''}
         </div>
       </div>
     </div>
   `;
   document.getElementById('addon-execution-guide').innerHTML = guideHtml;
 
-  // ============ 5.A.1 부록 — 지점별 차이 ============
-  const branches = DATA.meta.branches;
-  const by = A.by_branch || {};
-  let trs = '';
+  // ============ 5.A.1 부록 — 지점별 v1 / v2 (부산 제외) ============
+  const branches = (DATA.meta.branches || []).filter(b => !(ms.excluded_branches || []).includes(b));
+
+  // v1 vs 3~4월 비애드온 — 지점별
+  let trsV1 = '';
   branches.forEach(b => {
-    const r = by[b];
+    const r = (A.by_branch_v1 || {})[b];
     if (!r) return;
     const d = r.delta_pct;
     const warn = r.sample_warning ? ' <span style="color:var(--warn)" title="표본 부족 (클릭 <100)">⚠</span>' : '';
-    trs += `<tr><td class="lbl">${b}${warn}</td><td>${r.addon.ad_count}/${r.non_addon.ad_count}</td><td>${r.addon.clicks.toLocaleString()}/${r.non_addon.clicks.toLocaleString()}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
+    trsV1 += `<tr><td class="lbl">${b}${warn}</td><td>${r.addon.ad_count}/${r.non_addon.ad_count}</td><td>${r.addon.clicks.toLocaleString()}/${r.non_addon.clicks.toLocaleString()}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
   });
-  document.getElementById('addon-branch-tbl').innerHTML = `<thead><tr><th>지점</th><th>광고 (애드/비)</th><th>클릭 (애드/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${trs}</tbody>`;
+  document.getElementById('addon-branch-tbl-v1').innerHTML = `<thead><tr><th>지점</th><th>광고 (v1/비)</th><th>클릭 (v1/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${trsV1}</tbody>`;
 
-  // ============ 5.A.2 부록 — 페어 ============
-  const pairs = A.creative_pairs || [];
-  let prows = '';
-  pairs.forEach(p => {
-    const d = p.delta_pct;
-    prows += `<tr><td class="lbl">${p.creative_name}</td><td>${p.addon.ad_count}/${p.non_addon.ad_count}</td><td>${p.addon.clicks.toLocaleString()}/${p.non_addon.clicks.toLocaleString()}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
+  // v2 vs v1 — 지점별 디자인 직접 비교
+  let trsV2 = '';
+  branches.forEach(b => {
+    const r = (A.by_branch_v2 || {})[b];
+    if (!r) return;
+    const d = r.delta_pct;
+    const warn = r.sample_warning ? ' <span style="color:var(--warn)" title="표본 부족 (클릭 <100)">⚠</span>' : '';
+    trsV2 += `<tr><td class="lbl">${b}${warn}</td><td>${(r.v1.clicks||0).toLocaleString()} → ${(r.v2.clicks||0).toLocaleString()}</td><td>${r.v1.cvr !== null && r.v1.cvr !== undefined ? r.v1.cvr + '%' : '-'} → ${r.v2.cvr !== null && r.v2.cvr !== undefined ? r.v2.cvr + '%' : '-'}</td><td>${r.v1.cpa ? fmt(r.v1.cpa) : '-'} → ${r.v2.cpa ? fmt(r.v2.cpa) : '-'}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
   });
-  if (prows === '') prows = `<tr><td colspan="7" style="text-align:center;color:var(--tx2)">애드온/비애드온이 같이 운영된 매칭키 없음</td></tr>`;
-  document.getElementById('addon-pair-tbl').innerHTML = `<thead><tr><th>매칭키</th><th>광고 (애드/비)</th><th>클릭 (애드/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${prows}</tbody>`;
+  document.getElementById('addon-branch-tbl-v2').innerHTML = `<thead><tr><th>지점</th><th>클릭 (v1→v2)</th><th>CVR (v1→v2)</th><th>CPA (v1→v2)</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${trsV2}</tbody>`;
 
-  // ============ 5.A.3 부록 — 월별 추세 ============
+  // ============ 5.A.2 부록 — 월별 추세 ============
   const monthly = A.monthly_trend || [];
   let mtrs = '';
   monthly.forEach(m => {
     const d = m.delta_pct;
     const warn = m.sample_warning ? ' <span style="color:var(--warn)" title="표본 부족 (클릭 <100)">⚠</span>' : '';
-    mtrs += `<tr><td class="lbl">${m.month}${warn}</td><td>${m.addon.clicks.toLocaleString()} / ${m.non_addon.clicks.toLocaleString()}</td><td>${m.addon.cvr !== null ? m.addon.cvr + '%' : '-'}</td><td>${m.non_addon.cvr !== null ? m.non_addon.cvr + '%' : '-'}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="muted">${d.cvr_p !== null && d.cvr_p !== undefined ? 'p=' + d.cvr_p : '-'}</td></tr>`;
+    const vBadge = m.design_version === 'v2'
+      ? '<span style="font-size:8.5px;font-weight:800;background:rgba(52,211,153,.15);color:var(--t1);padding:2px 6px;border-radius:3px;margin-left:4px">신 v2</span>'
+      : '<span style="font-size:8.5px;font-weight:800;background:rgba(148,163,184,.15);color:var(--tx2);padding:2px 6px;border-radius:3px;margin-left:4px">구 v1</span>';
+    mtrs += `<tr><td class="lbl">${m.month}${vBadge}${warn}</td><td>${m.addon.clicks.toLocaleString()} / ${m.non_addon.clicks.toLocaleString()}</td><td>${m.addon.cvr !== null && m.addon.cvr !== undefined ? m.addon.cvr + '%' : '-'}</td><td>${m.non_addon.cvr !== null && m.non_addon.cvr !== undefined ? m.non_addon.cvr + '%' : '-'}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="muted">${d.cvr_p !== null && d.cvr_p !== undefined ? 'p=' + d.cvr_p : '-'}</td></tr>`;
   });
-  document.getElementById('addon-monthly-tbl').innerHTML = `<thead><tr><th>월</th><th>클릭 (애드/비)</th><th>애드 CVR</th><th>비애드 CVR</th><th>CVR Δ%</th><th>p-value</th></tr></thead><tbody>${mtrs}</tbody>`;
+  document.getElementById('addon-monthly-tbl').innerHTML = `<thead><tr><th>월 (디자인)</th><th>클릭 (애드/비)</th><th>애드 CVR</th><th>비애드 CVR</th><th>CVR Δ%</th><th>p-value</th></tr></thead><tbody>${mtrs}</tbody>`;
 })();
 
 // ==================== R9 Q2 — 1.2 KPI Gap Caveat ====================
@@ -1548,17 +1731,28 @@ document.querySelectorAll('.tb').forEach(btn => {
   const branches = ca.branches || {};
   const tr = ca.tier_rationale || {};
   if (Object.keys(branches).length === 0) { el.innerHTML = '<div class="muted">소재 분류 데이터 없음</div>'; return; }
-  const heads = ['소재명', 'TIER', '근거', '권장 액션', '비용', '전환'];
+  // 시청 깊이 + 인게이지먼트 데이터 유무 확인
+  const hasDepth = Object.values(branches).some(items => (items || []).some(it => it.v6s_rate !== null && it.v6s_rate !== undefined));
+  const hasEng = Object.values(branches).some(items => (items || []).some(it => it.share_rate !== null && it.share_rate !== undefined));
+  let heads = ['소재명', 'TIER', '근거', '권장 액션', '비용', '전환'];
+  if (hasDepth) heads = heads.concat(['6s 시청률', '100% 완료', '평균 시청']);
+  if (hasEng) heads = heads.concat(['좋아요율', '공유율']);
   let html = '';
-  // 상단 TIER 설명
-  html += `<div class="evidence-card" style="margin-bottom:14px;padding:12px 14px"><div style="font-size:10px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">TIER 분류 기준</div>${Object.entries(tr).map(([k,v]) => `<div style="font-size:11px;color:var(--tx);margin-bottom:3px"><strong>${k}</strong> — ${v}</div>`).join('')}</div>`;
+  // 상단 TIER 설명 + 시청률·인게이지먼트 안내
+  const extraNote = (hasDepth || hasEng) ? `<div style="font-size:10.5px;color:var(--tx2);margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd);line-height:1.5">
+    ${hasDepth ? '<strong>시청률 지표:</strong> 6s 시청률 = 6초 이상 시청 / 노출수 (애드온 노출 시점 도달률 추정). 100% 완료 = 영상 끝까지 본 비율. 평균 시청 = 평균 재생 시간(초).<br>' : ''}
+    ${hasEng ? '<strong>인게이지먼트:</strong> 좋아요율·공유율 = 노출수 대비 좋아요·공유 비율. 공유율이 높은 소재는 바이럴형, 클릭→전환 CVR이 높은 소재는 전환형으로 구분 가능합니다.' : ''}
+  </div>` : '';
+  html += `<div class="evidence-card" style="margin-bottom:14px;padding:12px 14px"><div style="font-size:10px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">TIER 분류 기준</div>${Object.entries(tr).map(([k,v]) => `<div style="font-size:11px;color:var(--tx);margin-bottom:3px"><strong>${k}</strong> — ${v}</div>`).join('')}${extraNote}</div>`;
   // 지점별 표
   (DATA.meta.branches || []).forEach(b => {
     const items = branches[b];
     if (!items || items.length === 0) return;
     let trs = '';
     items.forEach(it => {
-      trs += `<tr><td class="lbl">${it.name}</td><td><strong>${it.tier}</strong></td><td class="muted">${it.evidence}</td><td>${it.recommended_action}</td><td>${it.cost !== null ? fmt(it.cost) + '원' : '-'}</td><td>${it.conversions !== null ? it.conversions + '건' : '-'}</td></tr>`;
+      const depthCells = hasDepth ? `<td>${it.v6s_rate !== null && it.v6s_rate !== undefined ? it.v6s_rate.toFixed(1) + '%' : '-'}</td><td>${it.p100_rate !== null && it.p100_rate !== undefined ? it.p100_rate.toFixed(1) + '%' : '-'}</td><td>${it.avg_video_sec !== null && it.avg_video_sec !== undefined ? it.avg_video_sec.toFixed(1) + 's' : '-'}</td>` : '';
+      const engCells = hasEng ? `<td>${it.like_rate !== null && it.like_rate !== undefined ? it.like_rate.toFixed(2) + '%' : '-'}</td><td>${it.share_rate !== null && it.share_rate !== undefined ? it.share_rate.toFixed(4) + '%' : '-'}</td>` : '';
+      trs += `<tr><td class="lbl">${it.name}</td><td><strong>${it.tier}</strong></td><td class="muted">${it.evidence}</td><td>${it.recommended_action}</td><td>${it.cost !== null ? fmt(it.cost) + '원' : '-'}</td><td>${it.conversions !== null ? it.conversions + '건' : '-'}</td>${depthCells}${engCells}</tr>`;
     });
     html += `<div class="appx-tbl-section"><div class="appx-tbl-hdr">${b} — ${items.length}개 소재</div><div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody></table></div></div></div>`;
   });
@@ -1572,5 +1766,225 @@ document.querySelectorAll('.tb').forEach(btn => {
   const seas = (DATA.meta_caveats && DATA.meta_caveats.seasonality) || null;
   if (!seas) { el.style.display = 'none'; return; }
   el.innerHTML = `<div class="gap-caveat" style="border-left-color:var(--blue);background:rgba(96,165,250,.05)"><strong>시즌성 · 외부 변수.</strong> ${seas.caveat}</div>`;
+})();
+
+// ==================== 06 타겟팅 정합성 진단 (Phase 1A) ====================
+(function renderTargetingHealth() {
+  const th = DATA.targeting_health || {};
+  if (!th.available) {
+    const j = document.getElementById('targeting-judgement');
+    if (j) j.innerHTML = `<div class="muted">${th.note || '오디언스 데이터 없음 — 6장 데이터 수집 필요'}</div>`;
+    return;
+  }
+  const gv = th.gender_verdict || {};
+  const gs = th.gender_summary || {};
+  const an = th.none_anomaly;
+  const ageSig = th.age_signal;
+  const rec = th.recommendation || {};
+  const total = th.total || {};
+
+  const verdictColor = {
+    aligned: 'var(--t1)', minor_leak: 'var(--warn)', leak: 'var(--red)',
+    attribution_unidentified: 'var(--warn)',
+    inefficient: 'var(--red)', undersupplied: 'var(--t1)', noop: 'var(--tx3)',
+  };
+  const gc = verdictColor[gv.verdict] || 'var(--tx2)';
+  const ageColor = ageSig ? (verdictColor[ageSig.verdict] || 'var(--tx2)') : 'var(--tx2)';
+
+  // 6.1 진단 결과 헤더
+  document.getElementById('targeting-judgement').innerHTML = `
+    <div style="background:linear-gradient(135deg, var(--s2) 0%, var(--s1) 100%);border-left:5px solid ${gc};border-radius:8px;padding:16px 20px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:${gc};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">진단 헤드라인</div>
+      <div style="font-size:16px;font-weight:900;color:var(--tx);margin-bottom:8px">${rec.headline || '-'}</div>
+      <div style="font-size:12.5px;color:var(--tx);line-height:1.6;margin-bottom:8px">${rec.tone || ''}</div>
+      ${(rec.bullets && rec.bullets.length > 0) ? `<ul style="margin:6px 0 0 0;padding-left:18px;font-size:11.5px;color:var(--tx);line-height:1.7">${rec.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+    </div>
+    <div style="font-size:10.5px;color:var(--tx2);line-height:1.5">데이터 기간 ${th.data_period} · 총 노출 ${total.impressions ? total.impressions.toLocaleString() : '-'} · 총 전환 ${total.conversions || 0}건</div>
+  `;
+
+  // 6.2 성별 노출 정합성 카드
+  const total_impr = total.impressions || 0;
+  const cards = [
+    { lbl: '여성 노출 비중', val: (gs.female_impr_pct !== null && gs.female_impr_pct !== undefined) ? gs.female_impr_pct + '%' : '-', sub: '의도(여성 고정) 대비', color: gs.female_impr_pct > 95 ? 'var(--t1)' : 'var(--warn)' },
+    { lbl: '남성 노출 비중', val: (gs.male_impr_pct !== null && gs.male_impr_pct !== undefined) ? gs.male_impr_pct + '%' : '-', sub: gs.male_impr_pct === 0 ? '누수 없음 ✓' : '누수 감지 ⚠', color: gs.male_impr_pct === 0 ? 'var(--t1)' : 'var(--red)' },
+    { lbl: '미상 노출 비중', val: (gs.unknown_impr_pct !== null && gs.unknown_impr_pct !== undefined) ? gs.unknown_impr_pct + '%' : '-', sub: '미식별 분류', color: 'var(--tx2)' },
+    { lbl: '미상 전환 비중', val: (gs.unknown_conv_pct !== null && gs.unknown_conv_pct !== undefined) ? gs.unknown_conv_pct + '%' : '-', sub: an ? '이상 신호 ⚠' : '정상 범위', color: an ? 'var(--warn)' : 'var(--tx2)' },
+  ];
+  document.getElementById('targeting-gender-cards').innerHTML = `<div class="g4" style="gap:10px">${cards.map(c => `
+    <div style="background:var(--s1);border:1px solid var(--bd);border-left:4px solid ${c.color};border-radius:6px;padding:12px 14px">
+      <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">${c.lbl}</div>
+      <div style="font-size:20px;font-weight:900;font-family:'DM Mono',monospace;color:${c.color}">${c.val}</div>
+      <div style="font-size:10px;color:var(--tx2);margin-top:3px">${c.sub}</div>
+    </div>`).join('')}</div>`;
+
+  // NONE 분류 이상 신호 박스
+  if (an) {
+    document.getElementById('targeting-none-anomaly').innerHTML = `
+      <div class="gap-caveat" style="border-left-color:var(--warn);background:rgba(248,191,79,.06);font-size:11.5px;line-height:1.6">
+        <strong>${an.label}.</strong> ${an.rationale} · 미상 노출 ${an.unknown_impr_count.toLocaleString()} · 미상 전환 ${an.unknown_conv_count}건
+      </div>
+    `;
+  } else {
+    document.getElementById('targeting-none-anomaly').innerHTML = '';
+  }
+
+  // 6.3 여성 연령별 효율 표
+  const byAge = th.by_age_female || {};
+  const ageOrder = ['18-24', '25-34', '35-44', '45-54', '≥55', 'Unknown'];
+  let ageRows = '';
+  ageOrder.forEach(ag => {
+    const k = byAge[ag];
+    if (!k) return;
+    const isTargetAge = ageSig && ageSig.age_group === ag;
+    const highlight = isTargetAge ? `background:${ageSig.verdict === 'inefficient' ? 'rgba(248,113,113,.05)' : 'rgba(52,211,153,.05)'}` : '';
+    ageRows += `<tr style="${highlight}">
+      <td class="lbl">${ag}${isTargetAge ? ` <span style="font-size:8.5px;font-weight:800;background:${ageSig.verdict === 'inefficient' ? 'rgba(248,113,113,.18)' : 'rgba(52,211,153,.18)'};color:${ageColor};padding:2px 6px;border-radius:3px;margin-left:4px">${ageSig.verdict === 'inefficient' ? '비효율' : '확대 기회'}</span>` : ''}</td>
+      <td>${k.impressions.toLocaleString()}</td>
+      <td>${k.impr_share}%</td>
+      <td>${k.clicks.toLocaleString()}</td>
+      <td>${k.conversions}</td>
+      <td>${k.ctr !== null ? k.ctr + '%' : '-'}</td>
+      <td>${k.cvr !== null ? k.cvr + '%' : '-'}</td>
+      <td>${k.cpa ? fmt(k.cpa) + '원' : '-'}</td>
+    </tr>`;
+  });
+  document.getElementById('targeting-age-tbl').innerHTML = `<thead><tr><th>연령</th><th>노출</th><th>노출 비중</th><th>클릭</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead><tbody>${ageRows}</tbody>`;
+
+  // 연령 신호 박스
+  if (ageSig && ageSig.verdict !== 'noop') {
+    document.getElementById('targeting-age-signal').innerHTML = `
+      <div class="gap-caveat" style="border-left-color:${ageColor};background:${ageSig.verdict === 'inefficient' ? 'rgba(248,113,113,.06)' : 'rgba(52,211,153,.06)'};font-size:11.5px;line-height:1.6">
+        <strong>${ageSig.label}.</strong> ${ageSig.rationale}
+      </div>
+    `;
+  } else {
+    document.getElementById('targeting-age-signal').innerHTML = '';
+  }
+
+  // 6.4 지점별 노출 품질
+  const branches = DATA.meta.branches || [];
+  const by_b = th.by_branch || {};
+  let bRows = '';
+  const allBranches = [...branches, ...(by_b['부산'] ? ['부산'] : [])].filter((v, i, a) => a.indexOf(v) === i);
+  allBranches.forEach(b => {
+    const r = by_b[b];
+    if (!r) return;
+    const fpct = r.female_impr_pct;
+    const ucpct = r.unknown_conv_pct;
+    const fpctColor = fpct !== null && fpct < 95 ? 'var(--warn)' : 'var(--tx)';
+    const ucColor = ucpct !== null && ucpct > 10 ? 'var(--warn)' : 'var(--tx)';
+    bRows += `<tr><td class="lbl">${b}</td><td>${r.total_impr.toLocaleString()}</td><td style="color:${fpctColor}">${fpct !== null ? fpct + '%' : '-'}</td><td>${r.male_impr.toLocaleString()}</td><td>${r.unknown_impr.toLocaleString()}</td><td>${r.total_conv}</td><td style="color:${ucColor}">${ucpct !== null ? ucpct + '%' : '-'}</td></tr>`;
+  });
+  document.getElementById('targeting-branch-tbl').innerHTML = `<thead><tr><th>지점</th><th>총 노출</th><th>여성 비중</th><th>남성 노출</th><th>미상 노출</th><th>총 전환</th><th>미상 전환 비중</th></tr></thead><tbody>${bRows}</tbody>`;
+
+  // 6.A 분석 기준 안내
+  document.getElementById('targeting-note').innerHTML = `
+    <div class="evidence-card" style="padding:12px 14px;font-size:11px;color:var(--tx);line-height:1.7">
+      <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">분석 방법 및 한계</div>
+      <ul style="margin:0;padding-left:18px">
+        <li>TikTok Audience report API (report_type=AUDIENCE)로 dimensions=[ad_id, stat_time_day, age, gender] 수집</li>
+        <li>성별 정합성: 운영 의도(여성 고정) 대비 실제 노출 분포 비교. 남성 노출 0건 = 누수 없음</li>
+        <li>미상(NONE) 분류: TikTok이 사용자 성별을 식별하지 못한 케이스. 노출 대비 전환 비중이 비대칭이면 어트리뷰션 비식별 정황 (cross-device 추정 포함 가능)</li>
+        <li>연령 효율: 여성 한정 연령별 CVR 비교. 다른 연령대 평균 대비 50% 미만이면 비효율 구간, 100% 이상이면 확대 기회로 분류</li>
+        <li>${th.note || ''}</li>
+      </ul>
+    </div>
+  `;
+})();
+
+// ==================== 07 지역 도달 정합성 (Phase 1B) ====================
+(function renderGeoLeakage() {
+  const geo = DATA.geo_leakage || {};
+  if (!geo.available) {
+    const j = document.getElementById('geo-judgement');
+    if (j) j.innerHTML = `<div class="muted">${geo.note || '지역 데이터 없음 — province 수집 필요'}</div>`;
+    return;
+  }
+  const rec = geo.recommendation || {};
+  const total = geo.total || {};
+  const verdictColor = {
+    clean: 'var(--t1)', minor_leak: 'var(--warn)', major_leak: 'var(--red)',
+  };
+  const recColor = verdictColor[rec.verdict] || 'var(--tx2)';
+  const lo = geo.labels_overall || {};
+
+  // 7.1 진단 결과
+  document.getElementById('geo-judgement').innerHTML = `
+    <div style="background:linear-gradient(135deg, var(--s2) 0%, var(--s1) 100%);border-left:5px solid ${recColor};border-radius:8px;padding:16px 20px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:${recColor};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">진단 헤드라인</div>
+      <div style="font-size:16px;font-weight:900;color:var(--tx);margin-bottom:8px">${rec.headline || '-'}</div>
+      <div style="font-size:12.5px;color:var(--tx);line-height:1.6;margin-bottom:8px">${rec.tone || ''}</div>
+      ${(rec.bullets && rec.bullets.length > 0) ? `<ul style="margin:6px 0 0 0;padding-left:18px;font-size:11.5px;color:var(--tx);line-height:1.7">${rec.bullets.filter(b => b).map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+    </div>
+    <div style="font-size:10.5px;color:var(--tx2);line-height:1.5">데이터 기간 ${geo.data_period} · 총 노출 ${total.impressions ? total.impressions.toLocaleString() : '-'} · 총 전환 ${total.conversions || 0}건</div>
+  `;
+
+  // 7.2 전체 정합/생활권/누수 카드
+  const cards = [
+    { lbl: '정합 (핵심 광역)', val: (lo['정합'] || {}).impr_pct, sub: ((lo['정합'] || {}).impr || 0).toLocaleString() + '회', color: 'var(--t1)' },
+    { lbl: '생활권 (인접 광역)', val: (lo['생활권'] || {}).impr_pct, sub: ((lo['생활권'] || {}).impr || 0).toLocaleString() + '회', color: 'var(--blue, #60a5fa)' },
+    { lbl: '누수 (매칭권 밖)', val: (lo['누수'] || {}).impr_pct, sub: ((lo['누수'] || {}).impr || 0).toLocaleString() + '회', color: (lo['누수'] || {}).impr_pct > 5 ? 'var(--warn)' : 'var(--tx2)' },
+  ];
+  document.getElementById('geo-overall-cards').innerHTML = `<div class="g3" style="gap:10px">${cards.map(c => `
+    <div style="background:var(--s1);border:1px solid var(--bd);border-left:4px solid ${c.color};border-radius:7px;padding:14px 16px">
+      <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">${c.lbl}</div>
+      <div style="font-size:24px;font-weight:900;font-family:'DM Mono',monospace;color:${c.color}">${c.val !== null && c.val !== undefined ? c.val + '%' : '-'}</div>
+      <div style="font-size:10px;color:var(--tx2);margin-top:3px">${c.sub}</div>
+    </div>`).join('')}</div>`;
+
+  // 7.3 지점별 누수 진단 표
+  const byBranch = geo.by_branch || {};
+  let branchRows = '';
+  const branchOrder = (DATA.meta.branches || []).concat(['부산']).filter((v, i, a) => a.indexOf(v) === i);
+  branchOrder.forEach(b => {
+    const r = byBranch[b];
+    if (!r) return;
+    const v = r.verdict || {};
+    const vc = verdictColor[v.verdict] || 'var(--tx2)';
+    const leak = r.labels['누수'].impr_pct;
+    const topProvinces = (r.top_provinces || []).slice(0, 3).map(p => {
+      const c = p.match_label === '정합' ? 'var(--t1)' : (p.match_label === '생활권' ? 'var(--blue, #60a5fa)' : 'var(--red)');
+      return `<span style="color:${c}">${p.province} ${p.impr_pct}%</span>`;
+    }).join(' · ');
+    branchRows += `<tr>
+      <td class="lbl">${b}</td>
+      <td>${r.core_province}</td>
+      <td>${r.total_impr.toLocaleString()}</td>
+      <td style="color:var(--t1)">${r.labels['정합'].impr_pct}%</td>
+      <td style="color:var(--blue, #60a5fa)">${r.labels['생활권'].impr_pct}%</td>
+      <td style="color:${leak >= 15 ? 'var(--red)' : (leak >= 5 ? 'var(--warn)' : 'var(--tx2)')};font-weight:${leak >= 5 ? '800' : 'normal'}">${leak}%</td>
+      <td><strong style="color:${vc}">${v.label || '-'}</strong></td>
+      <td class="muted">${topProvinces}</td>
+    </tr>`;
+  });
+  document.getElementById('geo-branch-tbl').innerHTML = `<thead><tr><th>지점</th><th>핵심 광역</th><th>총 노출</th><th>정합%</th><th>생활권%</th><th>누수%</th><th>판단</th><th>노출 상위 지역</th></tr></thead><tbody>${branchRows}</tbody>`;
+
+  // 7.4 누수 노출 지역 TOP
+  const oos = geo.out_of_scope_provinces || [];
+  let leakRows = '';
+  oos.forEach(p => {
+    leakRows += `<tr><td class="lbl">${p.province}</td><td>${p.impr.toLocaleString()}</td><td>${p.impr_pct}%</td><td>${p.clicks.toLocaleString()}</td><td>${p.conv}</td></tr>`;
+  });
+  if (leakRows === '') leakRows = '<tr><td colspan="5" style="text-align:center;color:var(--tx2)">매칭권 밖 노출 없음</td></tr>';
+  document.getElementById('geo-leakage-tbl').innerHTML = `<thead><tr><th>광역</th><th>노출</th><th>전체 대비%</th><th>클릭</th><th>전환</th></tr></thead><tbody>${leakRows}</tbody>`;
+
+  // 7.A 매칭 룰 + 분석 기준
+  const rules = geo.match_rules || {};
+  const defs = rules.definition || {};
+  const inclusive = rules.inclusive || {};
+  let ruleRows = '';
+  Object.entries(inclusive).forEach(([b, list]) => {
+    ruleRows += `<tr><td class="lbl">${b}</td><td>${rules.core[b]}</td><td>${list.join(' · ')}</td></tr>`;
+  });
+  document.getElementById('geo-note').innerHTML = `
+    <div class="evidence-card" style="padding:12px 14px;font-size:11px;color:var(--tx);line-height:1.7;margin-bottom:10px">
+      <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">분류 정의</div>
+      ${Object.entries(defs).map(([k, v]) => `<div style="margin-bottom:3px"><strong style="color:${k === '정합' ? 'var(--t1)' : (k === '생활권' ? 'var(--blue, #60a5fa)' : 'var(--red)')}">${k}</strong> — ${v}</div>`).join('')}
+    </div>
+    <div class="evidence-card" style="padding:0;overflow:hidden;margin-bottom:10px"><div class="tw"><table><thead><tr><th>지점</th><th>핵심 광역</th><th>생활권 매칭</th></tr></thead><tbody>${ruleRows}</tbody></table></div></div>
+    <div class="gap-caveat" style="border-left-color:var(--warn);background:rgba(248,191,79,.05);font-size:11px;line-height:1.6">
+      <strong>해석 한계.</strong> ${geo.note || ''}
+    </div>
+  `;
 })();
 """

@@ -1,0 +1,238 @@
+{
+  "updated": "2026-05-21 15:06:47",
+  "rule_version": "v3",
+  "proposals": [
+    {
+      "id": "p001",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "수원",
+      "action_type": "budget_increase",
+      "title": "수원 예산 +20% 제안",
+      "reason": "소진률 33.1% vs 일자진행 61.3% (-28%p), CPA 24,535원은 목표 내 — 여력 있음",
+      "recommended_value": {
+        "current": 2000000,
+        "proposed": 2400000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "budget_pct": 33.1,
+        "date_progress": 61.3,
+        "cpa": 24535,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p002",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "일산",
+      "action_type": "budget_increase",
+      "title": "일산 예산 +20% 제안",
+      "reason": "소진률 45.1% vs 일자진행 61.3% (-16%p), CPA 20,042원은 목표 내 — 여력 있음",
+      "recommended_value": {
+        "current": 2000000,
+        "proposed": 2400000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "budget_pct": 45.1,
+        "date_progress": 61.3,
+        "cpa": 20042,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p003",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "대구",
+      "action_type": "budget_increase",
+      "title": "대구 예산 +20% 제안",
+      "reason": "소진률 42.4% vs 일자진행 61.3% (-19%p), CPA 18,414원은 목표 내 — 여력 있음",
+      "recommended_value": {
+        "current": 2000000,
+        "proposed": 2400000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "budget_pct": 42.4,
+        "date_progress": 61.3,
+        "cpa": 18414,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p004",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "부산",
+      "action_type": "budget_increase",
+      "title": "부산 예산 +20% 제안",
+      "reason": "소진률 34.4% vs 일자진행 61.3% (-27%p), CPA 19,647원은 목표 내 — 여력 있음",
+      "recommended_value": {
+        "current": 2000000,
+        "proposed": 2400000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "budget_pct": 34.4,
+        "date_progress": 61.3,
+        "cpa": 19647,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p005",
+      "priority": "medium",
+      "scope": "branch",
+      "target": "서울→수원",
+      "action_type": "budget_reallocate",
+      "title": "예산 재분배: 서울 → 수원 (200,000원)",
+      "reason": "서울 여유(전환 53.1%, 예산 48.7%) → 수원 부족(전환 32.1%, 일자진행 61.3%)",
+      "recommended_value": {
+        "from": "서울",
+        "to": "수원",
+        "amount": 200000,
+        "unit": "KRW/월"
+      },
+      "evidence": {
+        "src_status": "ok",
+        "dst_status": "danger",
+        "dst_conv_gap": -29.199999999999996
+      }
+    },
+    {
+      "id": "p006",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,462원, 전환 15건 (목표 25,000원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17462,
+        "off_conv": 15,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p007",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "신규",
+      "action_type": "reactivate_creative",
+      "title": "[신규] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 17,923원, 전환 65건 (목표 25,000원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "신규"
+      },
+      "evidence": {
+        "off_cpa": 17923,
+        "off_conv": 65,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p008",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 20,364원, 전환 14건 (목표 25,000원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 20364,
+        "off_conv": 14,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p009",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 21,108원, 전환 17건 (목표 25,000원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 21108,
+        "off_conv": 17,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p010",
+      "priority": "medium",
+      "scope": "creative",
+      "target": "재가공",
+      "action_type": "reactivate_creative",
+      "title": "[재가공] 재활성화 검토",
+      "reason": "OFF 상태 · 생존 시 CPA 21,413원, 전환 315건 (목표 25,000원 이내)",
+      "recommended_value": {
+        "action": "enable",
+        "ad_name": "재가공"
+      },
+      "evidence": {
+        "off_cpa": 21413,
+        "off_conv": 315,
+        "target_cpa": 25000
+      }
+    },
+    {
+      "id": "p011",
+      "priority": "medium",
+      "scope": "hour",
+      "target": "7시",
+      "action_type": "dayparting",
+      "title": "07시 시간대 송출 축소 검토",
+      "reason": "CPA 44,680원 (평균 29,089원의 1.5배), 비용비중 5.3%",
+      "recommended_value": {
+        "action": "reduce_hour_dayparting",
+        "hour": 7
+      },
+      "evidence": {
+        "hour_cpa": 44680,
+        "avg_cpa": 29089,
+        "cost_share": 5.3
+      }
+    },
+    {
+      "id": "p012",
+      "priority": "medium",
+      "scope": "weekday",
+      "target": "일",
+      "action_type": "weekday_boost",
+      "title": "일요일 예산 가중 검토",
+      "reason": "일요일 효율점수 1.17 (편차 0.43) — CPA 23,441원, 전환비중 13.4%",
+      "recommended_value": {
+        "action": "weight_weekday_higher",
+        "weekday": "일"
+      },
+      "evidence": {
+        "weekday": "일",
+        "eff_score": 1.17,
+        "variance": 0.43
+      }
+    }
+  ],
+  "summary": {
+    "total": 12,
+    "high": 0,
+    "medium": 12,
+    "low": 0
+  }
+}

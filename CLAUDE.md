@@ -6,24 +6,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # TikTok 광고 분석 파이프라인
 
-> 클라이언트: 다이트한의원 | 목표: 상담 전환 (소재 중심 분석) | v3.8
+> 클라이언트: 다이트한의원 | 목표: 상담 전환 (소재 중심 분석) | v3.10
 
 ---
 
 ## 아키텍처 개요
 
 ```
-[0] fetch_tiktok_raw.py      → input/tiktok_raw.csv (+ tiktok_raw_by_age.csv)  ※ --collect 시
+[0] fetch_tiktok_raw.py      → input/tiktok_raw.csv
+                               (+ tiktok_raw_by_age.csv      ※ --include-age)
+                               (+ tiktok_raw_by_audience.csv ※ --include-audience: age+gender)
+                               (+ tiktok_raw_by_province.csv ※ --include-province: 광역 지역)
         ↓
-[1] normalize_tiktok_raw.py  → output/normalized.parquet
+[1] normalize_tiktok_raw.py  → output/data/YYYYMMDD/normalized*.parquet
         ↓
-[2] parse_tiktok.py          → output/parsed.parquet (광고명 파싱)
+[2] parse_tiktok.py          → output/data/YYYYMMDD/parsed.parquet (광고명 파싱)
         ↓
 [3] score_creatives.py       → output/data/YYYYMMDD/creative_tier.parquet (TIER 분류)
         ↓
 [4] build_daily.py           → output/daily/YYYYMMDD/*.txt
     build_weekly.py          → output/weekly/YYYYMMDD/*.html
     build_monthly.py         → output/monthly/YYYYMM/*.html
+    build_proposal.py        → output/proposal/YYYYMM/*.html  (월간 운영 제안서)
 ```
 
 ## 핵심 모듈 구조
@@ -36,10 +40,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   ├── kpi.py                ← calc_kpi, calc_branch_kpi
 │   ├── utils.py              ← clean, fmt, fmt_man, fmt_pct
 │   └── logger.py             ← 에러 처리 유틸리티
-├── tiktok-normalizer/        ← CSV → Parquet 변환
+├── tiktok-api/               ← Phase 0: TikTok Marketing API 수집
+├── tiktok-normalizer/        ← CSV → Parquet 변환 + 지역/성별 코드 한글화
 ├── tiktok-parser/            ← 광고명 파싱 (소재구분, 지점, 소재유형 추출)
 ├── creative-analyzer/        ← TIER 분류, 훅 비교, 나이대 분석
 ├── report-generator/         ← 3종 리포트 생성 (daily/weekly/monthly)
+├── proposal-builder/         ← 월간 운영 제안서 (5장 본문 + 부록 A·B·C)
+│   ├── analyze_addon_effect.py    ← 애드온 v1/v2 디자인 분리 분석 (부산 제외)
+│   ├── analyze_targeting_health.py ← 부록 A: 성별·연령 타겟팅 정합성
+│   ├── analyze_geo_leakage.py      ← 부록 B: 지점-광역 노출 정합성
+│   ├── build_creative_appendix.py  ← 부록 C: 지점×소재 KPI 재집계
+│   ├── build_proposal.py           ← 통합 빌드
+│   └── html_template.py / js_body.py ← 렌더링
 └── insight-writer/           ← 인사이트 자동 생성
 ```
 
@@ -120,19 +132,22 @@ git config merge.ours.driver true
 # 전체 파이프라인 (분석 + 먼슬리) — 수동 CSV 사용
 python run_analysis.py
 
-# API로 수집 후 분석 (수동 다운로드 불필요)
+# API로 수집 후 분석
 python run_analysis.py --collect                       # 최근 14일
 python run_analysis.py --collect --days 30
-python run_analysis.py --collect --include-age         # 나이대 breakdown 포함
+python run_analysis.py --collect --include-age         # 나이대 breakdown
 python run_analysis.py --collect --start 2026-04-01 --end 2026-04-20
 
-# 수집만 단독 실행
+# Phase 0 디멘션 수집 (단독 실행) — 30일 윈도우 제한 있음
 python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --days 14
+python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --start 2026-03-01 --end 2026-03-30 --only-audience  # age+gender
+python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --start 2026-03-01 --end 2026-03-30 --only-province  # 광역 지역
 
 # 개별 리포트
 python .claude/skills/report-generator/scripts/build_monthly.py output/data/YYYYMMDD 202603
 python .claude/skills/report-generator/scripts/build_weekly.py input/tiktok_raw.csv output
 python .claude/skills/report-generator/scripts/build_daily.py input/tiktok_raw.csv output
+python .claude/skills/proposal-builder/scripts/build_proposal.py output/data/YYYYMMDD/parsed.parquet input/tiktok_ad_meta.csv output/proposal/YYYYMM
 ```
 
 ---
@@ -149,12 +164,25 @@ python .claude/skills/report-generator/scripts/build_daily.py input/tiktok_raw.c
 
 ⚠️ **디자인 레퍼런스**: 리포트 생성 전 `output/_ref/*.html` 먼저 확인
 
+⚠️ **부록 C 정합성** (v3.10): `creative_tier`는 **소재 단위 누적 KPI**. 지점별 효율을 부록 C에 표시하려면 `parsed.parquet`에서 `(지점, 소재)` 단위로 **별도 재집계**해야 함. `build_creative_appendix._aggregate_branch_creative_kpi()` 참조 — TIER 부여는 소재 단위 그대로, KPI 수치만 지점별로 분리.
+
+⚠️ **5월 부분월 부록 C fallback**: 5월처럼 ON 광고가 부족해 `creative_tier`가 0행이면 `_find_latest_creative_tier()`가 비어있지 않은 가장 최신 디렉토리로 자동 fallback. 데이터 출처는 `data_source_dir` 필드로 본문에 명시.
+
+⚠️ **부산점 별도 처리** (5장 애드온 분석): 5월에 부산만 애드온 일부 미적용 + R10 학습 룰 대상이라 `analyze_addon_effect`에서 `EXCLUDE_BRANCHES = ['부산']`로 분리. 부산 학습 평가는 3.4 부산 학습 박스에서 별도 모니터링.
+
+⚠️ **광고 표준 약어 유지**: 사용자 노출 영역에서 CPM/CTR/CVR/CPA/KPI/TIER/CTA/hero/LPV/v1/v2/p25~p100 등은 광고 업계 관행이므로 **한글화하지 않음**. 그 외 일반 영문 문구(Executive Summary, Stretch, Guardrail 등)는 한글로.
+
+⚠️ **TikTok API 30일 윈도우**: `dimensions=['ad_id', 'stat_time_day', ...]` 사용 시 한 번에 최대 30일. 긴 기간 재수집은 30일 단위로 4단계 분할 필요.
+
+⚠️ **province_id는 추정 메트릭**: TikTok reach·province는 추정·샘플링 성격. 부록 B(지역 도달)는 단정형이 아닌 **누수 진단형**으로만 사용. 본문 톤도 그렇게 유지.
+
 ---
 
 ## 지점 순서 (고정)
 
 ```python
-VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안']
+VALID_BRANCHES = ['서울', '부평', '수원', '일산', '대구', '창원', '천안', '대전', '부산']
+# 9개 지점. 부산은 R10 학습 룰 대상 — 정상 산식 미적용
 ```
 
 ## 지점별 월 예산
@@ -206,6 +234,7 @@ from common import (
 
 | 버전 | 날짜 | 변경 |
 |------|------|------|
+| v3.10 | 2026-05-21 | API 디멘션 확장 (성별·지역·시청 깊이·인게이지먼트) + 6월 운영 제안서 재구성 (5장 본문 + 부록 A·B·C) + 부록 C 지점×소재 재집계 |
 | v3.9 | 2026-04-21 | Phase 0 자동화 (`--collect`), 랜딩/도달/나이 컬럼 API 수집 추가 |
 | v3.8 | 2026-03-09 | 위클리 KPI OFF 소재 포함, 데일리 전일비 fallback 로직 추가 |
 | v3.7 | 2026-03-03 | 공용 모듈 생성 (.claude/skills/common/), 코드 품질 개선 |

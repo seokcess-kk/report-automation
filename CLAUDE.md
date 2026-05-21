@@ -167,9 +167,11 @@ python .claude/skills/report-generator/scripts/build_weekly.py input/tiktok_raw.
 python .claude/skills/report-generator/scripts/build_daily.py input/tiktok_raw.csv output
 python .claude/skills/proposal-builder/scripts/build_proposal.py output/data/YYYYMMDD/parsed.parquet input/tiktok_ad_meta.csv output/proposal/YYYYMM
 
-# 6월 운영 콘솔 (Phase 1 MVP)
-python -m dashboard.app                                  # http://localhost:5050
+# 6월 운영 콘솔 (Phase 1·2·3)
+python -m dashboard.app                                  # http://localhost:5050 (홈/지점/소재/체크리스트/트래커)
 python -m dashboard.workers.effect_tracker               # D+1/D+3/D+7 효과 자동 측정 (매일 1회)
+python -m dashboard.workers.telegram_notifier --dry-run  # 텔레그램 메시지 미리보기
+python -m dashboard.workers.telegram_notifier            # 텔레그램 발송 (TELEGRAM_BOT_TOKEN/CHAT_ID 필요)
 ```
 
 ---
@@ -256,6 +258,8 @@ from common import (
 
 | 버전 | 날짜 | 변경 |
 |------|------|------|
+| v3.13 | 2026-05-21 | 운영 콘솔 Phase 3 — 텔레그램 일일 알림(critical/high priority) + web/ 6월 운영 현황 페이지(클라이언트 보고용 하이브리드) |
+| v3.12 | 2026-05-21 | 운영 콘솔 Phase 2 — 지점·소재 drill-down 페이지 + 체크리스트 전용 페이지(W1~W4 그룹, 수동 토글) + 액션 트래커 archive(필터·통계) |
 | v3.11 | 2026-05-21 | 6월 TikTok 운영 콘솔 Phase 1 MVP (`dashboard/` Flask) — KPI 진행률·이상 신호(3가지 기준 병행)·체크리스트(YAML+자동평가)·추천 액션 큐·액션 트래커(D+1/D+3/D+7) |
 | v3.10 | 2026-05-21 | API 디멘션 확장 (성별·지역·시청 깊이·인게이지먼트) + 6월 운영 제안서 재구성 (5장 본문 + 부록 A·B·C) + 부록 C 지점×소재 재집계 |
 | v3.9 | 2026-04-21 | Phase 0 자동화 (`--collect`), 랜딩/도달/나이 컬럼 API 수집 추가 |

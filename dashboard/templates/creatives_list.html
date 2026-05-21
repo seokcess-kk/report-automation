@@ -2,7 +2,11 @@
 {% block title %}소재 전체 · 운영 콘솔{% endblock %}
 {% block content %}
 
-  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>소재 전체</span></div>
+  <div class="breadcrumb">
+    <a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> /
+    <span>소재 전체</span>
+    <button class="share-btn" onclick="copyShareUrl(this)">URL 복사</button>
+  </div>
 
   <div class="headline">
     <div class="headline-row">

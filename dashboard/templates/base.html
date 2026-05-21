@@ -16,6 +16,8 @@
        background:var(--bg);color:var(--tx);font-size:14px;line-height:1.55}
   a{color:var(--blue);text-decoration:none}
   a:hover{text-decoration:underline}
+
+  /* Topbar */
   .topbar{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--bd);padding:10px 24px;
           display:flex;align-items:center;gap:16px;z-index:10}
   .topbar h1{margin:0;font-size:16px;font-weight:800;letter-spacing:-.02em}
@@ -33,15 +35,24 @@
   .nav-drop-menu a{display:block;padding:6px 14px;font-size:12.5px;font-weight:600;color:var(--tx2);border-radius:0}
   .nav-drop-menu a:hover{background:var(--card);color:var(--tx)}
   .nav-drop-menu a.on{background:var(--bd);color:var(--tx)}
-  .topbar .meta{margin-left:auto;display:flex;gap:14px;align-items:center;font-size:11.5px;color:var(--tx2)}
+  .topbar .meta{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:11.5px;color:var(--tx2)}
   .topbar form{display:inline}
   .topbar button{background:var(--bd);color:var(--tx);border:none;padding:5px 11px;border-radius:5px;cursor:pointer;font-size:11.5px}
   .topbar button:hover{background:var(--card)}
+
+  /* A3 — 시간 이동 UI */
+  .time-controls{display:flex;gap:4px;align-items:center;background:var(--card);border:1px solid var(--bd);border-radius:5px;padding:2px 4px}
+  .time-controls input[type=date]{background:transparent;color:var(--tx);border:none;font-size:11.5px;font-family:inherit;padding:3px 6px;color-scheme:dark}
+  .time-controls button.quick{background:transparent;color:var(--tx2);padding:3px 8px;border-radius:3px;font-size:10.5px;font-weight:700}
+  .time-controls button.quick:hover{background:var(--bd);color:var(--tx)}
+
+  /* Wrap */
   .wrap{padding:18px 24px;max-width:1280px;margin:0 auto}
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 
+  /* Headline */
   .headline{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;margin-bottom:16px}
   .headline-row{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}
   .h-stat{display:flex;flex-direction:column;gap:2px}
@@ -53,11 +64,14 @@
   .h-stat.normal .val{color:var(--t1)}
   .h-stat.primary .val{color:var(--primary)}
 
+  /* Card */
   .card{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;margin-bottom:16px}
   .card h2{margin:0 0 10px 0;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--tx2);text-transform:uppercase}
   .card-row{padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
   .card-row:last-child{border-bottom:none}
-  .badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:3px;margin-right:6px}
+
+  /* A4 — badge에 아이콘 + 라벨 병행 (색맹 대응) */
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:3px;margin-right:6px}
   .badge.high{background:rgba(239,68,68,.18);color:var(--red)}
   .badge.medium{background:rgba(245,158,11,.18);color:var(--warn)}
   .badge.low{background:rgba(96,165,250,.18);color:var(--blue)}
@@ -65,18 +79,27 @@
   .badge.warning{background:rgba(245,158,11,.18);color:var(--warn)}
   .badge.recovery{background:rgba(16,185,129,.18);color:var(--t1)}
   .badge.gray{background:var(--bd);color:var(--tx2)}
+  .badge.tier1{background:rgba(16,185,129,.18);color:var(--t1)}
+  .badge.tier2{background:rgba(96,165,250,.18);color:var(--blue)}
+  .badge.tier3{background:rgba(245,158,11,.18);color:var(--warn)}
+  .badge.tier4{background:rgba(239,68,68,.18);color:var(--red)}
+  .badge.low_volume{background:var(--bd);color:var(--tx2)}
+  .badge.unclassified{background:var(--bd);color:var(--tx2)}
 
+  /* A5 — table zebra + hover */
   table{width:100%;border-collapse:collapse;font-size:12px}
   table th,table td{padding:8px 10px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
   table th{background:var(--card);color:var(--tx2);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em}
   table td.num{font-family:'DM Mono',monospace;text-align:right}
-  table tr:hover{background:rgba(255,255,255,.02)}
+  table tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
+  table tbody tr:hover{background:rgba(96,165,250,.05)}
   table.tight th, table.tight td{padding:5px 8px}
 
   .muted{color:var(--tx2);font-style:italic}
   .delta-up{color:var(--t1)}
   .delta-down{color:var(--red)}
 
+  /* Checklist */
   .ck-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd)}
   .ck-item:last-child{border-bottom:none}
   .ck-status{font-size:14px;min-width:18px;text-align:center;cursor:pointer;user-select:none}
@@ -91,18 +114,54 @@
   .ck-week{display:inline-block;font-size:9px;font-weight:800;background:var(--bd);color:var(--tx);padding:1px 6px;border-radius:3px;margin-right:6px}
   .ck-note-input{margin-top:6px;width:100%;background:var(--card);border:1px solid var(--bd);border-radius:4px;color:var(--tx);font-size:11px;padding:5px 8px;font-family:inherit}
 
+  /* Action category & log */
   .action-cat{margin-bottom:14px}
   .action-cat-hd{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--tx);margin-bottom:6px}
   .action-cat-hd .icon{font-size:14px}
   .action-cat-hd .count{font-size:10px;color:var(--tx2);font-weight:600}
+
+  /* A1 — 추천 액션 행에 [기록] 버튼 */
+  .rec-row{padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px;display:flex;align-items:flex-start;gap:8px}
+  .rec-row:last-child{border-bottom:none}
+  .rec-row .rec-body{flex:1}
+  .rec-row .rec-log-btn{flex-shrink:0;background:var(--bd);color:var(--tx);border:none;padding:4px 10px;border-radius:4px;font-size:10.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+  .rec-row .rec-log-btn:hover{background:var(--blue);color:white}
 
   .action-log{background:var(--card);border-radius:6px;padding:8px 12px;margin-bottom:6px;font-size:11.5px}
   .action-log .ts{color:var(--tx3);font-size:10px;font-family:'DM Mono',monospace}
   .action-log .effect{margin-top:4px;color:var(--tx2);font-size:10.5px}
 
   .alert-suppressed{opacity:.5}
-  .breadcrumb{font-size:11.5px;color:var(--tx2);margin-bottom:12px}
+
+  /* A6 — Breadcrumb + 공유 URL */
+  .breadcrumb{font-size:11.5px;color:var(--tx2);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .breadcrumb a{color:var(--tx2)}
+  .breadcrumb a:hover{color:var(--tx);text-decoration:underline}
+  .breadcrumb .share-btn{margin-left:auto;background:var(--bd);color:var(--tx2);border:none;padding:3px 9px;border-radius:3px;font-size:10.5px;cursor:pointer}
+  .breadcrumb .share-btn:hover{background:var(--card);color:var(--tx)}
+  .breadcrumb .share-btn.copied{background:var(--t1);color:white}
+
+  /* A2 — 빈 상태 */
+  .empty-state{padding:24px;text-align:center;border:1px dashed var(--bd);border-radius:8px;background:var(--card)}
+  .empty-state .emoji{font-size:28px;margin-bottom:8px}
+  .empty-state .title{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:4px}
+  .empty-state .desc{font-size:11.5px;color:var(--tx2);line-height:1.6}
+  .empty-state .desc a{color:var(--blue)}
+
+  /* A1 — 액션 기록 모달 */
+  .modal-bg{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:100;justify-content:center;align-items:center;padding:20px}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:22px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto}
+  .modal h3{margin:0 0 4px 0;font-size:15px;font-weight:800;color:var(--tx)}
+  .modal .modal-sub{font-size:11.5px;color:var(--tx2);margin-bottom:14px}
+  .modal label{display:block;font-size:11px;color:var(--tx2);font-weight:700;margin:10px 0 4px}
+  .modal input, .modal select, .modal textarea{width:100%;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:4px;padding:6px 10px;font-size:12.5px;font-family:inherit}
+  .modal textarea{min-height:60px;resize:vertical}
+  .modal .modal-actions{margin-top:14px;display:flex;gap:8px;justify-content:flex-end}
+  .modal .modal-actions button{padding:7px 14px;border-radius:5px;font-size:12px;font-weight:700;border:none;cursor:pointer}
+  .modal .modal-actions .cancel{background:var(--bd);color:var(--tx)}
+  .modal .modal-actions .submit{background:var(--blue);color:white}
+  .modal .modal-actions .submit:hover{filter:brightness(1.1)}
 </style>
 </head>
 <body>
@@ -123,7 +182,12 @@
     <a href="/tracker{% if today_param %}?today={{ today_param }}{% endif %}" class="{% if active == 'tracker' %}on{% endif %}">액션 트래커</a>
   </nav>
   <div class="meta">
-    <span>오늘: <strong>{{ today }}</strong></span>
+    <div class="time-controls">
+      <input type="date" id="time-picker" value="{{ today }}" />
+      <button type="button" class="quick" onclick="setDate('today')">오늘</button>
+      <button type="button" class="quick" onclick="setDate('yesterday')">어제</button>
+      <button type="button" class="quick" onclick="setDate('week_ago')">-7일</button>
+    </div>
     <span>데이터: <strong>{{ data_dir }}</strong></span>
     <form action="/refresh" method="post"><button type="submit">새로고침</button></form>
   </div>
@@ -133,7 +197,60 @@
 {% block content %}{% endblock %}
 </div>
 
+<!-- A1 — 액션 기록 모달 -->
+<div class="modal-bg" id="action-modal" onclick="if(event.target.id==='action-modal') closeActionModal()">
+  <div class="modal">
+    <h3>액션 기록</h3>
+    <div class="modal-sub" id="modal-rec-title">-</div>
+    <form id="action-form" onsubmit="submitAction(event)">
+      <input type="hidden" id="m_action_type" />
+      <input type="hidden" id="m_branch" />
+      <input type="hidden" id="m_creative_name" />
+      <input type="hidden" id="m_linked_alert_id" />
+      <input type="hidden" id="m_linked_checklist_id" />
+      <div>
+        <label>유형 (action_type)</label>
+        <select id="m_type_visible">
+          <option value="budget_increase">예산 증액</option>
+          <option value="budget_decrease">예산 감액</option>
+          <option value="ad_off">광고 OFF</option>
+          <option value="ad_on">광고 ON</option>
+          <option value="creative_swap">소재 교체</option>
+          <option value="setting_change">세팅 변경</option>
+        </select>
+      </div>
+      <div>
+        <label>변경 전 (before)</label>
+        <input type="text" id="m_before" placeholder="예: daily_budget 70000 / TIER1 active" />
+      </div>
+      <div>
+        <label>변경 후 (after)</label>
+        <input type="text" id="m_after" placeholder="예: daily_budget 50000 / OFF" />
+      </div>
+      <div>
+        <label>사유 (필수)</label>
+        <textarea id="m_reason" required placeholder="예: CPA 가드레일 +24% 초과 + 경기 누수 23.8% 확인"></textarea>
+      </div>
+      <div>
+        <label>측정 지표</label>
+        <select id="m_expected">
+          <option value="">없음</option>
+          <option value="CPA">CPA</option>
+          <option value="CVR">CVR</option>
+          <option value="CTR">CTR</option>
+          <option value="conversions">전환수</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="cancel" onclick="closeActionModal()">취소</button>
+        <button type="submit" class="submit">기록 및 닫기</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
+// 체크리스트 토글
 async function toggleCheck(cid, currentChecked, noteEl) {
   const note = noteEl ? noteEl.value : '';
   const newChecked = !currentChecked;
@@ -144,6 +261,75 @@ async function toggleCheck(cid, currentChecked, noteEl) {
   });
   if (r.ok) location.reload();
 }
+
+// A3 — 시간 이동 UI
+function setDate(mode) {
+  const picker = document.getElementById('time-picker');
+  const today = new Date();
+  let target = today;
+  if (mode === 'yesterday') target = new Date(today.getTime() - 86400000);
+  else if (mode === 'week_ago') target = new Date(today.getTime() - 7 * 86400000);
+  picker.value = target.toISOString().slice(0, 10);
+  navigateToDate(picker.value);
+}
+document.getElementById('time-picker').addEventListener('change', e => navigateToDate(e.target.value));
+function navigateToDate(d) {
+  const u = new URL(window.location);
+  u.searchParams.set('today', d);
+  window.location = u.toString();
+}
+
+// A6 — 공유 URL 복사
+function copyShareUrl(btn) {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// A1 — 액션 기록 모달
+function openActionModal(payload) {
+  document.getElementById('modal-rec-title').textContent = payload.title || '-';
+  document.getElementById('m_action_type').value = payload.action_type || 'budget_decrease';
+  document.getElementById('m_type_visible').value = payload.action_type || 'budget_decrease';
+  document.getElementById('m_branch').value = payload.branch || '';
+  document.getElementById('m_creative_name').value = payload.creative_name || '';
+  document.getElementById('m_linked_alert_id').value = payload.linked_alert_id || '';
+  document.getElementById('m_linked_checklist_id').value = payload.linked_checklist_id || '';
+  document.getElementById('m_before').value = '';
+  document.getElementById('m_after').value = '';
+  document.getElementById('m_reason').value = payload.suggested_reason || '';
+  document.getElementById('m_expected').value = payload.expected_metric || '';
+  document.getElementById('action-modal').classList.add('open');
+}
+function closeActionModal() {
+  document.getElementById('action-modal').classList.remove('open');
+}
+async function submitAction(e) {
+  e.preventDefault();
+  const body = {
+    action_type: document.getElementById('m_type_visible').value,
+    branch: document.getElementById('m_branch').value || null,
+    creative_name: document.getElementById('m_creative_name').value || null,
+    before: document.getElementById('m_before').value || null,
+    after: document.getElementById('m_after').value || null,
+    reason: document.getElementById('m_reason').value,
+    expected_metric: document.getElementById('m_expected').value || null,
+    linked_alert_id: document.getElementById('m_linked_alert_id').value || null,
+    linked_checklist_id: document.getElementById('m_linked_checklist_id').value || null,
+  };
+  const r = await fetch('/tracker/log', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body),
+  });
+  if (r.ok) { closeActionModal(); location.reload(); }
+  else alert('기록 실패');
+}
+// ESC로 모달 닫기
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeActionModal(); });
 </script>
 </body>
 </html>

@@ -2,7 +2,11 @@
 {% block title %}액션 트래커{% endblock %}
 {% block content %}
 
-  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>액션 트래커</span></div>
+  <div class="breadcrumb">
+    <a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> /
+    <span>액션 트래커</span>
+    <button class="share-btn" onclick="copyShareUrl(this)">URL 복사</button>
+  </div>
 
   <!-- 헤드 -->
   <div class="headline">

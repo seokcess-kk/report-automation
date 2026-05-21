@@ -2,7 +2,12 @@
 {% block title %}{{ detail.name }} · 소재 상세{% endblock %}
 {% block content %}
 
-  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>{{ detail.name }}</span></div>
+  <div class="breadcrumb">
+    <a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> /
+    <a href="/creatives{% if today_param %}?today={{ today_param }}{% endif %}">소재</a> /
+    <span>{{ detail.name }}</span>
+    <button class="share-btn" onclick="copyShareUrl(this)">URL 복사</button>
+  </div>
 
   <!-- 소재 헤드 -->
   {% if detail.tier_info %}

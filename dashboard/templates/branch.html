@@ -2,7 +2,11 @@
 {% block title %}{{ detail.branch }} · 지점 상세{% endblock %}
 {% block content %}
 
-  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>{{ detail.branch }}</span></div>
+  <div class="breadcrumb">
+    <a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> /
+    <span>{{ detail.branch }}</span>
+    <button class="share-btn" onclick="copyShareUrl(this)">URL 복사</button>
+  </div>
 
   <!-- 지점 KPI 헤드 -->
   <div class="headline">

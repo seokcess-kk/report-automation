@@ -29,34 +29,43 @@
       <div class="card">
         <h2>오늘 해야 할 일 ({{ action_count }}건)</h2>
 
-        {% macro render_rec_list(items, icon, label) %}
+        {% macro render_rec_list(items, icon, label, action_type) %}
         {% if items %}
         <div class="action-cat">
           <div class="action-cat-hd"><span class="icon">{{ icon }}</span>{{ label }} <span class="count">{{ items|length }}</span></div>
           {% for r in items %}
-          <div class="card-row">
-            <span class="badge {{ r.priority }}">{{ r.priority }}</span>
-            <strong>
-              {% if r.target_type == 'branch' and r.target_name %}<a href="/branch/{{ r.target_name }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ r.title }}</a>
-              {% elif r.target_type == 'ad' and r.target_name %}<a href="/creative/{{ r.target_name }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ r.title }}</a>
-              {% else %}{{ r.title }}{% endif %}
-            </strong>
-            <div class="muted" style="font-size:11px">{{ r.rationale }}</div>
+          <div class="rec-row">
+            <div class="rec-body">
+              <span class="badge {{ r.priority }}">{{ '🔴' if r.priority == 'high' else ('🟡' if r.priority == 'medium' else '🔵') }} {{ r.priority }}</span>
+              <strong>
+                {% if r.target_type == 'branch' and r.target_name %}<a href="/branch/{{ r.target_name }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ r.title }}</a>
+                {% elif r.target_type == 'ad' and r.target_name %}<a href="/creative/{{ r.target_name }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ r.title }}</a>
+                {% else %}{{ r.title }}{% endif %}
+              </strong>
+              <div class="muted" style="font-size:11px">{{ r.rationale }}</div>
+            </div>
+            {% if action_type %}
+            <button type="button" class="rec-log-btn" onclick='openActionModal({{ {"title": r.title, "action_type": action_type, "branch": r.target_name if r.target_type == "branch" else "", "creative_name": r.target_name if r.target_type == "ad" else "", "suggested_reason": r.rationale, "linked_checklist_id": r.linked_checklist} | tojson | safe }})'>기록</button>
+            {% endif %}
           </div>
           {% endfor %}
         </div>
         {% endif %}
         {% endmacro %}
 
-        {{ render_rec_list(recs.budget_increase, '💰', '예산 증액') }}
-        {{ render_rec_list(recs.budget_decrease, '💰', '예산 감액') }}
-        {{ render_rec_list(recs.ad_off, '🎬', '광고 OFF 후보') }}
-        {{ render_rec_list(recs.ad_on, '🎬', '광고 ON·확대 후보') }}
-        {{ render_rec_list(recs.setting, '⚙️', '세팅 확인') }}
-        {{ render_rec_list(recs.hold, '⏸', '보류·관찰') }}
+        {{ render_rec_list(recs.budget_increase, '💰', '예산 증액', 'budget_increase') }}
+        {{ render_rec_list(recs.budget_decrease, '💰', '예산 감액', 'budget_decrease') }}
+        {{ render_rec_list(recs.ad_off, '🎬', '광고 OFF 후보', 'ad_off') }}
+        {{ render_rec_list(recs.ad_on, '🎬', '광고 ON·확대 후보', 'ad_on') }}
+        {{ render_rec_list(recs.setting, '⚙️', '세팅 확인', 'setting_change') }}
+        {{ render_rec_list(recs.hold, '⏸', '보류·관찰', '') }}
 
         {% if action_count == 0 %}
-        <div class="muted">오늘 실행할 액션 없음 — 운영 안정 상태</div>
+        <div class="empty-state">
+          <div class="emoji">🟢</div>
+          <div class="title">오늘 실행할 액션 없음</div>
+          <div class="desc">모든 지점·소재가 운영 룰의 임계값 이내입니다. 정상 운영 상태로 판단됩니다.<br>임계값은 <code style="background:var(--bd);padding:1px 4px;border-radius:2px">config/operation_rules.yaml</code> 에서 조정 가능합니다.</div>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -76,12 +85,16 @@
           {% if a.linked_action %}<div class="muted" style="font-size:10.5px">→ {{ a.linked_action }}</div>{% endif %}
         </div>
         {% else %}
-        <div class="muted">감지된 이상 신호 없음</div>
+        <div class="empty-state">
+          <div class="emoji">🟢</div>
+          <div class="title">감지된 이상 신호 없음</div>
+          <div class="desc">전일비·3일 MA·6월 페이스 3가지 기준 모두 정상 범위입니다.</div>
+        </div>
         {% endfor %}
       </div>
 
       <div class="card">
-        <h2>액션 후 효과 추적 (최근 10건) · <a href="/tracker" style="font-size:11px;font-weight:600">전체 보기 →</a></h2>
+        <h2>액션 후 효과 추적 (최근 10건) · <a href="/tracker{% if today_param %}?today={{ today_param }}{% endif %}" style="font-size:11px;font-weight:600">전체 보기 →</a></h2>
         {% for a in recent_actions %}
         <div class="action-log">
           <div class="ts">{{ a.timestamp }}</div>
@@ -100,7 +113,11 @@
           {% endif %}
         </div>
         {% else %}
-        <div class="muted">기록된 액션 없음 — POST /tracker/log 로 액션 기록</div>
+        <div class="empty-state">
+          <div class="emoji">📋</div>
+          <div class="title">기록된 액션 없음</div>
+          <div class="desc">왼쪽 "오늘 해야 할 일"의 각 항목 옆 <strong>[기록]</strong> 버튼으로 액션을 기록하면 여기에 표시됩니다.<br>D+1·D+3·D+7 효과는 자동 측정됩니다.</div>
+        </div>
         {% endfor %}
       </div>
     </div>
@@ -111,7 +128,7 @@
   <div class="card">
     <h2>6월 운영 체크리스트
       ({{ checklist_stats.completed }}✓ · {{ checklist_stats.in_progress }}🔄 · {{ checklist_stats.partial }}⚠ · {{ checklist_stats.not_started }}☐)
-      · <a href="/checklist" style="font-size:11px;font-weight:600">전체 상세 →</a>
+      · <a href="/checklist{% if today_param %}?today={{ today_param }}{% endif %}" style="font-size:11px;font-weight:600">전체 상세 →</a>
     </h2>
     {% for c in checklist %}
     <div class="ck-item">

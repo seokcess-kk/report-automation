@@ -287,13 +287,13 @@ table th,table td{vertical-align:middle}
 #exec-matrix th:nth-child(2),#exec-matrix td:nth-child(2){min-width:72px;text-align:center}     /* 우선 */
 #exec-matrix th:nth-child(3),#exec-matrix td:nth-child(3),
 #exec-matrix th:nth-child(4),#exec-matrix td:nth-child(4),
-#exec-matrix th:nth-child(5),#exec-matrix td:nth-child(5){min-width:200px;white-space:normal;line-height:1.55}  /* CPM/CTR/CVR */
-#exec-matrix th:nth-child(3),#exec-matrix th:nth-child(4),#exec-matrix th:nth-child(5){text-align:center}
+#exec-matrix th:nth-child(5),#exec-matrix td:nth-child(5){min-width:200px;white-space:normal;line-height:1.55;text-align:center}  /* CPM/CTR/CVR — 헤더·셀 모두 가운데 정렬 */
 #exec-matrix th:nth-child(6),#exec-matrix td:nth-child(6){min-width:220px;white-space:normal;line-height:1.55}  /* 소재 역할 */
 #exec-matrix th:nth-child(7),#exec-matrix td:nth-child(7){min-width:280px;white-space:normal;line-height:1.6}   /* 6월 콘텐츠 */
 #exec-matrix .fcell{min-width:0}
 #exec-matrix .fcell-kpi{white-space:normal;word-break:break-word;font-size:11px;line-height:1.45;margin-top:3px}
-#exec-matrix .creative-name{white-space:nowrap;word-break:normal}
+/* 소재명 — 줄바꿈 방지, 너비 초과 시 말줄임 */
+#exec-matrix .creative-name{white-space:nowrap;word-break:keep-all;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:100%;vertical-align:bottom}
 /* 가로 스크롤 시 좌측 지점 컬럼 고정 (sticky) — 비교 편의 */
 #exec-matrix th:nth-child(1),#exec-matrix td:nth-child(1){position:sticky;left:0;background:var(--s1);z-index:2}
 #exec-matrix thead th:nth-child(1){background:var(--s2);z-index:3}

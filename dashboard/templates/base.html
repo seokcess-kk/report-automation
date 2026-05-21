@@ -26,8 +26,21 @@
     --container-max:1280px;
   }
   *{box-sizing:border-box}
-  body{margin:0;padding:0;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;
-       background:var(--bg);color:var(--tx);font-size:var(--fs-lg);line-height:1.55}
+  body{margin:0;padding:0;
+       font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;
+       background:var(--bg);color:var(--tx);font-size:var(--fs-lg);line-height:1.55;
+       /* 숫자는 균등 너비 + 굵기 균일 */
+       font-feature-settings:'tnum' 1, 'ss01' 1;}
+  /* 모든 폰트 통일 — DM Mono 사용 제거, Pretendard tabular-nums로 대체 */
+  .num,
+  .h-stat .val,
+  table td.num,
+  .action-log .ts,
+  .breadcrumb .share-btn,
+  .ts{
+    font-variant-numeric:tabular-nums;
+    font-feature-settings:'tnum' 1;
+  }
   a{color:var(--blue);text-decoration:none}
   a:hover{text-decoration:underline}
 
@@ -61,19 +74,24 @@
   .time-controls button.quick{background:transparent;color:var(--tx2);padding:3px var(--sp-2);border-radius:3px;font-size:var(--fs-xs);font-weight:700}
   .time-controls button.quick:hover{background:var(--bd);color:var(--tx)}
 
-  /* Wrap */
-  .wrap{padding:var(--sp-5) var(--sp-6);max-width:var(--container-max);margin:0 auto}
-  .grid-2,.grid-3,.grid-4{display:grid;gap:var(--sp-3)}
+  /* Wrap — 직속 자식 간 일관 세로 갭 (카드 간 여백 통일) */
+  .wrap{padding:var(--sp-5) var(--sp-6);max-width:var(--container-max);margin:0 auto;display:flex;flex-direction:column;gap:var(--sp-4)}
+  .wrap > .grid-2,.wrap > .grid-3,.wrap > .grid-4{margin:0}
+
+  /* Grid — 가로/세로 갭 동일하게 (--sp-4) */
+  .grid-2,.grid-3,.grid-4{display:grid;gap:var(--sp-4)}
   .grid-2{grid-template-columns:1fr 1fr}
   .grid-3{grid-template-columns:repeat(3,1fr)}
   .grid-4{grid-template-columns:repeat(4,1fr)}
+  /* grid 안의 카드들도 flex column gap 적용 */
+  .grid-2 > div,.grid-3 > div{display:flex;flex-direction:column;gap:var(--sp-4)}
 
   /* Headline — grid auto-fit으로 균등 분배 */
-  .headline{background:var(--panel);border:1px solid var(--bd);border-radius:var(--rad-lg);padding:var(--sp-5);margin-bottom:var(--sp-4)}
+  .headline{background:var(--panel);border:1px solid var(--bd);border-radius:var(--rad-lg);padding:var(--sp-5)}
   .headline-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--sp-5);align-items:baseline}
   .h-stat{display:flex;flex-direction:column;gap:2px;min-width:0}
   .h-stat .lbl{font-size:var(--fs-sm);color:var(--tx2);font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .h-stat .val{font-size:var(--fs-stat);font-weight:900;font-family:'DM Mono',monospace;line-height:1.2}
+  .h-stat .val{font-size:var(--fs-stat);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.2}
   .h-stat .sub{font-size:var(--fs-sm);color:var(--tx2);line-height:1.4}
   .h-stat.critical .val{color:var(--red)}
   .h-stat.warn .val{color:var(--warn)}
@@ -81,7 +99,7 @@
   .h-stat.primary .val{color:var(--primary)}
 
   /* Card */
-  .card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--rad-lg);padding:var(--sp-5);margin-bottom:var(--sp-4)}
+  .card{background:var(--panel);border:1px solid var(--bd);border-radius:var(--rad-lg);padding:var(--sp-5)}
   .card h2{margin:0 0 var(--sp-3) 0;font-size:var(--fs-base);font-weight:800;letter-spacing:.04em;color:var(--tx2);text-transform:uppercase}
   .card-row{padding:var(--sp-2) 0;border-bottom:1px solid var(--bd);font-size:var(--fs-base)}
   .card-row:last-child{border-bottom:none}
@@ -98,7 +116,10 @@
   table{width:100%;border-collapse:collapse;font-size:var(--fs-md)}
   table th,table td{padding:var(--sp-2) var(--sp-3);border-bottom:1px solid var(--bd);text-align:left;vertical-align:middle;line-height:1.5}
   table th{background:var(--card);color:var(--tx2);font-weight:700;font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
-  table td.num{font-family:'DM Mono',monospace;text-align:right;white-space:nowrap}
+  /* 숫자 컬럼 — 헤더·셀 모두 우측 정렬 + 균등 너비 */
+  table th.num, table td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  /* 텍스트 컬럼 — 좌측 + 줄바꿈 허용 */
+  table td.txt{text-align:left;line-height:1.55;max-width:340px}
   table tbody tr:nth-child(even){background:rgba(255,255,255,.015)}
   table tbody tr:hover{background:rgba(96,165,250,.05)}
   table.tight th, table.tight td{padding:var(--sp-1) var(--sp-2)}
@@ -136,7 +157,7 @@
   .rec-row .rec-log-btn:hover{background:var(--blue);color:white}
 
   .action-log{background:var(--card);border-radius:var(--rad-md);padding:var(--sp-2) var(--sp-3);margin-bottom:var(--sp-2);font-size:var(--fs-sm)}
-  .action-log .ts{color:var(--tx3);font-size:var(--fs-xs);font-family:'DM Mono',monospace}
+  .action-log .ts{color:var(--tx3);font-size:var(--fs-xs);font-variant-numeric:tabular-nums}
   .action-log .effect{margin-top:var(--sp-1);color:var(--tx2);font-size:var(--fs-xs)}
 
   .alert-suppressed{opacity:.5}

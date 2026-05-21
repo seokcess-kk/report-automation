@@ -60,7 +60,7 @@
       <div class="card">
         <h2>지점별 효율 ({{ detail.branch_kpi | length }}개 지점)</h2>
         <table class="tight">
-          <thead><tr><th>지점</th><th>전환</th><th>비용</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+          <thead><tr><th>지점</th><th class="num">전환</th><th class="num">비용</th><th class="num">CTR</th><th class="num">CVR</th><th class="num">CPA</th></tr></thead>
           <tbody>
             {% for b in detail.branch_kpi %}
             <tr>
@@ -111,7 +111,7 @@
   <div class="card">
     <h2>최근 30일 일별 추이</h2>
     <table class="tight">
-      <thead><tr><th>날짜</th><th>비용</th><th>클릭</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+      <thead><tr><th>날짜</th><th class="num">비용</th><th class="num">클릭</th><th class="num">전환</th><th class="num">CTR</th><th class="num">CVR</th><th class="num">CPA</th></tr></thead>
       <tbody>
         {% for d in detail.daily_trend %}
         <tr>

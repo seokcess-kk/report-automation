@@ -81,7 +81,7 @@
       <div class="card">
         <h2>최근 14일 일별 KPI</h2>
         <table class="tight">
-          <thead><tr><th>날짜</th><th>비용</th><th>클릭</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+          <thead><tr><th>날짜</th><th class="num">비용</th><th class="num">클릭</th><th class="num">전환</th><th class="num">CTR</th><th class="num">CVR</th><th class="num">CPA</th></tr></thead>
           <tbody>
             {% for d in detail.last_n_days %}
             <tr>
@@ -107,7 +107,7 @@
   <div class="card">
     <h2>{{ detail.branch }} 운영 소재 ({{ detail.creatives | length }}개)</h2>
     <table>
-      <thead><tr><th>소재명</th><th>TIER</th><th>유형</th><th>집행일수</th><th>비용</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+      <thead><tr><th>소재명</th><th>TIER</th><th>유형</th><th class="num">집행일수</th><th class="num">비용</th><th class="num">전환</th><th class="num">CTR</th><th class="num">CVR</th><th class="num">CPA</th></tr></thead>
       <tbody>
         {% for c in detail.creatives %}
         <tr>

@@ -38,6 +38,26 @@ EFF_WEIGHT = {
     'new': 1.00,     # 신규 → 계획 유지
 }
 
+# 신규 지점 학습 예산 룰 (codex R10 합의)
+NEW_BRANCH_RULE = {
+    'min_budget': 1_000_000,
+    'observation_weeks': 3,
+    'cpa_threshold_multiplier': 1.2,   # 9개 지점 정상월 CPA 평균 × 1.2
+    'cvr_threshold_multiplier': 0.8,   # 9개 지점 정상월 CVR 평균 × 0.8
+    'pass_combine': 'AND',
+    'pass_action_range': (1_900_000, 2_000_000),
+    'fail_action': '학습 예산 1.0M 유지 + 소재/타겟 점검',
+}
+
+# 18M 가이드라인 (soft) 적용 시 감액 우선순위 (codex R9 권장)
+GUIDELINE_CAP = 18_000_000
+CAP_DEDUCTION_RULE = [
+    {'priority': 1, 'target': '신규 학습 지점', 'rationale': '학습 단계 - 성과 검증 전이라 감액 영향 최소'},
+    {'priority': 2, 'target': '효율 부진(grade=bad) 지점', 'rationale': 'CVR 회복 전 증액 보류 원칙과 정합'},
+    {'priority': 3, 'target': '효율 평균(grade=average) 지점 일률 감축', 'rationale': '전체 균형 조정'},
+    {'priority': 4, 'target': '효율 우수(grade=good) 지점', 'rationale': '마지막 순위 - ROI 보호'},
+]
+
 
 def analyze(parsed_path: str) -> dict:
     df = pd.read_parquet(parsed_path)
@@ -192,16 +212,35 @@ def analyze(parsed_path: str) -> dict:
     )
 
     # 권장 = 정상월 평균 집행 × 지점별 효율 가중 (codex 권장)
+    # 신규 지점은 학습 예산 룰(codex R10) 적용
+    cpa_pass_threshold = int(avg_cpa * NEW_BRANCH_RULE['cpa_threshold_multiplier']) if avg_cpa else None
+    # CVR 평균은 정상월 누적에서 직접 계산
+    normal_total_clicks = int(df_normal['clicks'].sum())
+    avg_cvr = round(normal_total_conv / normal_total_clicks * 100, 2) if normal_total_clicks else None
+    cvr_pass_threshold = round(avg_cvr * NEW_BRANCH_RULE['cvr_threshold_multiplier'], 2) if avg_cvr else None
+
     recommended_by_branch = {}
     for branch in VALID_BRANCHES:
         bd = by_branch[branch]
         grade = bd['efficiency_grade']
         weight = EFF_WEIGHT.get(grade, 1.0)
         base = bd['avg_monthly_cost']
+        learning_rule = None
         if bd['is_new_branch']:
-            # 신규 지점은 5월 부분 운영 그대로 (없으면 0)
-            rec = bd['partial_may_cost'] if bd['partial_may_cost'] else 0
-            reason = '신규 학습 안정화 - 5월 부분 운영 수준 유지'
+            # 신규 지점: codex R10 학습 예산 룰
+            rec = NEW_BRANCH_RULE['min_budget']
+            reason = '신규 학습 - 최소 집행액 + 3주 관찰 후 통과 시 정상 산식 편입'
+            learning_rule = {
+                'min_budget': NEW_BRANCH_RULE['min_budget'],
+                'observation_weeks': NEW_BRANCH_RULE['observation_weeks'],
+                'cpa_pass_threshold': cpa_pass_threshold,
+                'cvr_pass_threshold': cvr_pass_threshold,
+                'pass_combine': NEW_BRANCH_RULE['pass_combine'],
+                'pass_budget_range': NEW_BRANCH_RULE['pass_action_range'],
+                'fail_action': NEW_BRANCH_RULE['fail_action'],
+                'measurement_note': '관찰 종료 시 전환 수 n 함께 표시 — n이 적으면 CPA/CVR 변동성 큼',
+                'partial_may_cost_reference': bd['partial_may_cost'],
+            }
         elif bd['no_data']:
             rec = 0
             reason = '데이터 없음 - 신규 진입 시 별도 계획 필요'
@@ -219,9 +258,28 @@ def analyze(parsed_path: str) -> dict:
             'delta_pct': delta_pct,
             'reason': reason,
             'base_avg_monthly_cost': base,
+            'efficiency_grade': grade,
+            'learning_rule': learning_rule,
         }
 
     recommended_total = sum(r['recommended_june_budget'] for r in recommended_by_branch.values())
+
+    # 부산 통과 시 조건부 추가 예산 (제안서 표기용)
+    pass_addition = NEW_BRANCH_RULE['pass_action_range'][1] - NEW_BRANCH_RULE['min_budget']
+    recommended_total_if_new_pass = recommended_total + pass_addition
+
+    # 18M cap normalize 시나리오 (codex R9 우려 #2)
+    cap_overage = recommended_total - GUIDELINE_CAP
+    cap_overage_pct = round(cap_overage / GUIDELINE_CAP * 100, 1) if GUIDELINE_CAP else None
+    normalize_table = {
+        'guideline_cap': GUIDELINE_CAP,
+        'guideline_type': 'soft',
+        'recommended_total': recommended_total,
+        'overage_amount': cap_overage,
+        'overage_pct': cap_overage_pct,
+        'deduction_priority': CAP_DEDUCTION_RULE,
+        'note': '18M cap 적용 시 위 우선순위로 감액. 지점별 세부 숫자 대신 감액 원칙 제시 — cap 적용 시 KPI 달성률 하락 가능.',
+    }
 
     # 시나리오 표시값
     scenarios = {
@@ -264,11 +322,15 @@ def analyze(parsed_path: str) -> dict:
         'june_scenarios': scenarios,
         'june_recommended_by_branch': recommended_by_branch,
         'june_recommended_total': recommended_total,
+        'june_recommended_total_if_new_pass': recommended_total_if_new_pass,
+        'new_branch_rule': NEW_BRANCH_RULE,
+        'normalize_18m_table': normalize_table,
         'efficiency_thresholds': {'good': EFF_GOOD, 'bad': EFF_BAD},
         'note': (
             '평균 월간 집행 = 정상월 2~4월 합계 ÷ 3. 5월은 부분 데이터로 평균 산정에서 제외. '
             '효율 점수 = 지점 전환 비중 ÷ 비용 비중. 비용 비중 대비 전환 비중이 클수록 예산 효율 우수. '
-            '6월 권장 예산은 정상월 평균 × 효율 가중 (우수 +10% / 평균 유지 / 부진 -10%).'
+            '6월 권장 예산은 정상월 평균 × 효율 가중 (우수 +10% / 평균 유지 / 부진 -10%). '
+            '신규 지점은 학습 예산 룰 적용 — 최소 집행액 1.0M + 3주 관찰 후 CPA/CVR 통과 시 정상 산식 편입.'
         ),
     }
 

@@ -8,6 +8,7 @@
 """
 import sys
 from pathlib import Path
+import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from common import VALID_BRANCHES
@@ -15,6 +16,88 @@ from common import VALID_BRANCHES
 sys.path.insert(0, str(Path(__file__).parent))
 from analyze_root_cause import analyze as analyze_root
 from analyze_conversion_perspective import analyze as analyze_conv
+
+
+def _find_latest_creative_tier(parsed_path: str) -> Path | None:
+    """parsed_path와 같은 디렉토리에 creative_tier.parquet이 없으면
+    output/data/ 하위에서 가장 최신 디렉토리의 것을 찾는다."""
+    same_dir = Path(parsed_path).parent / 'creative_tier.parquet'
+    if same_dir.exists():
+        return same_dir
+    data_root = Path(parsed_path).parent.parent
+    if not data_root.exists():
+        return None
+    candidates = sorted(
+        [d for d in data_root.iterdir() if d.is_dir() and (d / 'creative_tier.parquet').exists()],
+        key=lambda d: d.name,
+        reverse=True,
+    )
+    return (candidates[0] / 'creative_tier.parquet') if candidates else None
+
+
+def _load_creative_tier(parsed_path: str, top_n: int = 2) -> dict:
+    """creative_tier.parquet에서 지점별 TIER1/TIER4 소재명 추출.
+
+    creative_tier.parquet은 소재 단위 집계 — 지점 컬럼이 없고 `집행지점목록`(list)에 분포.
+    한 소재가 여러 지점에 ON되어 있을 수 있어, 각 지점에 대해 그 지점이 list에 포함된 소재만 필터.
+
+    Returns: {branch: {'tier1': [{name, cpa, cvr}], 'tier4': [...]}}
+    """
+    tier_path = _find_latest_creative_tier(parsed_path)
+    if tier_path is None:
+        return {}
+    try:
+        df = pd.read_parquet(tier_path)
+    except Exception:
+        return {}
+    if df.empty:
+        return {}
+
+    name_col = '매칭키' if '매칭키' in df.columns else ('creative_name' if 'creative_name' in df.columns else None)
+    tier_col = 'TIER' if 'TIER' in df.columns else ('tier' if 'tier' in df.columns else None)
+    cpa_col = 'CPA' if 'CPA' in df.columns else ('cpa' if 'cpa' in df.columns else None)
+    cvr_col = 'CVR' if 'CVR' in df.columns else ('cvr' if 'cvr' in df.columns else None)
+    branches_col = '집행지점목록' if '집행지점목록' in df.columns else None
+    if not name_col or not tier_col or not branches_col:
+        return {}
+
+    result = {}
+    for branch in VALID_BRANCHES:
+        def has_branch(lst, b=branch):
+            try:
+                return b in list(lst) if lst is not None else False
+            except Exception:
+                return False
+        bdf = df[df[branches_col].apply(has_branch)].copy()
+        if bdf.empty:
+            continue
+        tier1 = bdf[bdf[tier_col].astype(str).str.upper() == 'TIER1']
+        if cpa_col and cpa_col in tier1.columns:
+            tier1 = tier1.sort_values(by=cpa_col, na_position='last')
+        tier1_items = []
+        for _, r in tier1.head(top_n).iterrows():
+            cpa_v = r.get(cpa_col) if cpa_col else None
+            cvr_v = r.get(cvr_col) if cvr_col else None
+            tier1_items.append({
+                'name': str(r[name_col]),
+                'cpa': None if cpa_v is None or pd.isna(cpa_v) else int(cpa_v),
+                'cvr': None if cvr_v is None or pd.isna(cvr_v) else float(cvr_v),
+            })
+        tier4 = bdf[bdf[tier_col].astype(str).str.upper() == 'TIER4']
+        if cpa_col and cpa_col in tier4.columns:
+            tier4 = tier4.sort_values(by=cpa_col, ascending=False, na_position='last')
+        tier4_items = []
+        for _, r in tier4.head(top_n).iterrows():
+            cpa_v = r.get(cpa_col) if cpa_col else None
+            cvr_v = r.get(cvr_col) if cvr_col else None
+            tier4_items.append({
+                'name': str(r[name_col]),
+                'cpa': None if cpa_v is None or pd.isna(cpa_v) else int(cpa_v),
+                'cvr': None if cvr_v is None or pd.isna(cvr_v) else float(cvr_v),
+            })
+        if tier1_items or tier4_items:
+            result[branch] = {'tier1': tier1_items, 'tier4': tier4_items}
+    return result
 
 
 # 지점간 비교 약점 metric → 운영 액션 매핑
@@ -102,6 +185,7 @@ def _weakness_severity_sum(weaknesses: list) -> float:
 def analyze(parsed_path: str) -> dict:
     rc = analyze_root(parsed_path)
     cp = analyze_conv(parsed_path)
+    creative_tier_by_branch = _load_creative_tier(parsed_path)
 
     rows = []
     for branch in VALID_BRANCHES:
@@ -136,6 +220,7 @@ def analyze(parsed_path: str) -> dict:
                 'trend_warnings': [],
                 'conv_share_pct': None,
                 'cpa_grade': cd.get('cpa_grade'),
+                'creative_tier_inline': creative_tier_by_branch.get(branch, {'tier1': [], 'tier4': []}),
             })
             continue
 
@@ -202,6 +287,7 @@ def analyze(parsed_path: str) -> dict:
             'trend_warnings': trend_warnings,
             'conv_share_pct': cd['conv_share_pct'],
             'cpa_grade': cd['cpa_grade'],
+            'creative_tier_inline': creative_tier_by_branch.get(branch, {'tier1': [], 'tier4': []}),
         })
 
     # 정렬: 그룹 (A→B→C) → 약점 심각도 합 큰 순 → 전환 비중 큰 순

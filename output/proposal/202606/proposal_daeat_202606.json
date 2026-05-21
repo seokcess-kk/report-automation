@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-19 23:49",
+    "generated_at": "2026-05-20 16:17",
     "data_period": "2026-02 ~ 2026-05 (마지막: 2026-05-15)",
     "branches": [
       "서울",
@@ -14,7 +14,7 @@
       "부산"
     ],
     "campaign_objective": "전환 수 증대 (주요 목적)",
-    "partial_month_note": "2026-05는 2026-05-15까지의 부분월 데이터입니다. 누적 진단은 2~5월을 참고하되, 6월 목표·베스트월·예산 산정은 정상월 2~4월을 기준으로 합니다."
+    "partial_month_note": "2026-05는 운영 도중 중단된 부분 데이터 (15일까지). 월 환산 무의미하므로 6월 계획 베이스라인은 4월을 사용."
   },
   "funnel_by_month": {
     "months": [
@@ -3361,8 +3361,7 @@
             "cvr": 7.97,
             "cpa": 24386
           }
-        },
-        "data_caveat": "2026-04부터 정상 운영 데이터가 확인되어 목표·진단 신뢰도는 1개월 기준입니다."
+        }
       },
       "부산": {
         "is_new_branch": true,
@@ -3422,8 +3421,7 @@
           "2026-02": null,
           "2026-03": null,
           "2026-04": null
-        },
-        "data_caveat": "2026-05 신규·부분월 데이터 기준입니다. 6월은 정상월 확장성 검증이 우선입니다."
+        }
       }
     },
     "overall_targets": {
@@ -3452,8 +3450,7 @@
         "source_month": "지점별 베스트월 합산"
       }
     },
-    "note": "6월 목표는 정상 운영 월(2~4월) 베스트 기준. 5월은 운영 중단 부분 데이터로 베스트 후보·시점 비교 모두에서 제외.",
-    "interpretation_note": "지점별 베스트월 KPI는 각 지표의 과거 최고 성과 기준입니다. CPA·CTR·CVR의 source month가 다를 수 있어 동시 달성 보장이 아니라 운영 가드레일로 해석합니다."
+    "note": "6월 목표는 정상 운영 월(2~4월) 베스트 기준. 5월은 운영 중단 부분 데이터로 베스트 후보·시점 비교 모두에서 제외."
   },
   "recommendations": {
     "branches": [
@@ -4532,7 +4529,12 @@
     "meta_summary": {
       "addon_ads_in_data": 175,
       "total_ads_in_data": 423,
-      "addon_ratio": 41.4
+      "addon_ratio": 41.4,
+      "thresholds": {
+        "sample_min_clicks": 100,
+        "pair_min_clicks": 100,
+        "type_min_clicks": 50
+      }
     },
     "overall": {
       "addon": {
@@ -4541,10 +4543,10 @@
         "impressions": 1905152,
         "clicks": 11905,
         "conversions": 794,
-        "cpm": 10673,
+        "cpm": 10674,
         "ctr": 0.62,
         "cvr": 6.67,
-        "cpa": 25610
+        "cpa": 25611
       },
       "non_addon": {
         "ad_count": 248,
@@ -4552,17 +4554,305 @@
         "impressions": 4233711,
         "clicks": 25495,
         "conversions": 1477,
-        "cpm": 10116,
+        "cpm": 10117,
         "ctr": 0.6,
         "cvr": 5.79,
-        "cpa": 28998
+        "cpa": 28999
       },
       "delta_pct": {
         "cpm": 5.5,
         "ctr": 3.3,
         "cvr": 15.2,
-        "cpa": -11.7
+        "cpa": -11.7,
+        "cvr_z": 3.31,
+        "cvr_p": 0.0009,
+        "cvr_significant": true
       }
+    },
+    "by_creative_type": {
+      "리얼모델후기": {
+        "addon": {
+          "ad_count": 0,
+          "cost": 0,
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": null
+        },
+        "non_addon": {
+          "ad_count": 8,
+          "cost": 143763,
+          "impressions": 14467,
+          "clicks": 55,
+          "conversions": 0,
+          "cpm": 9937,
+          "ctr": 0.38,
+          "cvr": 0.0,
+          "cpa": null
+        },
+        "delta_pct": {
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": null,
+          "cvr_z": null,
+          "cvr_p": null,
+          "cvr_significant": false
+        },
+        "verdict": {
+          "verdict": "low_sample",
+          "label": "표본 부족 — 판단 보류",
+          "rationale": "애드온 클릭 0 / 비애드온 클릭 55 (기준 50)"
+        }
+      },
+      "방문후기": {
+        "addon": {
+          "ad_count": 2,
+          "cost": 111207,
+          "impressions": 16993,
+          "clicks": 64,
+          "conversions": 1,
+          "cpm": 6544,
+          "ctr": 0.38,
+          "cvr": 1.56,
+          "cpa": 111207
+        },
+        "non_addon": {
+          "ad_count": 0,
+          "cost": 0,
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": null
+        },
+        "delta_pct": {
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": null,
+          "cvr_z": null,
+          "cvr_p": null,
+          "cvr_significant": false
+        },
+        "verdict": {
+          "verdict": "low_sample",
+          "label": "표본 부족 — 판단 보류",
+          "rationale": "애드온 클릭 64 / 비애드온 클릭 0 (기준 50)"
+        }
+      },
+      "의료진정보": {
+        "addon": {
+          "ad_count": 16,
+          "cost": 904280,
+          "impressions": 95425,
+          "clicks": 439,
+          "conversions": 21,
+          "cpm": 9476,
+          "ctr": 0.46,
+          "cvr": 4.78,
+          "cpa": 43061
+        },
+        "non_addon": {
+          "ad_count": 38,
+          "cost": 5517431,
+          "impressions": 619251,
+          "clicks": 3811,
+          "conversions": 185,
+          "cpm": 8910,
+          "ctr": 0.62,
+          "cvr": 4.85,
+          "cpa": 29824
+        },
+        "delta_pct": {
+          "cpm": 6.4,
+          "ctr": -25.8,
+          "cvr": -1.4,
+          "cpa": 44.4,
+          "cvr_z": -0.07,
+          "cvr_p": 0.9479,
+          "cvr_significant": false
+        },
+        "verdict": {
+          "verdict": "hold",
+          "label": "6월 보류",
+          "rationale": "CVR -1.4% · CPA 44.4% (애드온 부정적 신호)"
+        }
+      },
+      "인플방문후기": {
+        "addon": {
+          "ad_count": 45,
+          "cost": 6157721,
+          "impressions": 645714,
+          "clicks": 2945,
+          "conversions": 193,
+          "cpm": 9536,
+          "ctr": 0.46,
+          "cvr": 6.55,
+          "cpa": 31905
+        },
+        "non_addon": {
+          "ad_count": 70,
+          "cost": 13029540,
+          "impressions": 1404973,
+          "clicks": 8060,
+          "conversions": 433,
+          "cpm": 9274,
+          "ctr": 0.57,
+          "cvr": 5.37,
+          "cpa": 30091
+        },
+        "delta_pct": {
+          "cpm": 2.8,
+          "ctr": -19.3,
+          "cvr": 22.0,
+          "cpa": 6.0,
+          "cvr_z": 2.37,
+          "cvr_p": 0.0179,
+          "cvr_significant": true
+        },
+        "verdict": {
+          "verdict": "expand",
+          "label": "6월 확대 권고",
+          "rationale": "CVR +22.0% · CPA 6.0% (p=0.0179, 통계적 유의)"
+        }
+      },
+      "진료QnA": {
+        "addon": {
+          "ad_count": 7,
+          "cost": 515234,
+          "impressions": 58870,
+          "clicks": 213,
+          "conversions": 16,
+          "cpm": 8752,
+          "ctr": 0.36,
+          "cvr": 7.51,
+          "cpa": 32202
+        },
+        "non_addon": {
+          "ad_count": 7,
+          "cost": 42473,
+          "impressions": 3917,
+          "clicks": 21,
+          "conversions": 1,
+          "cpm": 10843,
+          "ctr": 0.54,
+          "cvr": 4.76,
+          "cpa": 42473
+        },
+        "delta_pct": {
+          "cpm": -19.3,
+          "ctr": -33.3,
+          "cvr": 57.8,
+          "cpa": -24.2,
+          "cvr_z": 0.46,
+          "cvr_p": 0.6432,
+          "cvr_significant": false
+        },
+        "verdict": {
+          "verdict": "low_sample",
+          "label": "표본 부족 — 판단 보류",
+          "rationale": "애드온 클릭 213 / 비애드온 클릭 21 (기준 50)"
+        }
+      },
+      "진료셀프캠": {
+        "addon": {
+          "ad_count": 105,
+          "cost": 12646605,
+          "impressions": 1088150,
+          "clicks": 8244,
+          "conversions": 563,
+          "cpm": 11622,
+          "ctr": 0.76,
+          "cvr": 6.83,
+          "cpa": 22463
+        },
+        "non_addon": {
+          "ad_count": 125,
+          "cost": 24098178,
+          "impressions": 2191103,
+          "clicks": 13548,
+          "conversions": 858,
+          "cpm": 10998,
+          "ctr": 0.62,
+          "cvr": 6.33,
+          "cpa": 28086
+        },
+        "delta_pct": {
+          "cpm": 5.7,
+          "ctr": 22.6,
+          "cvr": 7.9,
+          "cpa": -20.0,
+          "cvr_z": 1.44,
+          "cvr_p": 0.1502,
+          "cvr_significant": false
+        },
+        "verdict": {
+          "verdict": "noop",
+          "label": "직관 운영 (유의성 부족)",
+          "rationale": "CVR 7.9% · CPA -20.0% (p=0.1502, 통계적 유의성 없음)"
+        }
+      }
+    },
+    "creative_type_verdicts": [
+      {
+        "creative_type": "리얼모델후기",
+        "verdict": "low_sample",
+        "label": "표본 부족 — 판단 보류",
+        "rationale": "애드온 클릭 0 / 비애드온 클릭 55 (기준 50)"
+      },
+      {
+        "creative_type": "방문후기",
+        "verdict": "low_sample",
+        "label": "표본 부족 — 판단 보류",
+        "rationale": "애드온 클릭 64 / 비애드온 클릭 0 (기준 50)"
+      },
+      {
+        "creative_type": "의료진정보",
+        "verdict": "hold",
+        "label": "6월 보류",
+        "rationale": "CVR -1.4% · CPA 44.4% (애드온 부정적 신호)"
+      },
+      {
+        "creative_type": "인플방문후기",
+        "verdict": "expand",
+        "label": "6월 확대 권고",
+        "rationale": "CVR +22.0% · CPA 6.0% (p=0.0179, 통계적 유의)"
+      },
+      {
+        "creative_type": "진료QnA",
+        "verdict": "low_sample",
+        "label": "표본 부족 — 판단 보류",
+        "rationale": "애드온 클릭 213 / 비애드온 클릭 21 (기준 50)"
+      },
+      {
+        "creative_type": "진료셀프캠",
+        "verdict": "noop",
+        "label": "직관 운영 (유의성 부족)",
+        "rationale": "CVR 7.9% · CPA -20.0% (p=0.1502, 통계적 유의성 없음)"
+      }
+    ],
+    "judgement": {
+      "expand": [
+        "인플방문후기"
+      ],
+      "hold": [
+        "의료진정보"
+      ],
+      "noop": [
+        "진료셀프캠"
+      ],
+      "low_sample": [
+        "리얼모델후기",
+        "방문후기",
+        "진료QnA"
+      ],
+      "headline": "6월 운영: 확대 ['인플방문후기'] · 보류 ['의료진정보'] · 직관 운영 ['진료셀프캠'] · 표본 부족 ['리얼모델후기', '방문후기', '진료QnA']"
     },
     "by_branch": {
       "서울": {
@@ -4583,7 +4873,7 @@
           "impressions": 471391,
           "clicks": 4055,
           "conversions": 293,
-          "cpm": 10571,
+          "cpm": 10572,
           "ctr": 0.86,
           "cvr": 7.23,
           "cpa": 17008
@@ -4592,8 +4882,12 @@
           "cpm": 12.3,
           "ctr": -5.8,
           "cvr": 37.5,
-          "cpa": -13.3
-        }
+          "cpa": -13.3,
+          "cvr_z": 3.56,
+          "cvr_p": 0.0004,
+          "cvr_significant": true
+        },
+        "sample_warning": false
       },
       "부평": {
         "addon": {
@@ -4613,7 +4907,7 @@
           "impressions": 865328,
           "clicks": 4867,
           "conversions": 257,
-          "cpm": 10519,
+          "cpm": 10520,
           "ctr": 0.56,
           "cvr": 5.28,
           "cpa": 35420
@@ -4622,8 +4916,12 @@
           "cpm": -0.6,
           "ctr": 5.4,
           "cvr": 31.1,
-          "cpa": -27.3
-        }
+          "cpa": -27.3,
+          "cvr_z": 2.61,
+          "cvr_p": 0.009,
+          "cvr_significant": true
+        },
+        "sample_warning": false
       },
       "수원": {
         "addon": {
@@ -4635,7 +4933,7 @@
           "cpm": 9931,
           "ctr": 0.44,
           "cvr": 5.21,
-          "cpa": 43311
+          "cpa": 43312
         },
         "non_addon": {
           "ad_count": 33,
@@ -4643,7 +4941,7 @@
           "impressions": 789793,
           "clicks": 3807,
           "conversions": 144,
-          "cpm": 9380,
+          "cpm": 9381,
           "ctr": 0.48,
           "cvr": 3.78,
           "cpa": 51450
@@ -4652,8 +4950,12 @@
           "cpm": 5.9,
           "ctr": -8.3,
           "cvr": 37.8,
-          "cpa": -15.8
-        }
+          "cpa": -15.8,
+          "cvr_z": 2.28,
+          "cvr_p": 0.0225,
+          "cvr_significant": true
+        },
+        "sample_warning": false
       },
       "일산": {
         "addon": {
@@ -4665,7 +4967,7 @@
           "cpm": 12623,
           "ctr": 0.99,
           "cvr": 7.04,
-          "cpa": 18152
+          "cpa": 18153
         },
         "non_addon": {
           "ad_count": 31,
@@ -4673,7 +4975,7 @@
           "impressions": 297651,
           "clicks": 2169,
           "conversions": 163,
-          "cpm": 10371,
+          "cpm": 10372,
           "ctr": 0.73,
           "cvr": 7.51,
           "cpa": 18939
@@ -4682,8 +4984,12 @@
           "cpm": 21.7,
           "ctr": 35.6,
           "cvr": -6.3,
-          "cpa": -4.2
-        }
+          "cpa": -4.2,
+          "cvr_z": -0.53,
+          "cvr_p": 0.5951,
+          "cvr_significant": false
+        },
+        "sample_warning": false
       },
       "대구": {
         "addon": {
@@ -4692,10 +4998,10 @@
           "impressions": 334732,
           "clicks": 1867,
           "conversions": 142,
-          "cpm": 9936,
+          "cpm": 9937,
           "ctr": 0.56,
           "cvr": 7.61,
-          "cpa": 23423
+          "cpa": 23424
         },
         "non_addon": {
           "ad_count": 32,
@@ -4703,7 +5009,7 @@
           "impressions": 636230,
           "clicks": 3812,
           "conversions": 255,
-          "cpm": 9364,
+          "cpm": 9365,
           "ctr": 0.6,
           "cvr": 6.69,
           "cpa": 23365
@@ -4712,8 +5018,12 @@
           "cpm": 6.1,
           "ctr": -6.7,
           "cvr": 13.8,
-          "cpa": 0.2
-        }
+          "cpa": 0.3,
+          "cvr_z": 1.27,
+          "cvr_p": 0.2033,
+          "cvr_significant": false
+        },
+        "sample_warning": false
       },
       "창원": {
         "addon": {
@@ -4722,7 +5032,7 @@
           "impressions": 248698,
           "clicks": 1386,
           "conversions": 61,
-          "cpm": 9706,
+          "cpm": 9707,
           "ctr": 0.56,
           "cvr": 4.4,
           "cpa": 39574
@@ -4733,7 +5043,7 @@
           "impressions": 538563,
           "clicks": 2876,
           "conversions": 127,
-          "cpm": 9946,
+          "cpm": 9947,
           "ctr": 0.53,
           "cvr": 4.42,
           "cpa": 42180
@@ -4742,8 +5052,12 @@
           "cpm": -2.4,
           "ctr": 5.7,
           "cvr": -0.5,
-          "cpa": -6.2
-        }
+          "cpa": -6.2,
+          "cvr_z": -0.02,
+          "cvr_p": 0.9825,
+          "cvr_significant": false
+        },
+        "sample_warning": false
       },
       "천안": {
         "addon": {
@@ -4752,7 +5066,7 @@
           "impressions": 228165,
           "clicks": 1350,
           "conversions": 70,
-          "cpm": 11209,
+          "cpm": 11210,
           "ctr": 0.59,
           "cvr": 5.19,
           "cpa": 36538
@@ -4763,17 +5077,21 @@
           "impressions": 434960,
           "clicks": 2562,
           "conversions": 125,
-          "cpm": 9957,
+          "cpm": 9958,
           "ctr": 0.59,
           "cvr": 4.88,
-          "cpa": 34649
+          "cpa": 34650
         },
         "delta_pct": {
           "cpm": 12.6,
           "ctr": 0.0,
           "cvr": 6.4,
-          "cpa": 5.5
-        }
+          "cpa": 5.4,
+          "cvr_z": 0.42,
+          "cvr_p": 0.6757,
+          "cvr_significant": false
+        },
+        "sample_warning": false
       },
       "대전": {
         "addon": {
@@ -4782,7 +5100,7 @@
           "impressions": 60947,
           "clicks": 628,
           "conversions": 26,
-          "cpm": 13532,
+          "cpm": 13533,
           "ctr": 1.03,
           "cvr": 4.14,
           "cpa": 31722
@@ -4793,7 +5111,7 @@
           "impressions": 157396,
           "clicks": 1029,
           "conversions": 82,
-          "cpm": 12704,
+          "cpm": 12705,
           "ctr": 0.65,
           "cvr": 7.97,
           "cpa": 24386
@@ -4802,8 +5120,12 @@
           "cpm": 6.5,
           "ctr": 58.5,
           "cvr": -48.1,
-          "cpa": 30.1
-        }
+          "cpa": 30.1,
+          "cvr_z": -3.06,
+          "cvr_p": 0.0022,
+          "cvr_significant": true
+        },
+        "sample_warning": false
       },
       "부산": {
         "addon": {
@@ -4815,7 +5137,7 @@
           "cpm": 6431,
           "ctr": 0.52,
           "cvr": 5.88,
-          "cpa": 21129
+          "cpa": 21130
         },
         "non_addon": {
           "ad_count": 6,
@@ -4823,7 +5145,7 @@
           "impressions": 42399,
           "clicks": 318,
           "conversions": 31,
-          "cpm": 14224,
+          "cpm": 14225,
           "ctr": 0.75,
           "cvr": 9.75,
           "cpa": 19455
@@ -4832,164 +5154,47 @@
           "cpm": -54.8,
           "ctr": -30.7,
           "cvr": -39.7,
-          "cpa": 8.6
-        }
+          "cpa": 8.6,
+          "cvr_z": -1.01,
+          "cvr_p": 0.3136,
+          "cvr_significant": false
+        },
+        "sample_warning": true
       }
     },
     "creative_pairs": [
       {
-        "creative_name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+        "creative_name": "진료셀프캠_주사형비만치료제 고민끝에 40대부부 -32kg",
         "addon": {
-          "ad_count": 13,
-          "cost": 4637898,
-          "impressions": 425225,
-          "clicks": 4101,
-          "conversions": 223,
-          "cpm": 10906,
-          "ctr": 0.96,
-          "cvr": 5.44,
-          "cpa": 20797
-        },
-        "non_addon": {
-          "ad_count": 10,
-          "cost": 5991516,
-          "impressions": 647957,
-          "clicks": 3960,
-          "conversions": 219,
-          "cpm": 9246,
-          "ctr": 0.61,
-          "cvr": 5.53,
-          "cpa": 27358
-        },
-        "delta_pct": {
-          "cpm": 18.0,
-          "ctr": 57.4,
-          "cvr": -1.6,
-          "cpa": -24.0
-        }
-      },
-      {
-        "creative_name": "진료셀프캠_다이어트의적 밥빵면",
-        "addon": {
-          "ad_count": 9,
-          "cost": 1336051,
-          "impressions": 70671,
-          "clicks": 837,
-          "conversions": 65,
-          "cpm": 18905,
-          "ctr": 1.18,
-          "cvr": 7.77,
-          "cpa": 20554
+          "ad_count": 2,
+          "cost": 378838,
+          "impressions": 25435,
+          "clicks": 183,
+          "conversions": 18,
+          "cpm": 14894,
+          "ctr": 0.72,
+          "cvr": 9.84,
+          "cpa": 21047
         },
         "non_addon": {
           "ad_count": 3,
-          "cost": 1338290,
-          "impressions": 75994,
-          "clicks": 709,
-          "conversions": 54,
-          "cpm": 17610,
-          "ctr": 0.93,
-          "cvr": 7.62,
-          "cpa": 24783
+          "cost": 436831,
+          "impressions": 33969,
+          "clicks": 312,
+          "conversions": 16,
+          "cpm": 12860,
+          "ctr": 0.92,
+          "cvr": 5.13,
+          "cpa": 27302
         },
         "delta_pct": {
-          "cpm": 7.4,
-          "ctr": 26.9,
-          "cvr": 2.0,
-          "cpa": -17.1
-        }
-      },
-      {
-        "creative_name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
-        "addon": {
-          "ad_count": 8,
-          "cost": 401142,
-          "impressions": 43512,
-          "clicks": 215,
-          "conversions": 19,
-          "cpm": 9219,
-          "ctr": 0.49,
-          "cvr": 8.84,
-          "cpa": 21112
-        },
-        "non_addon": {
-          "ad_count": 9,
-          "cost": 2347301,
-          "impressions": 264772,
-          "clicks": 1069,
-          "conversions": 75,
-          "cpm": 8865,
-          "ctr": 0.4,
-          "cvr": 7.02,
-          "cpa": 31297
-        },
-        "delta_pct": {
-          "cpm": 4.0,
-          "ctr": 22.5,
-          "cvr": 25.9,
-          "cpa": -32.5
-        }
-      },
-      {
-        "creative_name": "진료셀프캠_식욕억제주사실패 마지막",
-        "addon": {
-          "ad_count": 8,
-          "cost": 929205,
-          "impressions": 50563,
-          "clicks": 446,
-          "conversions": 41,
-          "cpm": 18377,
-          "ctr": 0.88,
-          "cvr": 9.19,
-          "cpa": 22663
-        },
-        "non_addon": {
-          "ad_count": 10,
-          "cost": 7439210,
-          "impressions": 486232,
-          "clicks": 3821,
-          "conversions": 270,
-          "cpm": 15299,
-          "ctr": 0.79,
-          "cvr": 7.07,
-          "cpa": 27552
-        },
-        "delta_pct": {
-          "cpm": 20.1,
-          "ctr": 11.4,
-          "cvr": 30.0,
-          "cpa": -17.7
-        }
-      },
-      {
-        "creative_name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
-        "addon": {
-          "ad_count": 9,
-          "cost": 2775630,
-          "impressions": 226571,
-          "clicks": 1448,
-          "conversions": 146,
-          "cpm": 12250,
-          "ctr": 0.64,
-          "cvr": 10.08,
-          "cpa": 19011
-        },
-        "non_addon": {
-          "ad_count": 11,
-          "cost": 3943173,
-          "impressions": 332442,
-          "clicks": 2218,
-          "conversions": 169,
-          "cpm": 11861,
-          "ctr": 0.67,
-          "cvr": 7.62,
-          "cpa": 23332
-        },
-        "delta_pct": {
-          "cpm": 3.3,
-          "ctr": -4.5,
-          "cvr": 32.3,
-          "cpa": -18.5
+          "cpm": 15.8,
+          "ctr": -21.7,
+          "cvr": 91.8,
+          "cpa": -22.9,
+          "cvr_z": 2.0,
+          "cvr_p": 0.0456,
+          "cvr_significant": true
         }
       },
       {
@@ -5020,69 +5225,10 @@
           "cpm": 37.8,
           "ctr": -12.5,
           "cvr": 63.8,
-          "cpa": -2.0
-        }
-      },
-      {
-        "creative_name": "진료셀프캠_주사형비만치료제 고민끝에 40대부부 -32kg",
-        "addon": {
-          "ad_count": 2,
-          "cost": 378838,
-          "impressions": 25435,
-          "clicks": 183,
-          "conversions": 18,
-          "cpm": 14894,
-          "ctr": 0.72,
-          "cvr": 9.84,
-          "cpa": 21046
-        },
-        "non_addon": {
-          "ad_count": 3,
-          "cost": 436831,
-          "impressions": 33969,
-          "clicks": 312,
-          "conversions": 16,
-          "cpm": 12859,
-          "ctr": 0.92,
-          "cvr": 5.13,
-          "cpa": 27301
-        },
-        "delta_pct": {
-          "cpm": 15.8,
-          "ctr": -21.7,
-          "cvr": 91.8,
-          "cpa": -22.9
-        }
-      },
-      {
-        "creative_name": "인플방문후기_맘껏먹는 다이어트 한달후기",
-        "addon": {
-          "ad_count": 7,
-          "cost": 2066039,
-          "impressions": 205639,
-          "clicks": 1018,
-          "conversions": 71,
-          "cpm": 10046,
-          "ctr": 0.5,
-          "cvr": 6.97,
-          "cpa": 29099
-        },
-        "non_addon": {
-          "ad_count": 3,
-          "cost": 369139,
-          "impressions": 28237,
-          "clicks": 211,
-          "conversions": 16,
-          "cpm": 13072,
-          "ctr": 0.75,
-          "cvr": 7.58,
-          "cpa": 23071
-        },
-        "delta_pct": {
-          "cpm": -23.1,
-          "ctr": -33.3,
-          "cvr": -8.0,
-          "cpa": 26.1
+          "cpa": -2.0,
+          "cvr_z": 2.46,
+          "cvr_p": 0.0138,
+          "cvr_significant": true
         }
       },
       {
@@ -5113,7 +5259,112 @@
           "cpm": 20.9,
           "ctr": -35.1,
           "cvr": 36.1,
-          "cpa": 36.6
+          "cpa": 36.6,
+          "cvr_z": 1.47,
+          "cvr_p": 0.1405,
+          "cvr_significant": false
+        }
+      },
+      {
+        "creative_name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+        "addon": {
+          "ad_count": 9,
+          "cost": 2775630,
+          "impressions": 226571,
+          "clicks": 1448,
+          "conversions": 146,
+          "cpm": 12251,
+          "ctr": 0.64,
+          "cvr": 10.08,
+          "cpa": 19011
+        },
+        "non_addon": {
+          "ad_count": 11,
+          "cost": 3943173,
+          "impressions": 332442,
+          "clicks": 2218,
+          "conversions": 169,
+          "cpm": 11861,
+          "ctr": 0.67,
+          "cvr": 7.62,
+          "cpa": 23332
+        },
+        "delta_pct": {
+          "cpm": 3.3,
+          "ctr": -4.5,
+          "cvr": 32.3,
+          "cpa": -18.5,
+          "cvr_z": 2.6,
+          "cvr_p": 0.0093,
+          "cvr_significant": true
+        }
+      },
+      {
+        "creative_name": "진료셀프캠_식욕억제주사실패 마지막",
+        "addon": {
+          "ad_count": 8,
+          "cost": 929205,
+          "impressions": 50563,
+          "clicks": 446,
+          "conversions": 41,
+          "cpm": 18377,
+          "ctr": 0.88,
+          "cvr": 9.19,
+          "cpa": 22664
+        },
+        "non_addon": {
+          "ad_count": 10,
+          "cost": 7439210,
+          "impressions": 486232,
+          "clicks": 3821,
+          "conversions": 270,
+          "cpm": 15300,
+          "ctr": 0.79,
+          "cvr": 7.07,
+          "cpa": 27553
+        },
+        "delta_pct": {
+          "cpm": 20.1,
+          "ctr": 11.4,
+          "cvr": 30.0,
+          "cpa": -17.7,
+          "cvr_z": 1.63,
+          "cvr_p": 0.1021,
+          "cvr_significant": false
+        }
+      },
+      {
+        "creative_name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+        "addon": {
+          "ad_count": 8,
+          "cost": 401142,
+          "impressions": 43512,
+          "clicks": 215,
+          "conversions": 19,
+          "cpm": 9219,
+          "ctr": 0.49,
+          "cvr": 8.84,
+          "cpa": 21113
+        },
+        "non_addon": {
+          "ad_count": 9,
+          "cost": 2347301,
+          "impressions": 264772,
+          "clicks": 1069,
+          "conversions": 75,
+          "cpm": 8865,
+          "ctr": 0.4,
+          "cvr": 7.02,
+          "cpa": 31297
+        },
+        "delta_pct": {
+          "cpm": 4.0,
+          "ctr": 22.5,
+          "cvr": 25.9,
+          "cpa": -32.5,
+          "cvr_z": 0.94,
+          "cvr_p": 0.3495,
+          "cvr_significant": false
         }
       },
       {
@@ -5127,7 +5378,7 @@
           "cpm": 10776,
           "ctr": 0.64,
           "cvr": 7.46,
-          "cpa": 22465
+          "cpa": 22466
         },
         "non_addon": {
           "ad_count": 2,
@@ -5138,14 +5389,261 @@
           "cpm": 11246,
           "ctr": 1.0,
           "cvr": 6.59,
-          "cpa": 17096
+          "cpa": 17097
         },
         "delta_pct": {
           "cpm": -4.2,
           "ctr": -36.0,
           "cvr": 13.2,
-          "cpa": 31.4
+          "cpa": 31.4,
+          "cvr_z": 0.37,
+          "cvr_p": 0.7094,
+          "cvr_significant": false
         }
+      },
+      {
+        "creative_name": "진료셀프캠_다이어트의적 밥빵면",
+        "addon": {
+          "ad_count": 9,
+          "cost": 1336051,
+          "impressions": 70671,
+          "clicks": 837,
+          "conversions": 65,
+          "cpm": 18905,
+          "ctr": 1.18,
+          "cvr": 7.77,
+          "cpa": 20555
+        },
+        "non_addon": {
+          "ad_count": 3,
+          "cost": 1338290,
+          "impressions": 75994,
+          "clicks": 709,
+          "conversions": 54,
+          "cpm": 17610,
+          "ctr": 0.93,
+          "cvr": 7.62,
+          "cpa": 24783
+        },
+        "delta_pct": {
+          "cpm": 7.4,
+          "ctr": 26.9,
+          "cvr": 2.0,
+          "cpa": -17.1,
+          "cvr_z": 0.11,
+          "cvr_p": 0.9125,
+          "cvr_significant": false
+        }
+      },
+      {
+        "creative_name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+        "addon": {
+          "ad_count": 13,
+          "cost": 4637898,
+          "impressions": 425225,
+          "clicks": 4101,
+          "conversions": 223,
+          "cpm": 10907,
+          "ctr": 0.96,
+          "cvr": 5.44,
+          "cpa": 20798
+        },
+        "non_addon": {
+          "ad_count": 10,
+          "cost": 5991516,
+          "impressions": 647957,
+          "clicks": 3960,
+          "conversions": 219,
+          "cpm": 9247,
+          "ctr": 0.61,
+          "cvr": 5.53,
+          "cpa": 27359
+        },
+        "delta_pct": {
+          "cpm": 18.0,
+          "ctr": 57.4,
+          "cvr": -1.6,
+          "cpa": -24.0,
+          "cvr_z": -0.18,
+          "cvr_p": 0.8551,
+          "cvr_significant": false
+        }
+      },
+      {
+        "creative_name": "인플방문후기_맘껏먹는 다이어트 한달후기",
+        "addon": {
+          "ad_count": 7,
+          "cost": 2066039,
+          "impressions": 205639,
+          "clicks": 1018,
+          "conversions": 71,
+          "cpm": 10047,
+          "ctr": 0.5,
+          "cvr": 6.97,
+          "cpa": 29099
+        },
+        "non_addon": {
+          "ad_count": 3,
+          "cost": 369139,
+          "impressions": 28237,
+          "clicks": 211,
+          "conversions": 16,
+          "cpm": 13073,
+          "ctr": 0.75,
+          "cvr": 7.58,
+          "cpa": 23071
+        },
+        "delta_pct": {
+          "cpm": -23.1,
+          "ctr": -33.3,
+          "cvr": -8.0,
+          "cpa": 26.1,
+          "cvr_z": -0.31,
+          "cvr_p": 0.7538,
+          "cvr_significant": false
+        }
+      }
+    ],
+    "monthly_trend": [
+      {
+        "month": "2026-02",
+        "addon": {
+          "ad_count": 0,
+          "cost": 0,
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 0,
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": null
+        },
+        "non_addon": {
+          "ad_count": 64,
+          "cost": 16721935,
+          "impressions": 1944916,
+          "clicks": 12067,
+          "conversions": 613,
+          "cpm": 8598,
+          "ctr": 0.62,
+          "cvr": 5.08,
+          "cpa": 27279
+        },
+        "delta_pct": {
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": null,
+          "cvr_z": null,
+          "cvr_p": null,
+          "cvr_significant": false
+        },
+        "sample_warning": true
+      },
+      {
+        "month": "2026-03",
+        "addon": {
+          "ad_count": 97,
+          "cost": 13534315,
+          "impressions": 1363211,
+          "clicks": 6519,
+          "conversions": 468,
+          "cpm": 9928,
+          "ctr": 0.48,
+          "cvr": 7.18,
+          "cpa": 28919
+        },
+        "non_addon": {
+          "ad_count": 108,
+          "cost": 2452991,
+          "impressions": 186694,
+          "clicks": 1274,
+          "conversions": 70,
+          "cpm": 13139,
+          "ctr": 0.68,
+          "cvr": 5.49,
+          "cpa": 35043
+        },
+        "delta_pct": {
+          "cpm": -24.4,
+          "ctr": -29.4,
+          "cvr": 30.8,
+          "cpa": -17.5,
+          "cvr_z": 2.17,
+          "cvr_p": 0.0301,
+          "cvr_significant": true
+        },
+        "sample_warning": false
+      },
+      {
+        "month": "2026-04",
+        "addon": {
+          "ad_count": 85,
+          "cost": 0,
+          "impressions": 0,
+          "clicks": 0,
+          "conversions": 1,
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": 0
+        },
+        "non_addon": {
+          "ad_count": 167,
+          "cost": 23029423,
+          "impressions": 2056538,
+          "clicks": 11816,
+          "conversions": 761,
+          "cpm": 11198,
+          "ctr": 0.57,
+          "cvr": 6.44,
+          "cpa": 30262
+        },
+        "delta_pct": {
+          "cpm": null,
+          "ctr": null,
+          "cvr": null,
+          "cpa": -100.0,
+          "cvr_z": null,
+          "cvr_p": null,
+          "cvr_significant": false
+        },
+        "sample_warning": true
+      },
+      {
+        "month": "2026-05",
+        "addon": {
+          "ad_count": 78,
+          "cost": 6800732,
+          "impressions": 541941,
+          "clicks": 5386,
+          "conversions": 325,
+          "cpm": 12549,
+          "ctr": 0.99,
+          "cvr": 6.03,
+          "cpa": 20925
+        },
+        "non_addon": {
+          "ad_count": 118,
+          "cost": 627036,
+          "impressions": 45563,
+          "clicks": 338,
+          "conversions": 33,
+          "cpm": 13762,
+          "ctr": 0.74,
+          "cvr": 9.76,
+          "cpa": 19001
+        },
+        "delta_pct": {
+          "cpm": -8.8,
+          "ctr": 33.8,
+          "cvr": -38.2,
+          "cpa": 10.1,
+          "cvr_z": -2.75,
+          "cvr_p": 0.006,
+          "cvr_significant": true
+        },
+        "sample_warning": false
       }
     ]
   },
@@ -6111,6 +6609,16 @@
           "grade": "inefficient",
           "label": "효율 부진",
           "ratio_pct": 75.1
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6147,6 +6655,21 @@
           "grade": "inefficient",
           "label": "효율 부진",
           "ratio_pct": 48.6
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6181,6 +6704,21 @@
           "grade": "inefficient",
           "label": "효율 부진",
           "ratio_pct": 27.0
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6211,6 +6749,21 @@
           "grade": "average",
           "label": "평균 수준",
           "ratio_pct": -6.0
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6238,6 +6791,21 @@
           "grade": "efficient",
           "label": "효율 우수",
           "ratio_pct": -42.0
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6267,35 +6835,42 @@
           "grade": "efficient",
           "label": "효율 우수",
           "ratio_pct": -15.9
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
         "branch": "부평",
         "is_new_branch": false,
         "is_partial_source": false,
-        "group": "A",
-        "headline": "예산 증액 보류 + 고효율 소재 집중 / CPA 정상화 후 확대 재검토",
+        "group": "B",
+        "headline": "현 운영 유지 + 우수 소재 확대로 전환 볼륨 추가 확보",
         "period_summary": "전환 390건 (17.2%) / CPA 32,119원 / 일평균 3.82건 / [효율 부진]",
         "partial_may_summary": "",
-        "sort_priority": 35.5,
-        "diagnoses": [
-          "전환 단가 비싼 편",
-          "증액 전 CPA 정상화 필요"
-        ],
-        "diagnosis_evidence": [
-          "CPA 32,119원 (전 지점 평균 27,814원 대비 +15.5%)",
-          "전환 볼륨은 높지만 효율 등급은 부진이므로 예산 확대 후보에서 제외"
-        ],
+        "sort_priority": 0,
+        "diagnoses": [],
+        "diagnosis_evidence": [],
         "verify_metrics": [
           "CPA",
-          "CVR",
           "전환수"
         ],
         "actions": [
-          "전환 볼륨은 유지하되 광고 그룹 예산 증액은 보류합니다. CPA 우수 소재 중심으로 광고 단위 ON을 유지하고, CPA/CVR 저성과 소재는 OFF 또는 교체합니다.",
-          "CPA가 전 지점 평균 +10% 이내로 회복되면 B그룹 확대 후보로 재검토합니다."
+          "전 지점 평균 대비 특이 약점 없음 - 현 운영 패턴 유지, 6월에는 우수 소재 확대·신규 콘텐츠 테스트로 전환 볼륨 확대 시도"
         ],
-        "verify_kpi": "CPA 전 지점 평균 +10% 이내 회복 / 전환수 급감 없는 효율 정상화",
+        "verify_kpi": "전 기간 KPI 유지",
         "trend_warnings": [
           "※ CPM 추세 일관 상승 - 매체 경쟁 강도 증가 시그널. 신규 오디언스 확보·시간대 분산 검토"
         ],
@@ -6304,6 +6879,21 @@
           "grade": "inefficient",
           "label": "효율 부진",
           "ratio_pct": 15.5
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6331,6 +6921,16 @@
           "grade": "efficient",
           "label": "효율 우수",
           "ratio_pct": -33.0
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       },
       {
@@ -6362,6 +6962,21 @@
           "grade": "new",
           "label": "신규 (5월 부분) · 효율 우수",
           "ratio_pct": -29.4
+        },
+        "creative_tier_inline": {
+          "tier1": [
+            {
+              "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+              "cpa": 14075,
+              "cvr": 10.88
+            },
+            {
+              "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+              "cpa": 17815,
+              "cvr": 10.86
+            }
+          ],
+          "tier4": []
         }
       }
     ],
@@ -6370,12 +6985,12 @@
         "수원",
         "창원",
         "천안",
-        "대전",
-        "부평"
+        "대전"
       ],
       "B": [
         "서울",
         "대구",
+        "부평",
         "일산"
       ],
       "C": [
@@ -6385,11 +7000,11 @@
     "group_definitions": {
       "A": {
         "label": "A. 효율 개선 우선",
-        "criterion": "약점 심각도 높음 - CVR/CPA/CTR/CPM 등에서 전 지점 평균 대비 부진하거나 증액 전 효율 정상화가 필요한 지점"
+        "criterion": "약점 심각도 높음 - CVR/CPA/CTR 등에서 전 지점 평균 대비 부진"
       },
       "B": {
         "label": "B. 예산 확대 후보",
-        "criterion": "성과 효율 양호 - CPA 안정성과 전환 기여도가 동시에 확인되어 확대 시 전환 추가 확보 가능"
+        "criterion": "성과 효율 양호 - 특이 약점 없음, 확대 시 전환 추가 확보 가능"
       },
       "C": {
         "label": "C. 신규 모니터링",
@@ -7131,7 +7746,7 @@
         }
       }
     },
-    "methodology": "누적 진단 KPI는 전 기간(2~5월, 5월은 15일까지 부분월) 데이터를 사용합니다. 6월 목표·베스트월·예산 산정은 정상 운영 월(2~4월)을 기준으로 분리합니다."
+    "methodology": "누적 KPI는 전 기간(2~5월) 데이터 사용. 5월은 부분 데이터로 비율 지표(CPM/CTR/CVR/CPA)에 미치는 영향은 제한적이나, 절대량(전환수·비용)에는 포함."
   },
   "creative_type": {
     "baseline_period": [
@@ -14299,11 +14914,10 @@
       },
       "recommended": {
         "label": "권장 (정상월 평균 집행 × 효율 가중)",
-        "total_budget": 19210392,
-        "expected_conv": 711,
-        "assumption": "지점별 권장 예산을 각 지점 누적 CPA로 환산한 방어적 추정. 예산은 효율 우수 지점 +10%, 효율 부진 지점 동결·축소, 부산은 5월 부분월 수준 유지",
-        "risk": "부평·수원·창원·천안의 CVR 회복이 지연되면 700건 하회 가능. 부산은 5월 부분월 기반이라 정상월 확장성 검증 필요",
-        "expected_conv_basis": "지점별 권장예산 ÷ 지점별 2~5월 누적 CPA 합산 (약 711건)"
+        "total_budget": 19522757,
+        "expected_conv": "시나리오별 차등",
+        "assumption": "실집행 베이스라인 유지하며 효율 우수 지점 증액·부진 지점 축소",
+        "risk": "CVR 회복이 더디면 부진 지점 축소 폭이 부족할 수 있음"
       },
       "conservative": {
         "label": "보수 (Base 전환 × CPA 평균)",
@@ -14319,71 +14933,145 @@
         "delta_amount": 225828,
         "delta_pct": 10.0,
         "reason": "효율 우수 → +10%",
-        "base_avg_monthly_cost": 2258277
+        "base_avg_monthly_cost": 2258277,
+        "efficiency_grade": "good",
+        "learning_rule": null
       },
       "부평": {
         "recommended_june_budget": 3866801,
         "delta_amount": 0,
         "delta_pct": 0.0,
-        "reason": "전환 볼륨 높으나 CPA 부진 → 증액 보류·동결",
-        "base_avg_monthly_cost": 3866801
+        "reason": "평균 수준 → ±0%",
+        "base_avg_monthly_cost": 3866801,
+        "efficiency_grade": "average",
+        "learning_rule": null
       },
       "수원": {
         "recommended_june_budget": 2973207,
         "delta_amount": -330356,
         "delta_pct": -10.0,
         "reason": "효율 부진 → -9%",
-        "base_avg_monthly_cost": 3303563
+        "base_avg_monthly_cost": 3303563,
+        "efficiency_grade": "bad",
+        "learning_rule": null
       },
       "일산": {
         "recommended_june_budget": 1467962,
         "delta_amount": 133451,
         "delta_pct": 10.0,
         "reason": "효율 우수 → +10%",
-        "base_avg_monthly_cost": 1334511
+        "base_avg_monthly_cost": 1334511,
+        "efficiency_grade": "good",
+        "learning_rule": null
       },
       "대구": {
         "recommended_june_budget": 3094358,
         "delta_amount": 281305,
         "delta_pct": 10.0,
         "reason": "효율 우수 → +10%",
-        "base_avg_monthly_cost": 2813053
+        "base_avg_monthly_cost": 2813053,
+        "efficiency_grade": "good",
+        "learning_rule": null
       },
       "창원": {
         "recommended_june_budget": 2090746,
         "delta_amount": -232305,
         "delta_pct": -10.0,
         "reason": "효율 부진 → -9%",
-        "base_avg_monthly_cost": 2323051
+        "base_avg_monthly_cost": 2323051,
+        "efficiency_grade": "bad",
+        "learning_rule": null
       },
       "천안": {
         "recommended_june_budget": 1812371,
         "delta_amount": -201375,
         "delta_pct": -10.0,
         "reason": "효율 부진 → -9%",
-        "base_avg_monthly_cost": 2013746
+        "base_avg_monthly_cost": 2013746,
+        "efficiency_grade": "bad",
+        "learning_rule": null
       },
       "대전": {
         "recommended_june_budget": 733207,
         "delta_amount": 66655,
         "delta_pct": 10.0,
         "reason": "효율 우수 → +10%",
-        "base_avg_monthly_cost": 666552
+        "base_avg_monthly_cost": 666552,
+        "efficiency_grade": "good",
+        "learning_rule": null
       },
       "부산": {
-        "recommended_june_budget": 687635,
+        "recommended_june_budget": 1000000,
         "delta_amount": 0,
         "delta_pct": null,
-        "reason": "신규 학습 안정화 - 5월 부분 운영 수준 유지",
-        "base_avg_monthly_cost": 0
+        "reason": "신규 학습 - 최소 집행액 + 3주 관찰 후 통과 시 정상 산식 편입",
+        "base_avg_monthly_cost": 0,
+        "efficiency_grade": "new",
+        "learning_rule": {
+          "min_budget": 1000000,
+          "observation_weeks": 3,
+          "cpa_pass_threshold": 34963,
+          "cvr_pass_threshold": 4.83,
+          "pass_combine": "AND",
+          "pass_budget_range": [
+            1900000,
+            2000000
+          ],
+          "fail_action": "학습 예산 1.0M 유지 + 소재/타겟 점검",
+          "measurement_note": "관찰 종료 시 전환 수 n 함께 표시 — n이 적으면 CPA/CVR 변동성 큼",
+          "partial_may_cost_reference": 687635
+        }
       }
     },
-    "june_recommended_total": 19210392,
+    "june_recommended_total": 19522757,
+    "june_recommended_total_if_new_pass": 20522757,
+    "new_branch_rule": {
+      "min_budget": 1000000,
+      "observation_weeks": 3,
+      "cpa_threshold_multiplier": 1.2,
+      "cvr_threshold_multiplier": 0.8,
+      "pass_combine": "AND",
+      "pass_action_range": [
+        1900000,
+        2000000
+      ],
+      "fail_action": "학습 예산 1.0M 유지 + 소재/타겟 점검"
+    },
+    "normalize_18m_table": {
+      "guideline_cap": 18000000,
+      "guideline_type": "soft",
+      "recommended_total": 19522757,
+      "overage_amount": 1522757,
+      "overage_pct": 8.5,
+      "deduction_priority": [
+        {
+          "priority": 1,
+          "target": "신규 학습 지점",
+          "rationale": "학습 단계 - 성과 검증 전이라 감액 영향 최소"
+        },
+        {
+          "priority": 2,
+          "target": "효율 부진(grade=bad) 지점",
+          "rationale": "CVR 회복 전 증액 보류 원칙과 정합"
+        },
+        {
+          "priority": 3,
+          "target": "효율 평균(grade=average) 지점 일률 감축",
+          "rationale": "전체 균형 조정"
+        },
+        {
+          "priority": 4,
+          "target": "효율 우수(grade=good) 지점",
+          "rationale": "마지막 순위 - ROI 보호"
+        }
+      ],
+      "note": "18M cap 적용 시 위 우선순위로 감액. 지점별 세부 숫자 대신 감액 원칙 제시 — cap 적용 시 KPI 달성률 하락 가능."
+    },
     "efficiency_thresholds": {
       "good": 1.15,
       "bad": 0.85
     },
-    "note": "평균 월간 집행 = 정상월 2~4월 합계 ÷ 3. 5월은 부분 데이터로 평균 산정에서 제외. 효율 점수 = 지점 전환 비중 ÷ 비용 비중. 비용 비중 대비 전환 비중이 클수록 예산 효율 우수. 6월 권장 예산은 정상월 평균 × 효율 가중 (우수 +10% / 평균 유지 / 부진 -10%)."
+    "note": "평균 월간 집행 = 정상월 2~4월 합계 ÷ 3. 5월은 부분 데이터로 평균 산정에서 제외. 효율 점수 = 지점 전환 비중 ÷ 비용 비중. 비용 비중 대비 전환 비중이 클수록 예산 효율 우수. 6월 권장 예산은 정상월 평균 × 효율 가중 (우수 +10% / 평균 유지 / 부진 -10%). 신규 지점은 학습 예산 룰 적용 — 최소 집행액 1.0M + 3주 관찰 후 CPA/CVR 통과 시 정상 산식 편입."
   },
   "funnel_variance": {
     "overall_trend": {
@@ -14519,7 +15207,7 @@
         "policy_inputs": {
           "within_contribution_pct": 93
         },
-        "operation_implication": "5월은 부분월입니다 — 집행일수·비용이 정상월의 70% 미만으로 정책 적용 강도를 낮춥니다. 이번 CVR 하락은 소재유형 비중 변화보다 동일 소재유형 내 전환 성과 하락 영향이 큽니다. 클릭 이후 단계(랜딩·5단계 폼·상담 응대) 로그 대조를 우선 권장합니다.",
+        "operation_implication": "5월은 부분월입니다 — 집행일수·비용이 정상월의 70% 미만으로 정책 적용 강도를 낮춥니다. 광고 mix 변화로 설명되는 비중은 7% 수준입니다. 클릭 이후 단계(랜딩·5단계 폼·상담 응대) 로그 대조를 우선 권장합니다.",
         "implication_strength": "soft"
       },
       {
@@ -14618,7 +15306,7 @@
           "mix_top": "의료진정보",
           "mix_contribution_pct": 44
         },
-        "operation_implication": "이번 CVR 상승의 44%는 전환 효율이 높은 소재유형의 노출 비중 증가에서 발생했습니다. 해당 배분 유지 또는 확대를 검토해 주십시오.",
+        "operation_implication": "전환 효율이 높은 유입 mix 증가가 변동의 44%를 설명합니다. 해당 배분 유지 또는 확대를 검토해 주십시오.",
         "implication_strength": "strong"
       },
       {
@@ -15316,7 +16004,7 @@
       "2026-04": false,
       "2026-05": true
     },
-    "computed_at": "2026-05-19T23:49:14"
+    "computed_at": "2026-05-20T16:17:44"
   },
   "consulting_signals": {
     "by_branch": {
@@ -15764,25 +16452,19 @@
     },
     "group_impact": {
       "A": {
-        "min": null,
-        "max": null,
-        "label": "효율 개선 그룹",
-        "display": "정량 추정 보류",
-        "note": "CPA/CVR 회복 후 산정"
+        "min": 0,
+        "max": 0,
+        "label": "효율 개선 그룹"
       },
       "B": {
-        "min": null,
-        "max": null,
-        "label": "예산 확대 그룹",
-        "display": "단계 확대",
-        "note": "CPA 가드 충족 시 +5~10%"
+        "min": 0,
+        "max": 0,
+        "label": "예산 확대 그룹"
       },
       "C": {
-        "min": null,
-        "max": null,
-        "label": "신규 안정화 그룹",
-        "display": "학습 안정화",
-        "note": "정상월 1개월 확보 후 재진단"
+        "min": 0,
+        "max": 0,
+        "label": "신규 안정화 그룹"
       }
     },
     "creative_role_library": [
@@ -15794,6 +16476,1054 @@
       "지역명확형",
       "재방문리마인드형"
     ],
-    "note": "갭% 양수=목표 초과달성, 음수=개선 필요. 목표·예산 산정은 정상월 2~4월 기준, 누적 진단은 5월 부분월을 포함한 2~5월 기준입니다."
+    "note": "갭% 양수=목표 초과달성, 음수=개선 필요. status는 평균/목표 대비 ±10%/±20% 임계값."
+  },
+  "creative_appendix": {
+    "branches": {
+      "서울": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_비만주사가놓친것",
+          "tier": "LOW_VOLUME",
+          "cpa": null,
+          "cvr": null,
+          "ctr": 0.0,
+          "cost": 1421,
+          "conversions": 0,
+          "days_active": 11,
+          "evidence": "CTR 0.00%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "부평": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_운동안해도되는",
+          "tier": "LOW_VOLUME",
+          "cpa": 61935,
+          "cvr": 2.44,
+          "ctr": 0.86,
+          "cost": 61935,
+          "conversions": 1,
+          "days_active": 11,
+          "evidence": "CPA 61,935원 / CVR 2.44% / CTR 0.86%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "수원": [
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_50대다이어트대사",
+          "tier": "LOW_VOLUME",
+          "cpa": null,
+          "cvr": 0.0,
+          "ctr": 0.32,
+          "cost": 4863,
+          "conversions": 0,
+          "days_active": 11,
+          "evidence": "CVR 0.00% / CTR 0.32%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "일산": [
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_운동안해도되는",
+          "tier": "LOW_VOLUME",
+          "cpa": 61935,
+          "cvr": 2.44,
+          "ctr": 0.86,
+          "cost": 61935,
+          "conversions": 1,
+          "days_active": 11,
+          "evidence": "CPA 61,935원 / CVR 2.44% / CTR 0.86%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_50대다이어트대사",
+          "tier": "LOW_VOLUME",
+          "cpa": null,
+          "cvr": 0.0,
+          "ctr": 0.32,
+          "cost": 4863,
+          "conversions": 0,
+          "days_active": 11,
+          "evidence": "CVR 0.00% / CTR 0.32%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "대구": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 6850,
+          "cvr": 11.11,
+          "ctr": 0.49,
+          "cost": 6850,
+          "conversions": 1,
+          "days_active": 4,
+          "evidence": "CPA 6,850원 / CVR 11.11% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 8135,
+          "cvr": 20.0,
+          "ctr": 0.23,
+          "cost": 8135,
+          "conversions": 1,
+          "days_active": 4,
+          "evidence": "CPA 8,135원 / CVR 20.00% / CTR 0.23%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "창원": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "천안": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "대전": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사이길수없는",
+          "tier": "LOW_VOLUME",
+          "cpa": 20831,
+          "cvr": 6.45,
+          "ctr": 0.43,
+          "cost": 83325,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 20,831원 / CVR 6.45% / CTR 0.43%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_10kg성공공식",
+          "tier": "LOW_VOLUME",
+          "cpa": 22857,
+          "cvr": 5.97,
+          "ctr": 0.52,
+          "cost": 91428,
+          "conversions": 4,
+          "days_active": 11,
+          "evidence": "CPA 22,857원 / CVR 5.97% / CTR 0.52%",
+          "recommended_action": "추가 노출 누적 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ],
+      "부산": [
+        {
+          "name": "진료셀프캠_주사형비만치료제 고민끝에 50대부부 -32kg",
+          "tier": "TIER1",
+          "cpa": 14075,
+          "cvr": 10.88,
+          "ctr": 0.71,
+          "cost": 943041,
+          "conversions": 67,
+          "days_active": 11,
+          "evidence": "CPA 14,075원 / CVR 10.88% / CTR 0.71%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "인플방문후기_주사형비만치료제(the.hyunniverse)",
+          "tier": "TIER1",
+          "cpa": 17815,
+          "cvr": 10.86,
+          "ctr": 0.44,
+          "cost": 338482,
+          "conversions": 19,
+          "days_active": 11,
+          "evidence": "CPA 17,815원 / CVR 10.86% / CTR 0.44%",
+          "recommended_action": "광고 단위 ON 유지·확대"
+        },
+        {
+          "name": "진료셀프캠_다이어트의적 밥빵면",
+          "tier": "TIER3",
+          "cpa": 20573,
+          "cvr": 7.37,
+          "ctr": 1.23,
+          "cost": 1213802,
+          "conversions": 59,
+          "days_active": 11,
+          "evidence": "CPA 20,573원 / CVR 7.37% / CTR 1.23%",
+          "recommended_action": "광고 그룹 예산 가드 (증액 보류)"
+        },
+        {
+          "name": "진료셀프캠_쉬운다이어트함정",
+          "tier": "UNCLASSIFIED",
+          "cpa": 14841,
+          "cvr": 8.7,
+          "ctr": 0.4,
+          "cost": 89044,
+          "conversions": 6,
+          "days_active": 4,
+          "evidence": "CPA 14,841원 / CVR 8.70% / CTR 0.40%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_식욕억제주사실패 마지막",
+          "tier": "UNCLASSIFIED",
+          "cpa": 21575,
+          "cvr": 8.26,
+          "ctr": 0.83,
+          "cost": 388345,
+          "conversions": 18,
+          "days_active": 5,
+          "evidence": "CPA 21,575원 / CVR 8.26% / CTR 0.83%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_주사형 비만치료제보다 더중요한이것",
+          "tier": "UNCLASSIFIED",
+          "cpa": 22328,
+          "cvr": 3.65,
+          "ctr": 1.37,
+          "cost": 1607589,
+          "conversions": 72,
+          "days_active": 5,
+          "evidence": "CPA 22,328원 / CVR 3.65% / CTR 1.37%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "진료셀프캠_다이어트 실패 진짜 이유",
+          "tier": "UNCLASSIFIED",
+          "cpa": 32626,
+          "cvr": 3.66,
+          "ctr": 0.49,
+          "cost": 97879,
+          "conversions": 3,
+          "days_active": 4,
+          "evidence": "CPA 32,626원 / CVR 3.66% / CTR 0.49%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        },
+        {
+          "name": "의료진정보_주사형비만치료제 10년은",
+          "tier": "UNCLASSIFIED",
+          "cpa": null,
+          "cvr": 0.0,
+          "ctr": 0.52,
+          "cost": 4657,
+          "conversions": 0,
+          "days_active": 5,
+          "evidence": "CVR 0.00% / CTR 0.52%",
+          "recommended_action": "집행일수 충족 후 재평가"
+        }
+      ]
+    },
+    "tier_rationale": {
+      "TIER1": "CPA ≤ 지점 목표 AND CVR ≥ 5.0% — 최우수, 광고 단위 유지·확대",
+      "TIER2": "CPA ≤ 지점 목표 AND CVR < 5.0% AND 랜딩도달률 ≥ 50% — CVR 개선 시 TIER1 후보",
+      "TIER3": "CPA > 지점 목표 AND CVR ≥ 5.0% — CPA 가드 후 유지",
+      "TIER4": "CPA > 지점 목표 AND CVR < 5.0% — 최우선 OFF 후보",
+      "LOW_VOLUME": "클릭 < 100 AND 비용 < 100,000원 — 평가 보류",
+      "UNCLASSIFIED": "집행일수 < 7일 — 평가 보류"
+    },
+    "tier_action_default": {
+      "TIER1": "광고 단위 ON 유지·확대",
+      "TIER2": "랜딩 hero·CTA 점검 후 CVR 개선 시 확대",
+      "TIER3": "광고 그룹 예산 가드 (증액 보류)",
+      "TIER4": "광고 단위 OFF (우선)",
+      "LOW_VOLUME": "추가 노출 누적 후 재평가",
+      "UNCLASSIFIED": "집행일수 충족 후 재평가"
+    },
+    "note": "액션 카드 inline은 핵심 TIER1/TIER4 1~2개. 부록은 지점별 전체 소재 표."
+  },
+  "meta_caveats": {
+    "kpi_gap": {
+      "kpi_target": 891,
+      "recommended_conv": 762,
+      "stretch_conv": 822,
+      "gap_amount": 129,
+      "gap_pct": 14.5,
+      "caveat": "KPI 목표 891건 대비 권장 시나리오 762건 — 129건 차이는 정상월 베스트 페이스 재현 기준이므로 KPI는 가드레일, 권장은 진단 기반 추정. 추가 효율 개선 또는 예산 상향 시 stretch 달성 가능."
+    },
+    "seasonality": {
+      "caveat": "본 추정은 5월 운영 패턴 가정. 6월 시즌 효과(휴일·지역 이벤트·매체 알고리즘/입찰 경쟁 변화)는 별도 보정이 필요하며, KPI·권장·신규 지점 환산이 모두 이 기반 리스크를 공유."
+    }
   }
 }

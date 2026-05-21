@@ -278,6 +278,28 @@ nav{position:sticky;top:0;z-index:100;background:var(--nav-bg);backdrop-filter:b
 /* ==================== Tables ==================== */
 .tw{overflow-x:auto;border-radius:8px;border:1px solid var(--bd)}
 table{width:100%;border-collapse:collapse;font-size:13px}
+/* 모든 테이블 셀 세로 중앙 정렬 (행 높이 차이 시 상중하 중 중앙) */
+table th,table td{vertical-align:middle}
+/* 4.1 지점×퍼널 매트릭스 — 콘텐츠 길이에 따라 유동 너비 + 가로 스크롤(.tw overflow-x:auto) */
+/* table-layout:auto = 콘텐츠 기반 자동 분배. min-width로 가독성 floor만 설정. */
+#exec-matrix{table-layout:auto}
+#exec-matrix th:nth-child(1),#exec-matrix td:nth-child(1){min-width:96px}                       /* 지점 */
+#exec-matrix th:nth-child(2),#exec-matrix td:nth-child(2){min-width:72px;text-align:center}     /* 우선 */
+#exec-matrix th:nth-child(3),#exec-matrix td:nth-child(3),
+#exec-matrix th:nth-child(4),#exec-matrix td:nth-child(4),
+#exec-matrix th:nth-child(5),#exec-matrix td:nth-child(5){min-width:200px;white-space:normal;line-height:1.55}  /* CPM/CTR/CVR */
+#exec-matrix th:nth-child(6),#exec-matrix td:nth-child(6){min-width:220px;white-space:normal;line-height:1.55}  /* 소재 역할 */
+#exec-matrix th:nth-child(7),#exec-matrix td:nth-child(7){min-width:280px;white-space:normal;line-height:1.6}   /* 6월 콘텐츠 */
+#exec-matrix .fcell{min-width:0}
+#exec-matrix .fcell-kpi{white-space:normal;word-break:break-word;font-size:11px;line-height:1.45;margin-top:3px}
+/* 가로 스크롤 시 좌측 지점 컬럼 고정 (sticky) — 비교 편의 */
+#exec-matrix th:nth-child(1),#exec-matrix td:nth-child(1){position:sticky;left:0;background:var(--s1);z-index:2}
+#exec-matrix thead th:nth-child(1){background:var(--s2);z-index:3}
+/* sticky 컬럼이 #exec-matrix 특이도로 덮어써져 hover가 적용 안 되는 문제 보정 */
+#exec-matrix tbody tr:hover td:nth-child(1){background:var(--hover-bg)}
+/* 스크롤 힌트 */
+.scroll-hint{font-size:10.5px;color:var(--tx2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.scroll-hint::before{content:'↔';font-weight:800;color:var(--acc)}
 th{background:var(--s2);color:var(--tx2);font-weight:700;font-size:11px;letter-spacing:.04em;
   padding:12px 14px;text-align:left;border-bottom:1px solid var(--bd);white-space:nowrap;line-height:1.4;text-transform:uppercase}
 td{padding:13px 14px;border-bottom:1px solid var(--bd);color:var(--tx);vertical-align:middle;white-space:nowrap;
@@ -316,7 +338,7 @@ tr:hover td{background:var(--hover-bg)}
 
 /* ==================== Funnel Cell (P3 매트릭스) ==================== */
 .fcell{padding:10px 12px;border-radius:5px;background:transparent;border:1px solid transparent;
-  font-family:'Pretendard Variable',Pretendard,sans-serif;font-size:12px;line-height:1.55;min-width:150px;white-space:normal;vertical-align:top}
+  font-family:'Pretendard Variable',Pretendard,sans-serif;font-size:12px;line-height:1.55;min-width:150px;white-space:normal;vertical-align:middle}
 .fcell.good{background:transparent;border-color:transparent;opacity:.65}
 .fcell.warn{background:rgba(251,191,36,.05);border-color:rgba(251,191,36,.18)}
 .fcell.bad{background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.22)}
@@ -394,6 +416,25 @@ tr:hover td{background:var(--hover-bg)}
 .appx[open] summary::after{transform:rotate(180deg)}
 .appx-num{font-size:10px;font-weight:800;color:var(--acc);font-family:"DM Mono",monospace;margin-right:6px}
 .appx-body{padding:16px 20px;border-top:1px solid var(--bd)}
+
+/* ==================== R9·R10 추가 박스 ==================== */
+.gap-caveat{padding:10px 14px;border:1px solid var(--bd);border-left:4px solid var(--warn);border-radius:6px;background:rgba(245,158,11,.05);font-size:11.5px;color:var(--tx);line-height:1.6}
+.gap-caveat strong{color:var(--warn)}
+.busan-box{padding:14px 16px;border:2px dashed var(--pur);border-radius:8px;background:rgba(167,139,250,.06)}
+.busan-hdr{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.busan-tag{font-size:10px;font-weight:800;color:var(--pur);letter-spacing:.06em;text-transform:uppercase;background:rgba(167,139,250,.12);padding:3px 8px;border-radius:4px}
+.busan-title{font-size:14px;font-weight:800;color:var(--tx)}
+.busan-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+.busan-row{font-size:11.5px;color:var(--tx);line-height:1.55}
+.busan-row strong{color:var(--pur)}
+.norm-box{padding:12px 14px;border:1px solid var(--bd);border-radius:6px;background:var(--s2)}
+.norm-hdr{font-size:11px;font-weight:800;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.norm-list{font-size:11.5px;color:var(--tx);line-height:1.7}
+.norm-list li{margin-bottom:4px}
+.tier-inline{margin-top:8px;padding:6px 10px;background:rgba(52,211,153,.06);border-left:3px solid var(--t1);border-radius:0 4px 4px 0;font-size:11.5px;color:var(--tx);line-height:1.55}
+.tier-inline-lbl{font-size:10px;font-weight:800;color:var(--t1);letter-spacing:.06em;text-transform:uppercase;margin-right:6px}
+.appx-tbl-section{margin-bottom:18px}
+.appx-tbl-hdr{font-size:12px;font-weight:800;color:var(--tx);margin-bottom:6px;padding:6px 10px;background:var(--s2);border-radius:4px;border-left:3px solid var(--acc)}
 
 /* ==================== Misc ==================== */
 .muted{color:var(--tx2);font-size:11px;font-weight:500}
@@ -493,6 +534,7 @@ tr:hover td{background:var(--hover-bg)}
     <div class="kpi-primary-row" id="kpi-primary"></div>
     <div class="sec-hd" style="margin-top:18px"><span class="sec-hd-num">1.2</span><span class="sec-hd-title">목표 달성 조건</span><span class="sec-hd-sub">Funnel KPI · 조정 레버</span></div>
     <div class="kpi-funnel-row" id="kpi-funnel"></div>
+    <div id="kpi-gap-caveat" style="margin-top:12px"></div>
   </div>
 
   <div class="sec">
@@ -662,6 +704,8 @@ tr:hover td{background:var(--hover-bg)}
     <div class="lead" id="budget-lead-34"></div>
     <div class="g3 aligned-6" style="margin-bottom:16px" id="budget-scenarios"></div>
     <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="budget-rec-tbl"></table></div></div>
+    <div id="busan-learning-box" style="margin-top:16px"></div>
+    <div id="normalize-18m-box" style="margin-top:16px"></div>
   </div>
 
   <div class="sec">
@@ -755,6 +799,7 @@ tr:hover td{background:var(--hover-bg)}
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">4.1</span><span class="sec-hd-title">지점 × 퍼널 실행 매트릭스</span></div>
     <div class="lead" id="ep-lead-41"></div>
+    <div class="scroll-hint">좌우 스크롤로 모든 컬럼 확인 (지점 컬럼은 고정)</div>
     <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="exec-matrix"></table></div></div>
   </div>
 
@@ -834,57 +879,70 @@ tr:hover td{background:var(--hover-bg)}
   </div>
 </div></div>
 
-<!-- ========================= 05 애드온 판단 ========================= -->
+<!-- ========================= 05 애드온 판단 (R11 보수적 압축) ========================= -->
 <div id="pg-addon" class="pg"><div class="wrap">
   <div class="page-hd">
     <div class="page-hd-num">05 · Add-on Judgement</div>
     <h2 class="page-hd-title">애드온 운영 판단</h2>
-    <div class="page-hd-msg">6월 애드온 운영은 전면 확대가 아니라, 효율 양호 지점을 중심으로 한 조건부 확대를 권고드립니다. 현재 데이터는 적용·비적용 그룹 간 관찰 비교에 해당하며 인과 관계로 단정할 수 없으므로, 통제된 A/B 검증을 거친 후 본격 확대 여부를 결정하는 것이 안전한 것으로 판단됩니다.</div>
+    <div class="page-hd-msg">6월 애드온 운영은 전면 확대가 아니라 <strong style="color:var(--t1)">소재유형별</strong>로 조건부 적용을 권고드립니다. 본 판단은 전 기간 누적 관찰에 통계적 유의성 검정(z-test on CVR proportions)을 결합한 결과이며, 표본이 충분한 소재유형 중심으로만 확대·보류 결정을 제시합니다.</div>
     <div class="page-hd-meta">
-      <span>비교 방식 <strong>적용 그룹 vs 비적용 그룹 관찰 비교</strong></span>
-      <span>해석 한계 <strong>선택 편향 가능성</strong></span>
+      <span>판단 기준 <strong>CVR Δ + p-value (z-test)</strong></span>
+      <span>최소 표본 <strong>소재유형 클릭 ≥ 50</strong></span>
+      <span>해석 한계 <strong>선택 편향 가능성 존재</strong></span>
     </div>
   </div>
 
   <div class="sec">
     <div class="sec-hd"><span class="sec-hd-num">5.1</span><span class="sec-hd-title">6월 애드온 운영 판단</span></div>
-    <div class="action-card" id="addon-decision"></div>
+    <div id="addon-judgement"></div>
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.2</span><span class="sec-hd-title">전체 합산 관찰값</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">5.2</span><span class="sec-hd-title">판단 근거</span><span class="sec-hd-sub">전체 합산 + 소재유형별</span></div>
     <div class="lead" id="addon-lead-52">아래 수치는 관찰값입니다. 적용 광고가 비적용 광고보다 우수한 결과를 보이는 배경에는 선택 편향(애드온 적용 광고가 운영 관심이 높은 우수 소재일 가능성)이 포함될 수 있음을 함께 고려해 주시기 바랍니다.</div>
     <div class="g4" id="addon-overall" style="margin-bottom:14px"></div>
-    <div class="evidence-card"><div class="card-title">전체 KPI 차이 (관찰값)</div><div class="card-sub">CPM 및 CPA는 부호를 반전하여 표기하였습니다 (낮을수록 양호하므로 양수 = 우세).</div><div style="position:relative;height:220px"><canvas id="addonOverallChart"></canvas></div></div>
+    <div class="evidence-card" style="margin-bottom:14px"><div class="card-title">전체 KPI 차이 (관찰값)</div><div class="card-sub">CPM 및 CPA는 부호를 반전하여 표기하였습니다 (낮을수록 양호하므로 양수 = 우세).</div><div style="position:relative;height:220px"><canvas id="addonOverallChart"></canvas></div></div>
+    <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="addon-creative-type-tbl"></table></div></div>
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.3</span><span class="sec-hd-title">지점별 관찰 차이</span></div>
-    <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="addon-branch-tbl"></table></div></div>
+    <div class="sec-hd"><span class="sec-hd-num">5.3</span><span class="sec-hd-title">6월 애드온 실행 가이드</span><span class="sec-hd-sub">데이터 기반 처방</span></div>
+    <div id="addon-execution-guide"></div>
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.4</span><span class="sec-hd-title">동일 매칭키 페어 비교</span></div>
-    <div class="lead">동일 소재(매칭키) 내에서 애드온 적용 광고와 비적용 광고가 모두 운영된 경우만 비교 대상으로 설정하였습니다. 운영 시점 · 예산 · 타겟이 완전히 동일하지는 않으므로 통제된 A/B 테스트와는 차이가 있는 점 함께 고려해 주시기 바랍니다.</div>
-    <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="addon-pair-tbl"></table></div></div>
-  </div>
-
-  <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.5</span><span class="sec-hd-title">6월 애드온 실행 가이드</span></div>
-    <div class="g3 aligned-2" id="addon-execution-guide">
-      <div class="action-card">
-        <div class="card-title">1주차 — 통제된 A/B 진행</div>
-        <div class="card-sub" style="margin-bottom:0">효율 양호 지점(서울 · 일산 · 대구) 중 1~2개 매칭키를 선정하여 애드온 적용·비적용 광고를 동시 집행합니다. 예산과 타겟은 동일하게 통제합니다.</div>
-      </div>
-      <div class="action-card">
-        <div class="card-title">2주차 — 결과 평가</div>
-        <div class="card-sub" style="margin-bottom:0">CVR · CPA 차이가 통계적으로 유의한지 확인합니다. 차이가 ±10% 이내인 경우 효과 불분명으로 판단하겠습니다.</div>
-      </div>
-      <div class="action-card">
-        <div class="card-title">3~4주차 — 확대 또는 보류</div>
-        <div class="card-sub" style="margin-bottom:0">CPA 개선이 확인되는 경우 효율 양호 지점을 중심으로 단계적 확대를 진행합니다. 효과가 확인되지 않거나 악화될 경우 운영을 보류하겠습니다.</div>
-      </div>
+    <div class="sec-hd"><span class="sec-hd-num">5.A</span><span class="sec-hd-title">Appendix · 디테일 자료</span></div>
+    <div id="addon-appendix">
+      <details class="appx">
+        <summary><span><span class="appx-num">A.1</span>지점별 관찰 차이</span></summary>
+        <div class="appx-body"><div class="tw"><table id="addon-branch-tbl"></table></div></div>
+      </details>
+      <details class="appx">
+        <summary><span><span class="appx-num">A.2</span>동일 매칭키 페어 비교 (selection bias 제거)</span></summary>
+        <div class="appx-body">
+          <div class="lead" style="margin-bottom:10px;font-size:12px">동일 소재(매칭키) 내 애드온/비애드온 동시 운영 케이스만 비교. 양쪽 클릭 ≥100 필터.</div>
+          <div class="tw"><table id="addon-pair-tbl"></table></div>
+        </div>
+      </details>
+      <details class="appx">
+        <summary><span><span class="appx-num">A.3</span>월별 추세 (시점별 효과 변화)</span></summary>
+        <div class="appx-body">
+          <div class="lead" style="margin-bottom:10px;font-size:12px">월별 애드온 vs 비애드온 CVR 차이. 표본 부족 월(클릭 &lt;100)은 ⚠ 표시.</div>
+          <div class="tw"><table id="addon-monthly-tbl"></table></div>
+        </div>
+      </details>
     </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">5.D</span><span class="sec-hd-title">Appendix D · 지점별 소재 분류 부록</span></div>
+    <div class="lead">3.3 운영 처방 카드의 TIER1 소재 inline은 대표 1~2개만 노출됩니다. 본 부록은 지점별 전체 소재의 TIER 분류·근거·권장 액션을 한 표로 정리하였습니다. PDF/인쇄 시에도 손실 없이 운영 의사결정 데이터를 참고하실 수 있습니다.</div>
+    <div id="appendix-creative-tbl"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-hd-num">5.E</span><span class="sec-hd-title">Appendix E · 추정 기반 캐비엇</span></div>
+    <div id="seasonality-caveat"></div>
   </div>
 </div></div>
 

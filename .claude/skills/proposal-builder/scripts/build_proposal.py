@@ -30,6 +30,39 @@ from analyze_cross_branch_variance import analyze as analyze_cross_var
 from analyze_budget import analyze as analyze_budget
 from analyze_funnel_variance import analyze as analyze_variance
 from derive_consulting_signals import derive as derive_signals
+from build_creative_appendix import build as build_creative_appendix
+
+
+def _build_meta_caveats(targets: dict, budget: dict) -> dict:
+    """KPI 갭 + 시즌성 캐비엇 (codex R9 Q2 + 종합 누락 항목)."""
+    overall_target_conv = (targets.get('overall_targets', {}) or {}).get('base_target_total') or 762
+    rec_conv = (budget.get('june_scenarios', {}).get('recommended', {}) or {}).get('expected_conv')
+    # MONTHLY_TARGET_CONV = 891 (CLAUDE.md 기준)
+    kpi_target = 891
+    rec_conv_int = rec_conv if isinstance(rec_conv, int) else overall_target_conv
+    gap = kpi_target - rec_conv_int
+    gap_pct = round(gap / kpi_target * 100, 1) if kpi_target else None
+    return {
+        'kpi_gap': {
+            'kpi_target': kpi_target,
+            'recommended_conv': rec_conv_int,
+            'stretch_conv': (budget.get('june_scenarios', {}).get('optimistic', {}) or {}).get('expected_conv') or 822,
+            'gap_amount': gap,
+            'gap_pct': gap_pct,
+            'caveat': (
+                f'KPI 목표 {kpi_target}건 대비 권장 시나리오 {rec_conv_int}건 — {gap}건 차이는 정상월 베스트 페이스 재현 기준이므로 '
+                'KPI는 가드레일, 권장은 진단 기반 추정. 추가 효율 개선 또는 예산 상향 시 stretch 달성 가능.'
+            ),
+        },
+        'seasonality': {
+            'caveat': (
+                '본 추정은 5월 운영 패턴 가정. 6월 시즌 효과(휴일·지역 이벤트·매체 알고리즘/입찰 경쟁 변화)는 '
+                '별도 보정이 필요하며, KPI·권장·신규 지점 환산이 모두 이 기반 리스크를 공유.'
+            ),
+        },
+    }
+
+
 
 
 def analyze_weekday_performance(parsed_path: str) -> dict:
@@ -113,6 +146,10 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
     weekday_performance = analyze_weekday_performance(parsed_path)
     budget = analyze_budget(parsed_path)
     funnel_variance = analyze_variance(parsed_path)
+    creative_appendix = build_creative_appendix(parsed_path)
+
+    # 캐비엇 (codex R9·R10)
+    meta_caveats = _build_meta_caveats(targets, budget)
 
     # 컨설팅 보조 지표 (codex Round 2 권장)
     consulting_signals = derive_signals(
@@ -151,6 +188,8 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
         'budget': budget,
         'funnel_variance': funnel_variance,
         'consulting_signals': consulting_signals,
+        'creative_appendix': creative_appendix,
+        'meta_caveats': meta_caveats,
     }
     payload = clean(payload)
 

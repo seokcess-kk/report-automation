@@ -898,6 +898,19 @@ document.querySelectorAll('.tb').forEach(btn => {
         <div class="bp-section">
           <div class="bp-section-lbl">6월 핵심 운영 액션</div>
           <div style="font-size:12px;color:var(--tx);line-height:1.65;background:rgba(129,140,248,.05);border-left:3px solid var(--acc);padding:8px 12px;border-radius:0 5px 5px 0">${r.headline || '-'}</div>
+          ${(() => {
+            const ti = r.creative_tier_inline || {tier1:[], tier4:[]};
+            const t1 = (ti.tier1 || []).slice(0,2);
+            const t4 = (ti.tier4 || []).slice(0,2);
+            if (t1.length === 0 && t4.length === 0) return '';
+            const t1Html = t1.length > 0
+              ? `<div class="tier-inline"><span class="tier-inline-lbl">TIER1 (확대)</span>${t1.map(x => `<strong>${x.name}</strong>${x.cpa ? ` <span class="muted">(CPA ${fmt(x.cpa)}원·CVR ${fmtPct(x.cvr)})</span>` : ''}`).join(' · ')}</div>`
+              : '';
+            const t4Html = t4.length > 0
+              ? `<div class="tier-inline" style="background:rgba(248,113,113,.06);border-left-color:var(--red)"><span class="tier-inline-lbl" style="color:var(--red)">TIER4 (OFF 우선)</span>${t4.map(x => `<strong>${x.name}</strong>${x.cpa ? ` <span class="muted">(CPA ${fmt(x.cpa)}원·CVR ${fmtPct(x.cvr)})</span>` : ''}`).join(' · ')}</div>`
+              : '';
+            return t1Html + t4Html + '<div style="font-size:10px;color:var(--tx2);margin-top:4px;text-align:right">전체 소재 분류는 Appendix D 참조</div>';
+          })()}
         </div>
         <div class="g2" style="gap:12px;margin-top:10px">
           <div>
@@ -1053,7 +1066,7 @@ document.querySelectorAll('.tb').forEach(btn => {
       <div class="fcell-row">${statusBadge(status)}</div>
       <div class="fcell-action">${action}</div>
       ${role ? `<div class="fcell-role"><strong>${role}</strong></div>` : ''}
-      ${pick ? `<div class="fcell-kpi">${pick.name.length > 18 ? pick.name.slice(0, 18) + '…' : pick.name}</div>` : ''}
+      ${pick ? `<div class="fcell-kpi">${pick.name}</div>` : ''}
     </td>`;
   };
   branches.forEach(b => {
@@ -1063,9 +1076,10 @@ document.querySelectorAll('.tb').forEach(btn => {
     const role = bs.creative_role || {};
     const rec = recBy[b] || {};
     const contentBrief = [];
-    if (rec.keep && rec.keep[0]) contentBrief.push(`유지: ${rec.keep[0].creative_name.slice(0, 16)}`);
-    if (rec.expand && rec.expand[0]) contentBrief.push(`확대: ${rec.expand[0].creative_name.slice(0, 16)}`);
-    if (rec.new_intro && rec.new_intro[0]) contentBrief.push(`신규: ${rec.new_intro[0].creative_name.slice(0, 16)}`);
+    // 가로 스크롤 + 넓은 컬럼이라 잘림 해제 — 줄바꿈으로 자연스럽게 펼침
+    if (rec.keep && rec.keep[0]) contentBrief.push(`<span style="color:var(--t1);font-weight:700">유지</span> ${rec.keep[0].creative_name}`);
+    if (rec.expand && rec.expand[0]) contentBrief.push(`<span style="color:var(--warn);font-weight:700">확대</span> ${rec.expand[0].creative_name}`);
+    if (rec.new_intro && rec.new_intro[0]) contentBrief.push(`<span style="color:var(--acc);font-weight:700">신규</span> ${rec.new_intro[0].creative_name}`);
     trs += `<tr class="r-${grp}">
       <td class="lbl">${b} <span class="bd bd-${grp}" style="font-size:10px;margin-left:4px">${grp}</span></td>
       <td>${priorityBadge(bs.priority_level || 'Mid')}</td>
@@ -1324,43 +1338,46 @@ document.querySelectorAll('.tb').forEach(btn => {
 
 // ==================== 05 애드온 판단 ====================
 (function renderAddon() {
-  const ov = DATA.addon_effect.overall;
-  const ms = DATA.addon_effect.meta_summary;
-  const dp = ov.delta_pct;
+  const A = DATA.addon_effect || {};
+  const ov = A.overall || {};
+  const ms = A.meta_summary || {};
+  const dp = ov.delta_pct || {};
+  const judge = A.judgement || {};
+  const byType = A.by_creative_type || {};
 
-  // 5.1 판단 카드
-  const goodCount = ['cpm','ctr','cvr','cpa'].filter(k => {
-    const v = dp[k];
-    if (v === null) return false;
-    if (k === 'cpm' || k === 'cpa') return v < -5;
-    return v > 5;
-  }).length;
-  let decision = '판단 보류 (효과 불분명)';
-  let decisionColor = 'var(--warn)';
-  if (goodCount >= 3) { decision = '조건부 선별 확대 권고'; decisionColor = 'var(--t1)'; }
-  else if (goodCount === 0) { decision = '확대 보류 권고'; decisionColor = 'var(--red)'; }
-  document.getElementById('addon-decision').innerHTML = `
-    <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px">
-      <div style="flex:1"><div class="card-title" style="font-size:18px;color:${decisionColor}">${decision}</div></div>
-      <div style="font-size:11px;color:var(--tx2);text-align:right"><div>애드온 적용 광고 <strong style="color:var(--tx)">${ms.addon_ads_in_data}/${ms.total_ads_in_data}개</strong></div><div>적용률 ${ms.addon_ratio}%</div></div>
+  const cls = (v, dir) => v === null || v === undefined ? '' : (dir === 'low' ? (v < 0 ? 'delta-up' : 'delta-down') : (v > 0 ? 'delta-up' : 'delta-down'));
+  const sigBadge = (p) => (p !== null && p !== undefined && p < 0.05) ? '<span style="color:var(--t1);font-weight:800;margin-left:4px" title="통계적으로 유의 (p<0.05)">★</span>' : '';
+
+  // ============ 5.1 운영 판단 (소재유형별 처방) ============
+  const expand = judge.expand || [];
+  const hold = judge.hold || [];
+  const noop = judge.noop || [];
+  const low = judge.low_sample || [];
+  const verdictCard = (label, items, color, icon) => `
+    <div style="background:var(--s2);border-left:4px solid ${color};border-radius:6px;padding:12px 14px">
+      <div style="font-size:10px;font-weight:800;color:${color};letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">${icon} ${label}</div>
+      <div style="font-size:13px;color:var(--tx);font-weight:700;line-height:1.55">${items.length > 0 ? items.join(' · ') : '<span class="muted">해당 없음</span>'}</div>
+    </div>`;
+  document.getElementById('addon-judgement').innerHTML = `
+    <div class="g3" style="gap:10px;margin-bottom:14px">
+      ${verdictCard('6월 확대', expand, 'var(--t1)', '▲')}
+      ${verdictCard('6월 보류', hold, 'var(--red)', '✕')}
+      ${verdictCard('직관 운영 (유의성 부족)', noop, 'var(--warn)', '◦')}
     </div>
-    <div class="g3" style="gap:10px;margin-bottom:12px">
-      <div style="background:var(--s2);border-left:3px solid var(--t1);border-radius:5px;padding:10px 14px"><div style="font-size:10px;font-weight:800;color:var(--t1);letter-spacing:.04em;margin-bottom:4px">관찰 근거</div><div style="font-size:11px;color:var(--tx);line-height:1.55">애드온 그룹이 CVR ${fmtSigned(dp.cvr)} · CPA ${fmtSigned(dp.cpa)}로 우세하게 관찰되었습니다.</div></div>
-      <div style="background:var(--s2);border-left:3px solid var(--warn);border-radius:5px;padding:10px 14px"><div style="font-size:10px;font-weight:800;color:var(--warn);letter-spacing:.04em;margin-bottom:4px">해석 한계</div><div style="font-size:11px;color:var(--tx);line-height:1.55">동일 조건 실험이 아니며 선택 편향 가능성이 있어 인과 관계로 단정할 수 없습니다.</div></div>
-      <div style="background:var(--s2);border-left:3px solid var(--acc);border-radius:5px;padding:10px 14px"><div style="font-size:10px;font-weight:800;color:var(--acc);letter-spacing:.04em;margin-bottom:4px">운영 게이트</div><div style="font-size:11px;color:var(--tx);line-height:1.55">통제된 A/B에서 CPA 개선이 확인되는 경우 효율 양호 지점부터 단계적으로 확대합니다.</div></div>
-    </div>
+    ${low.length > 0 ? `<div class="gap-caveat" style="border-left-color:var(--tx3);background:rgba(148,163,184,.05);font-size:11.5px">표본 부족으로 판단 보류: <strong>${low.join(' · ')}</strong> (각 소재유형 클릭 &lt; 50)</div>` : ''}
+    <div style="margin-top:10px;font-size:10.5px;color:var(--tx2);line-height:1.55">판단 기준: CVR Δ &gt; 0 AND z-test p &lt; 0.05 → 확대 / CVR Δ &lt; 0 OR CPA Δ &gt; +10% → 보류 / 그 외 → 직관 운영. 적용 광고 ${ms.addon_ads_in_data}/${ms.total_ads_in_data}개 (적용률 ${ms.addon_ratio}%).</div>
   `;
 
-  // 5.2 KPI 카드
+  // ============ 5.2 판단 근거 — 전체 합산 KPI 카드 ============
   const summary = [
     { lbl: '적용 광고 수', val: `${ms.addon_ads_in_data}/${ms.total_ads_in_data}`, sub: `${ms.addon_ratio}%` },
     { lbl: 'CPM Δ', val: fmtSigned(dp.cpm), good: dp.cpm !== null && dp.cpm < 0 },
     { lbl: 'CTR Δ', val: fmtSigned(dp.ctr), good: dp.ctr !== null && dp.ctr > 0 },
-    { lbl: 'CVR Δ', val: fmtSigned(dp.cvr), good: dp.cvr !== null && dp.cvr > 0 },
+    { lbl: 'CVR Δ', val: fmtSigned(dp.cvr) + (dp.cvr_significant ? ' ★' : ''), good: dp.cvr !== null && dp.cvr > 0, sub: dp.cvr_p !== null ? `p=${dp.cvr_p}` : '' },
   ];
   document.getElementById('addon-overall').innerHTML = summary.map(s => {
-    const cls = s.good === undefined ? '' : (s.good ? 'delta-up' : 'delta-down');
-    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:14px 16px"><div style="font-size:10px;font-weight:700;color:var(--tx2);letter-spacing:.06em;margin-bottom:5px">${s.lbl}</div><div style="font-size:22px;font-weight:900;font-family:'DM Mono',monospace" class="${cls}">${s.val}</div>${s.sub ? `<div style="font-size:10px;color:var(--tx2);margin-top:3px">${s.sub}</div>` : ''}</div>`;
+    const c = s.good === undefined ? '' : (s.good ? 'delta-up' : 'delta-down');
+    return `<div style="background:var(--s1);border:1px solid var(--bd);border-radius:6px;padding:14px 16px"><div style="font-size:10px;font-weight:700;color:var(--tx2);letter-spacing:.06em;margin-bottom:5px">${s.lbl}</div><div style="font-size:22px;font-weight:900;font-family:'DM Mono',monospace" class="${c}">${s.val}</div>${s.sub ? `<div style="font-size:10px;color:var(--tx2);margin-top:3px">${s.sub}</div>` : ''}</div>`;
   }).join('');
 
   // chart
@@ -1373,28 +1390,187 @@ document.querySelectorAll('.tb').forEach(btn => {
     options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:CHART_TEXT},grid:{color:CHART_GRID}}, y:{ticks:{color:CHART_TEXT,callback:v => v+'%'},grid:{color:CHART_GRID}}} },
   });
 
-  // 5.3 branch tbl
+  // 5.2 소재유형별 inline 표
+  const ctOrder = Object.keys(byType).sort((a, b) => {
+    // 확대 > 보류 > 직관 > 표본부족 순
+    const order = { expand:0, hold:1, noop:2, low_sample:3 };
+    return (order[byType[a].verdict.verdict] || 9) - (order[byType[b].verdict.verdict] || 9);
+  });
+  const verdictColor = { expand:'var(--t1)', hold:'var(--red)', noop:'var(--warn)', low_sample:'var(--tx3)' };
+  let ctRows = '';
+  ctOrder.forEach(ct => {
+    const b = byType[ct];
+    const v = b.verdict || {};
+    const d = b.delta_pct || {};
+    const vc = verdictColor[v.verdict] || 'var(--tx2)';
+    ctRows += `<tr>
+      <td class="lbl">${ct}</td>
+      <td><strong style="color:${vc}">${v.label || '-'}</strong></td>
+      <td>${b.addon.clicks.toLocaleString()} / ${b.non_addon.clicks.toLocaleString()}</td>
+      <td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td>
+      <td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td>
+      <td class="muted">${d.cvr_p !== null && d.cvr_p !== undefined ? 'p=' + d.cvr_p : '-'}</td>
+    </tr>`;
+  });
+  document.getElementById('addon-creative-type-tbl').innerHTML =
+    `<thead><tr><th>소재유형</th><th>판단</th><th>클릭 (애드/비)</th><th>CVR Δ</th><th>CPA Δ</th><th>p-value</th></tr></thead><tbody>${ctRows}</tbody>`;
+
+  // ============ 5.3 실행 가이드 — 데이터 기반 처방 (W1~W4) ============
+  const expandStr = expand.length > 0 ? expand.join(' · ') : '없음';
+  const holdStr = hold.length > 0 ? hold.join(' · ') : '없음';
+  const noopStr = noop.length > 0 ? noop.join(' · ') : '없음';
+  const guideHtml = `
+    <div class="g4 aligned-2" style="gap:10px">
+      <div class="action-card">
+        <div class="card-title">W1 (6/1~6/7) — 즉시 적용</div>
+        <div class="card-sub" style="margin-bottom:0">
+          ${expand.length > 0
+            ? `<strong style="color:var(--t1)">${expandStr}</strong> 소재유형에 애드온을 광고 단위 신규 ON 또는 확대. 기존 비애드온 광고는 OFF 전환하여 동일 매칭키 안에서 애드온으로 교체.`
+            : '확대 대상 없음 — 현 운영 유지하며 다음 평가 주기까지 표본 누적'}
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="card-title">W1 (6/1~6/7) — 즉시 보류</div>
+        <div class="card-sub" style="margin-bottom:0">
+          ${hold.length > 0
+            ? `<strong style="color:var(--red)">${holdStr}</strong> 소재유형에 신규 애드온 적용 중단. 기존 애드온은 OFF 또는 비애드온 버전으로 교체 검토 (CPA 악화 신호).`
+            : '보류 대상 없음'}
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="card-title">W2~W3 (6/8~6/21) — 검증</div>
+        <div class="card-sub" style="margin-bottom:0">
+          확대된 ${expandStr} 소재의 CVR·CPA를 위클리 리포트(6/8, 6/15)로 점검. 6월 평균 CVR이 5월 비애드온 수준(9.76%) 대비 ±10% 이내면 효과 지속 판정.
+          ${noop.length > 0 ? `직관 운영 그룹 <strong>${noopStr}</strong>은 운영자가 광고 단위로 별도 판단.` : ''}
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="card-title">W4 (6/22~6/30) — 7월 방향 확정</div>
+        <div class="card-sub" style="margin-bottom:0">
+          확대 그룹 CVR 유지·개선 시 7월 전 지점 표준화. 미달 시 매칭키별 페어 재검증(부록 A.2 참조).
+          ${low.length > 0 ? `<br><span class="muted">표본 부족 그룹(${low.join('·')})은 광고 단위 누적 확보 후 다음 라운드 재판단.</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('addon-execution-guide').innerHTML = guideHtml;
+
+  // ============ 5.A.1 부록 — 지점별 차이 ============
   const branches = DATA.meta.branches;
-  const by = DATA.addon_effect.by_branch;
+  const by = A.by_branch || {};
   let trs = '';
   branches.forEach(b => {
     const r = by[b];
     if (!r) return;
     const d = r.delta_pct;
-    const cls = (v, dir) => v === null ? '' : (dir === 'low' ? (v < 0 ? 'delta-up' : 'delta-down') : (v > 0 ? 'delta-up' : 'delta-down'));
-    trs += `<tr><td class="lbl">${b}</td><td>${r.addon.ad_count}/${r.non_addon.ad_count}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
+    const warn = r.sample_warning ? ' <span style="color:var(--warn)" title="표본 부족 (클릭 <100)">⚠</span>' : '';
+    trs += `<tr><td class="lbl">${b}${warn}</td><td>${r.addon.ad_count}/${r.non_addon.ad_count}</td><td>${r.addon.clicks.toLocaleString()}/${r.non_addon.clicks.toLocaleString()}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
   });
-  document.getElementById('addon-branch-tbl').innerHTML = `<thead><tr><th>지점</th><th>광고 (애드온/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${trs}</tbody>`;
+  document.getElementById('addon-branch-tbl').innerHTML = `<thead><tr><th>지점</th><th>광고 (애드/비)</th><th>클릭 (애드/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${trs}</tbody>`;
 
-  // 5.4 pair
-  const pairs = DATA.addon_effect.creative_pairs || [];
+  // ============ 5.A.2 부록 — 페어 ============
+  const pairs = A.creative_pairs || [];
   let prows = '';
   pairs.forEach(p => {
     const d = p.delta_pct;
-    const cls = (v, dir) => v === null ? '' : (dir === 'low' ? (v < 0 ? 'delta-up' : 'delta-down') : (v > 0 ? 'delta-up' : 'delta-down'));
-    prows += `<tr><td class="lbl">${p.creative_name}</td><td>${p.addon.ad_count}/${p.non_addon.ad_count}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
+    prows += `<tr><td class="lbl">${p.creative_name}</td><td>${p.addon.ad_count}/${p.non_addon.ad_count}</td><td>${p.addon.clicks.toLocaleString()}/${p.non_addon.clicks.toLocaleString()}</td><td class="${cls(d.cpm,'low')}">${fmtSigned(d.cpm)}</td><td class="${cls(d.ctr,'high')}">${fmtSigned(d.ctr)}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="${cls(d.cpa,'low')}">${fmtSigned(d.cpa)}</td></tr>`;
   });
-  if (prows === '') prows = `<tr><td colspan="6" style="text-align:center;color:var(--tx2)">애드온/비애드온이 같이 운영된 매칭키 없음</td></tr>`;
-  document.getElementById('addon-pair-tbl').innerHTML = `<thead><tr><th>매칭키</th><th>광고 (애드온/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${prows}</tbody>`;
+  if (prows === '') prows = `<tr><td colspan="7" style="text-align:center;color:var(--tx2)">애드온/비애드온이 같이 운영된 매칭키 없음</td></tr>`;
+  document.getElementById('addon-pair-tbl').innerHTML = `<thead><tr><th>매칭키</th><th>광고 (애드/비)</th><th>클릭 (애드/비)</th><th>CPM Δ</th><th>CTR Δ</th><th>CVR Δ</th><th>CPA Δ</th></tr></thead><tbody>${prows}</tbody>`;
+
+  // ============ 5.A.3 부록 — 월별 추세 ============
+  const monthly = A.monthly_trend || [];
+  let mtrs = '';
+  monthly.forEach(m => {
+    const d = m.delta_pct;
+    const warn = m.sample_warning ? ' <span style="color:var(--warn)" title="표본 부족 (클릭 <100)">⚠</span>' : '';
+    mtrs += `<tr><td class="lbl">${m.month}${warn}</td><td>${m.addon.clicks.toLocaleString()} / ${m.non_addon.clicks.toLocaleString()}</td><td>${m.addon.cvr !== null ? m.addon.cvr + '%' : '-'}</td><td>${m.non_addon.cvr !== null ? m.non_addon.cvr + '%' : '-'}</td><td class="${cls(d.cvr,'high')}">${fmtSigned(d.cvr)}${sigBadge(d.cvr_p)}</td><td class="muted">${d.cvr_p !== null && d.cvr_p !== undefined ? 'p=' + d.cvr_p : '-'}</td></tr>`;
+  });
+  document.getElementById('addon-monthly-tbl').innerHTML = `<thead><tr><th>월</th><th>클릭 (애드/비)</th><th>애드 CVR</th><th>비애드 CVR</th><th>CVR Δ%</th><th>p-value</th></tr></thead><tbody>${mtrs}</tbody>`;
+})();
+
+// ==================== R9 Q2 — 1.2 KPI Gap Caveat ====================
+(function renderKpiGapCaveat() {
+  const el = document.getElementById('kpi-gap-caveat');
+  if (!el) return;
+  const gap = (DATA.meta_caveats && DATA.meta_caveats.kpi_gap) || null;
+  if (!gap) { el.style.display = 'none'; return; }
+  el.innerHTML = `<div class="gap-caveat">
+    <strong>KPI 갭 — 권장 ${gap.recommended_conv}건 vs KPI 목표 ${gap.kpi_target}건 (${gap.gap_amount > 0 ? '-' : '+'}${Math.abs(gap.gap_amount)}건, ${gap.gap_pct}%).</strong>
+    ${gap.caveat}
+  </div>`;
+})();
+
+// ==================== R10 — 3.4 부산 학습 박스 ====================
+(function renderBusanLearningBox() {
+  const el = document.getElementById('busan-learning-box');
+  if (!el) return;
+  const rec = (DATA.budget && DATA.budget.june_recommended_by_branch) || {};
+  const busan = rec['부산'];
+  if (!busan || !busan.learning_rule) { el.style.display = 'none'; return; }
+  const lr = busan.learning_rule;
+  const range = lr.pass_budget_range || [];
+  el.innerHTML = `<div class="busan-box">
+    <div class="busan-hdr">
+      <span class="busan-tag">신규 학습 — 정상 산식 미적용</span>
+      <span class="busan-title">부산 (codex R10 학습 룰)</span>
+    </div>
+    <div class="busan-row">기본 <strong>${fmt(lr.min_budget)}원</strong> · ${lr.observation_weeks}주 관찰 (6/1~6/21)</div>
+    <div class="busan-grid">
+      <div class="busan-row">통과 기준 <strong>CPA ≤ ${lr.cpa_pass_threshold ? fmt(lr.cpa_pass_threshold) + '원' : '-'}</strong> ${lr.pass_combine} <strong>CVR ≥ ${lr.cvr_pass_threshold !== null ? lr.cvr_pass_threshold + '%' : '-'}</strong></div>
+      <div class="busan-row">통과 시 <strong>${range.length === 2 ? fmt(range[0]) + '~' + fmt(range[1]) + '원' : '-'}</strong> 정상 산식 편입</div>
+      <div class="busan-row">미통과 시 ${lr.fail_action || '-'}</div>
+      <div class="busan-row" style="color:var(--tx2)">※ ${lr.measurement_note || ''}</div>
+    </div>
+  </div>`;
+})();
+
+// ==================== R9 Q1 — 3.4 normalize 18M 보조 표 ====================
+(function renderNormalize18mBox() {
+  const el = document.getElementById('normalize-18m-box');
+  if (!el) return;
+  const nm = (DATA.budget && DATA.budget.normalize_18m_table) || null;
+  if (!nm) { el.style.display = 'none'; return; }
+  const dp = nm.deduction_priority || [];
+  el.innerHTML = `<div class="norm-box">
+    <div class="norm-hdr">18M cap 적용 시 (${nm.guideline_type} guideline) — 감액 우선순위</div>
+    <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">권장 ${fmt(nm.recommended_total)}원 vs cap ${fmt(nm.guideline_cap)}원 → 초과 ${fmt(nm.overage_amount)}원 (${nm.overage_pct > 0 ? '+' : ''}${nm.overage_pct}%). 18M 적용 시 아래 순위로 감액합니다.</div>
+    <ol class="norm-list">${dp.map(d => `<li><strong>${d.priority}. ${d.target}</strong> — <span class="muted">${d.rationale}</span></li>`).join('')}</ol>
+    <div style="font-size:10.5px;color:var(--tx2);margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd)">${nm.note || ''}</div>
+  </div>`;
+})();
+
+// ==================== R9 Q3 — 5.D Appendix 부록 소재 표 ====================
+(function renderAppendixCreatives() {
+  const el = document.getElementById('appendix-creative-tbl');
+  if (!el) return;
+  const ca = DATA.creative_appendix || {branches:{}, tier_rationale:{}};
+  const branches = ca.branches || {};
+  const tr = ca.tier_rationale || {};
+  if (Object.keys(branches).length === 0) { el.innerHTML = '<div class="muted">소재 분류 데이터 없음</div>'; return; }
+  const heads = ['소재명', 'TIER', '근거', '권장 액션', '비용', '전환'];
+  let html = '';
+  // 상단 TIER 설명
+  html += `<div class="evidence-card" style="margin-bottom:14px;padding:12px 14px"><div style="font-size:10px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">TIER 분류 기준</div>${Object.entries(tr).map(([k,v]) => `<div style="font-size:11px;color:var(--tx);margin-bottom:3px"><strong>${k}</strong> — ${v}</div>`).join('')}</div>`;
+  // 지점별 표
+  (DATA.meta.branches || []).forEach(b => {
+    const items = branches[b];
+    if (!items || items.length === 0) return;
+    let trs = '';
+    items.forEach(it => {
+      trs += `<tr><td class="lbl">${it.name}</td><td><strong>${it.tier}</strong></td><td class="muted">${it.evidence}</td><td>${it.recommended_action}</td><td>${it.cost !== null ? fmt(it.cost) + '원' : '-'}</td><td>${it.conversions !== null ? it.conversions + '건' : '-'}</td></tr>`;
+    });
+    html += `<div class="appx-tbl-section"><div class="appx-tbl-hdr">${b} — ${items.length}개 소재</div><div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody></table></div></div></div>`;
+  });
+  el.innerHTML = html;
+})();
+
+// ==================== R9 종합 누락 — 5.E 시즌성 캐비엇 ====================
+(function renderSeasonalityCaveat() {
+  const el = document.getElementById('seasonality-caveat');
+  if (!el) return;
+  const seas = (DATA.meta_caveats && DATA.meta_caveats.seasonality) || null;
+  if (!seas) { el.style.display = 'none'; return; }
+  el.innerHTML = `<div class="gap-caveat" style="border-left-color:var(--blue);background:rgba(96,165,250,.05)"><strong>시즌성 · 외부 변수.</strong> ${seas.caveat}</div>`;
 })();
 """

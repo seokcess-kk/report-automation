@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}액션 트래커{% endblock %}
+{% block content %}
+
+  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>액션 트래커</span></div>
+
+  <!-- 헤드 -->
+  <div class="headline">
+    <div class="headline-row">
+      <div class="h-stat"><div class="lbl">총 액션 수</div><div class="val">{{ stats.total }}</div></div>
+      <div class="h-stat"><div class="lbl">D+1 측정 완료</div><div class="val">{{ stats.d1_done }}</div><div class="sub">/ {{ stats.total }}</div></div>
+      <div class="h-stat"><div class="lbl">D+3 측정 완료</div><div class="val">{{ stats.d3_done }}</div><div class="sub">/ {{ stats.total }}</div></div>
+      <div class="h-stat"><div class="lbl">D+7 측정 완료</div><div class="val">{{ stats.d7_done }}</div><div class="sub">/ {{ stats.total }}</div></div>
+      <div class="h-stat"><div class="lbl">측정 대기</div><div class="val">{{ stats.pending }}</div></div>
+    </div>
+  </div>
+
+  <!-- 필터 -->
+  <div class="card">
+    <h2>필터</h2>
+    <form method="get" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:4px">action_type</label>
+        <select name="action_type" style="background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;border-radius:4px">
+          <option value="">전체</option>
+          {% for at in filter_options.action_types %}
+          <option value="{{ at }}" {% if at == filters.action_type %}selected{% endif %}>{{ at }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:4px">지점</label>
+        <select name="branch" style="background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;border-radius:4px">
+          <option value="">전체</option>
+          {% for b in filter_options.branches %}
+          <option value="{{ b }}" {% if b == filters.branch %}selected{% endif %}>{{ b }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:4px">From</label>
+        <input type="date" name="from_date" value="{{ filters.from_date or '' }}" style="background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;border-radius:4px">
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:4px">To</label>
+        <input type="date" name="to_date" value="{{ filters.to_date or '' }}" style="background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;border-radius:4px">
+      </div>
+      <button type="submit" style="background:var(--bd);color:var(--tx);border:none;padding:6px 14px;border-radius:5px;cursor:pointer">적용</button>
+      <a href="/tracker" style="font-size:11px">초기화</a>
+    </form>
+  </div>
+
+  <!-- 액션 목록 -->
+  <div class="card">
+    <h2>액션 목록 ({{ actions | length }}건)</h2>
+    <table>
+      <thead><tr><th>일자</th><th>유형</th><th>대상</th><th>변경</th><th>사유</th><th>D+1</th><th>D+3</th><th>D+7</th></tr></thead>
+      <tbody>
+        {% for a in actions %}
+        <tr>
+          <td>{{ a.date }}<div class="muted" style="font-size:10px">{{ a.timestamp[11:16] }}</div></td>
+          <td><span class="badge gray">{{ a.action_type }}</span></td>
+          <td>
+            {% if a.branch %}<a href="/branch/{{ a.branch }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ a.branch }}</a>{% endif %}
+            {% if a.creative_name %}<div style="font-size:11px">{{ a.creative_name }}</div>{% endif %}
+          </td>
+          <td>
+            {% if a.before %}<div class="muted" style="font-size:11px">{{ a.before }}</div>{% endif %}
+            {% if a.after %}<div style="font-size:11px">→ {{ a.after }}</div>{% endif %}
+          </td>
+          <td><div class="muted" style="font-size:11px">{{ a.reason }}</div></td>
+          <td>
+            {% if a.effects.d1 %}
+              <div style="font-size:10.5px">CPA {{ a.effects.d1.cpa | won }}</div>
+              <div class="muted" style="font-size:10px">CVR {{ a.effects.d1.cvr | pct(2) }}</div>
+            {% else %}<span class="muted" style="font-size:10px">대기</span>{% endif %}
+          </td>
+          <td>
+            {% if a.effects.d3 %}
+              <div style="font-size:10.5px">CPA {{ a.effects.d3.cpa | won }}</div>
+              <div class="muted" style="font-size:10px">CVR {{ a.effects.d3.cvr | pct(2) }}</div>
+            {% else %}<span class="muted" style="font-size:10px">대기</span>{% endif %}
+          </td>
+          <td>
+            {% if a.effects.d7 %}
+              <div style="font-size:10.5px">CPA {{ a.effects.d7.cpa | won }}</div>
+              <div class="muted" style="font-size:10px">CVR {{ a.effects.d7.cvr | pct(2) }}</div>
+            {% else %}<span class="muted" style="font-size:10px">대기</span>{% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="muted">필터 조건에 맞는 액션 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 평균 효과 -->
+  {% if avg_effects %}
+  <div class="card">
+    <h2>액션 유형별 평균 효과 (D+7 기준)</h2>
+    <table class="tight">
+      <thead><tr><th>action_type</th><th>측정 건수</th><th>평균 CPA 변화</th><th>평균 CVR 변화</th></tr></thead>
+      <tbody>
+        {% for ae in avg_effects %}
+        <tr>
+          <td>{{ ae.action_type }}</td>
+          <td class="num">{{ ae.count }}</td>
+          <td class="num {{ 'delta-up' if (ae.cpa_delta_pct or 0) < 0 else 'delta-down' }}">{{ ae.cpa_delta_pct | pct(1) }}</td>
+          <td class="num {{ 'delta-up' if (ae.cvr_delta_pct or 0) > 0 else 'delta-down' }}">{{ ae.cvr_delta_pct | pct(1) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="muted" style="font-size:10.5px;margin-top:8px">CPA는 음수가 좋고 CVR은 양수가 좋습니다.</div>
+  </div>
+  {% endif %}
+
+{% endblock %}

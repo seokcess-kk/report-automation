@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}체크리스트{% endblock %}
+{% block content %}
+
+  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>체크리스트</span></div>
+
+  <div class="headline">
+    <div class="headline-row">
+      <div class="h-stat normal"><div class="lbl">완료 ✓</div><div class="val">{{ stats.completed }}</div></div>
+      <div class="h-stat"><div class="lbl">진행 중 🔄</div><div class="val">{{ stats.in_progress }}</div></div>
+      <div class="h-stat warn"><div class="lbl">부분 진행 ⚠</div><div class="val">{{ stats.partial }}</div></div>
+      <div class="h-stat"><div class="lbl">미시작 ☐</div><div class="val">{{ stats.not_started }}</div></div>
+    </div>
+  </div>
+
+  {% for week, items in grouped_by_week.items() %}
+  <div class="card">
+    <h2>{{ week }} — {{ items | length }}개 항목</h2>
+    {% for c in items %}
+    <div class="ck-item" data-id="{{ c.id }}">
+      <div class="ck-status {{ c.status }}" {% if c.manual_override %}onclick="toggleCheck('{{ c.id }}', {{ 'true' if c.manually_checked else 'false' }}, document.getElementById('note-{{ c.id }}'))" title="클릭하여 토글"{% endif %}>{{ c.status_icon }}</div>
+      <div class="ck-body">
+        <div>
+          <span class="ck-week">{{ c.week }}</span>
+          <span class="ck-title">{{ c.title }}</span>
+          {% if c.manual_override %}<span class="badge gray" style="font-size:9px;margin-left:6px">수동 토글 가능</span>{% endif %}
+        </div>
+        <div class="ck-meta">{{ c.related_section }} · {{ c.owner }} · status_rule: <code style="background:var(--bd);padding:1px 4px;border-radius:2px">{{ c.id }}</code></div>
+        {% if c.note %}<div class="ck-note">↳ {{ c.note }}</div>{% endif %}
+        {% if c.success_metric_value is not none %}
+        <div class="ck-meta">📊 measure: {{ c.success_metric_value }}</div>
+        {% endif %}
+        {% if c.manual_override %}
+        <input type="text" id="note-{{ c.id }}" class="ck-note-input" placeholder="메모 (선택)" />
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+
+  <div class="card">
+    <h2>체크리스트 정의 (참고)</h2>
+    <div class="muted" style="font-size:11.5px;line-height:1.7">
+      체크리스트 항목은 <code style="background:var(--bd);padding:1px 4px;border-radius:2px">config/june_checklist.yaml</code> 에 정의되어 있습니다.
+      상태는 <code style="background:var(--bd);padding:1px 4px;border-radius:2px">status_rule</code> 에 따라 데이터 기반으로 자동 평가되며,
+      <strong>수동 토글 가능</strong> 항목은 운영자가 직접 ✓ 처리할 수 있습니다 (메모와 함께 <code>checklist_state.json</code> 에 저장).
+    </div>
+  </div>
+
+{% endblock %}

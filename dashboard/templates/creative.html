@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}{{ detail.name }} · 소재 상세{% endblock %}
+{% block content %}
+
+  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>{{ detail.name }}</span></div>
+
+  <!-- 소재 헤드 -->
+  {% if detail.tier_info %}
+  <div class="headline">
+    <div class="headline-row">
+      <div class="h-stat primary">
+        <div class="lbl">TIER</div>
+        <div class="val">{{ detail.tier_info.tier }}</div>
+        <div class="sub">{{ detail.tier_info.creative_type }} · {{ detail.tier_info.creative_kind }}</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">누적 비용 (전체)</div>
+        <div class="val">{{ detail.tier_info.cost_total | won }}</div>
+        <div class="sub">{{ detail.tier_info.days_active }}일 집행</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">누적 전환</div>
+        <div class="val">{{ detail.tier_info.conv_total | count }}</div>
+        <div class="sub">CVR {{ detail.tier_info.cvr | pct(2) }}</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">평균 CPA</div>
+        <div class="val">{{ detail.tier_info.cpa | won }}</div>
+        <div class="sub">CTR {{ detail.tier_info.ctr | pct(2) }}</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">운영 지점</div>
+        <div class="val">{{ detail.tier_info.branches_list | length }}</div>
+        <div class="sub">{{ detail.tier_info.branches_list | join(' · ') }}</div>
+      </div>
+    </div>
+    {% if detail.tier_info.tier_basis %}
+    <div class="muted" style="font-size:11.5px;margin-top:8px;border-top:1px dashed var(--bd);padding-top:8px">TIER 근거: {{ detail.tier_info.tier_basis }}</div>
+    {% endif %}
+    {% if detail.tier_info.branch_warning %}
+    <div class="muted" style="font-size:11px;margin-top:4px;color:var(--warn)">{{ detail.tier_info.branch_warning }}</div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card">
+    <h2>소재 정보</h2>
+    <div class="muted">creative_tier에서 찾을 수 없는 소재입니다 (UNCLASSIFIED 또는 LOW_VOLUME 가능성).</div>
+  </div>
+  {% endif %}
+
+  <div class="grid-2">
+
+    <!-- 지점별 효율 -->
+    <div>
+      <div class="card">
+        <h2>지점별 효율 ({{ detail.branch_kpi | length }}개 지점)</h2>
+        <table class="tight">
+          <thead><tr><th>지점</th><th>전환</th><th>비용</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+          <tbody>
+            {% for b in detail.branch_kpi %}
+            <tr>
+              <td><a href="/branch/{{ b.branch }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ b.branch }}</a></td>
+              <td class="num">{{ b.conversions | count }}</td>
+              <td class="num">{{ b.cost | won }}</td>
+              <td class="num">{{ b.ctr | pct(2) }}</td>
+              <td class="num">{{ b.cvr | pct(2) }}</td>
+              <td class="num">{{ b.cpa | won }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="muted">데이터 없음</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 시청 깔때기 + 인게이지먼트 -->
+    <div>
+      <div class="card">
+        <h2>시청 깔때기 + 인게이지먼트</h2>
+        {% if detail.watch_funnel %}
+        <table class="tight">
+          <tbody>
+            <tr><th>노출수</th><td class="num">{{ detail.watch_funnel.impressions | count }}</td></tr>
+            <tr><th>6s 시청률</th><td class="num">{{ detail.watch_funnel.v6s_rate | pct(2) }}</td></tr>
+            <tr><th>15s 시청률</th><td class="num">{{ detail.watch_funnel.eng15s_rate | pct(2) }}</td></tr>
+            <tr><th>25% 도달</th><td class="num">{{ detail.watch_funnel.p25_rate | pct(2) }}</td></tr>
+            <tr><th>50% 도달</th><td class="num">{{ detail.watch_funnel.p50_rate | pct(2) }}</td></tr>
+            <tr><th>75% 도달</th><td class="num">{{ detail.watch_funnel.p75_rate | pct(2) }}</td></tr>
+            <tr><th>100% 완료</th><td class="num">{{ detail.watch_funnel.p100_rate | pct(2) }}</td></tr>
+            <tr><th>평균 시청 시간</th><td class="num">{{ detail.watch_funnel.avg_video_sec }}s</td></tr>
+            <tr><th>좋아요율</th><td class="num">{{ detail.watch_funnel.like_rate | pct(3) }}</td></tr>
+            <tr><th>공유율 (바이럴 지수)</th><td class="num">{{ detail.watch_funnel.share_rate }}%</td></tr>
+            <tr><th>댓글율</th><td class="num">{{ detail.watch_funnel.comment_rate | pct(3) }}</td></tr>
+          </tbody>
+        </table>
+        {% else %}
+        <div class="muted">시청 깊이 메트릭이 수집되지 않은 소재입니다.</div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 일별 추이 -->
+  <div class="card">
+    <h2>최근 30일 일별 추이</h2>
+    <table class="tight">
+      <thead><tr><th>날짜</th><th>비용</th><th>클릭</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+      <tbody>
+        {% for d in detail.daily_trend %}
+        <tr>
+          <td>{{ d.date }}</td>
+          <td class="num">{{ d.cost | won }}</td>
+          <td class="num">{{ d.clicks | count }}</td>
+          <td class="num">{{ d.conversions | count }}</td>
+          <td class="num">{{ d.ctr | pct(2) }}</td>
+          <td class="num">{{ d.cvr | pct(2) }}</td>
+          <td class="num">{{ d.cpa | won }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="muted">데이터 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 소재 액션 로그 -->
+  <div class="card">
+    <h2>소재 액션 로그</h2>
+    {% for a in detail.actions %}
+    <div class="action-log">
+      <div class="ts">{{ a.timestamp }}</div>
+      <strong>{{ a.action_type }}</strong>{% if a.branch %} · {{ a.branch }}{% endif %}
+      {% if a.before and a.after %}<div class="muted">{{ a.before }} → {{ a.after }}</div>{% endif %}
+      <div class="muted">사유: {{ a.reason }}</div>
+    </div>
+    {% else %}
+    <div class="muted">기록된 액션 없음</div>
+    {% endfor %}
+  </div>
+
+{% endblock %}

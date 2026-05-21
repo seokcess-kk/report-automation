@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}{{ detail.branch }} · 지점 상세{% endblock %}
+{% block content %}
+
+  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>{{ detail.branch }}</span></div>
+
+  <!-- 지점 KPI 헤드 -->
+  <div class="headline">
+    <div class="headline-row">
+      <div class="h-stat primary">
+        <div class="lbl">6월 전환 진행</div>
+        <div class="val">{{ detail.branch_kpi.conversions | count }} / {{ detail.branch_kpi.target_conversions }}</div>
+        <div class="sub">{{ detail.branch_kpi.conv_pct }}%</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">6월 누적 CPA</div>
+        <div class="val">{{ detail.branch_kpi.cpa | won }}</div>
+        <div class="sub">가드레일 {{ detail.target_cpa | won }} · {{ '✓' if detail.branch_kpi.within_guardrail else '⚠' }}</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">CPA 3일 MA</div>
+        <div class="val">{{ detail.cpa_3day_avg | won }}</div>
+        <div class="sub">7일 MA: {{ detail.cpa_7day_avg | won }}</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">CVR 3일 MA</div>
+        <div class="val">{{ detail.cvr_3day_avg | pct(2) }}</div>
+        <div class="sub">7일 MA: {{ detail.cvr_7day_avg | pct(2) }}</div>
+      </div>
+      <div class="h-stat critical">
+        <div class="lbl">이상 신호</div>
+        <div class="val">{{ detail.alerts | length }}</div>
+        <div class="sub">건</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <!-- 이상 신호 + 추천 액션 -->
+    <div>
+      <div class="card">
+        <h2>{{ detail.branch }} 신호 ({{ detail.alerts | length }}건)</h2>
+        {% for a in detail.alerts %}
+        <div class="card-row {{ 'alert-suppressed' if a.suppressed else '' }}">
+          <span class="badge {{ a.level }}">{{ a.icon }} {{ a.level }}</span>
+          {{ a.message }}
+          {% if a.linked_action %}<div class="muted" style="font-size:10.5px">→ {{ a.linked_action }}</div>{% endif %}
+        </div>
+        {% else %}
+        <div class="muted">감지된 신호 없음</div>
+        {% endfor %}
+      </div>
+
+      <div class="card">
+        <h2>{{ detail.branch }} 추천 액션</h2>
+        {% set total = detail.recommendations.budget_increase | length + detail.recommendations.budget_decrease | length + detail.recommendations.ad_off | length + detail.recommendations.ad_on | length + detail.recommendations.setting | length %}
+        {% if total == 0 %}
+        <div class="muted">추천 액션 없음</div>
+        {% endif %}
+        {% for cat_key, label in [('budget_increase','💰 예산 증액'),('budget_decrease','💰 예산 감액'),('ad_off','🎬 OFF 후보'),('ad_on','🎬 ON·확대 후보'),('setting','⚙️ 세팅 확인')] %}
+        {% set items = detail.recommendations[cat_key] %}
+        {% if items %}
+        <div class="action-cat">
+          <div class="action-cat-hd">{{ label }} <span class="count">{{ items|length }}</span></div>
+          {% for r in items %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 최근 14일 일별 KPI -->
+    <div>
+      <div class="card">
+        <h2>최근 14일 일별 KPI</h2>
+        <table class="tight">
+          <thead><tr><th>날짜</th><th>비용</th><th>클릭</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+          <tbody>
+            {% for d in detail.last_n_days %}
+            <tr>
+              <td>{{ d.date }}</td>
+              <td class="num">{{ d.cost | won }}</td>
+              <td class="num">{{ d.clicks | count }}</td>
+              <td class="num">{{ d.conversions | count }}</td>
+              <td class="num">{{ d.ctr | pct(2) }}</td>
+              <td class="num">{{ d.cvr | pct(2) }}</td>
+              <td class="num">{{ d.cpa | won }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" class="muted">데이터 없음</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 지점 소재 TIER 표 -->
+  <div class="card">
+    <h2>{{ detail.branch }} 운영 소재 ({{ detail.creatives | length }}개)</h2>
+    <table>
+      <thead><tr><th>소재명</th><th>TIER</th><th>유형</th><th>집행일수</th><th>비용</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+      <tbody>
+        {% for c in detail.creatives %}
+        <tr>
+          <td><a href="/creative/{{ c.name }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ c.name }}</a></td>
+          <td><strong>{{ c.tier }}</strong></td>
+          <td>{{ c.creative_type }}</td>
+          <td class="num">{{ c.days_active }}일</td>
+          <td class="num">{{ c.cost | won }}</td>
+          <td class="num">{{ c.conversions | count }}</td>
+          <td class="num">{{ c.ctr | pct(2) }}</td>
+          <td class="num">{{ c.cvr | pct(2) }}</td>
+          <td class="num">{{ c.cpa | won }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="muted">소재 데이터 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 지점 액션 로그 -->
+  <div class="card">
+    <h2>{{ detail.branch }} 액션 로그 (최근 30건)</h2>
+    {% for a in detail.actions %}
+    <div class="action-log">
+      <div class="ts">{{ a.timestamp }}</div>
+      <strong>{{ a.action_type }}</strong>
+      {% if a.before and a.after %} · {{ a.before }} → {{ a.after }}{% endif %}
+      <div class="muted">사유: {{ a.reason }}</div>
+      {% if a.effects %}
+      <div class="effect">
+        {% if a.effects.d1 %}D+1: CPA {{ a.effects.d1.cpa | won }}{% endif %}
+        {% if a.effects.d3 %} · D+3: CPA {{ a.effects.d3.cpa | won }}{% endif %}
+        {% if a.effects.d7 %} · D+7: CPA {{ a.effects.d7.cpa | won }}{% endif %}
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="muted">기록된 액션 없음</div>
+    {% endfor %}
+  </div>
+
+{% endblock %}

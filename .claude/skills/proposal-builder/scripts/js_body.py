@@ -918,7 +918,7 @@ document.querySelectorAll('.tb').forEach(btn => {
             <div style="font-size:11px;color:var(--tx2);line-height:1.55">${r.verify_kpi || '-'}</div>
           </div>
           <div>
-            <div class="bp-section-lbl">중단 조건 (Guardrail)</div>
+            <div class="bp-section-lbl">중단 조건 (가드레일)</div>
             <div style="font-size:11px;color:var(--warn);line-height:1.55">${guardrail}</div>
           </div>
         </div>
@@ -1718,13 +1718,20 @@ document.querySelectorAll('.tb').forEach(btn => {
   const branches = ca.branches || {};
   const tr = ca.tier_rationale || {};
   if (Object.keys(branches).length === 0) { el.innerHTML = '<div class="muted">소재 분류 데이터 없음</div>'; return; }
+  // 데이터 출처 안내 (현재 부분월에 TIER 분류 대상이 없어 직전 dir에서 가져온 경우)
+  let dataSourceNotice = '';
+  if (ca.data_source_dir) {
+    const dsd = ca.data_source_dir;
+    const formatted = dsd.length === 8 ? `${dsd.slice(0,4)}-${dsd.slice(4,6)}-${dsd.slice(6,8)}` : dsd;
+    dataSourceNotice = `<div class="gap-caveat" style="margin-bottom:14px;border-left-color:var(--warn);background:rgba(248,191,79,.06);font-size:11.5px;line-height:1.6">현재 분석 기간(5월 부분월)은 ON 광고가 적어 TIER 분류 대상이 부족합니다. 본 부록은 직전 분류 결과(<strong>${formatted} 기준</strong>)를 표시하여 운영 의사결정 데이터 손실을 막습니다. 시청 깊이·인게이지먼트 컬럼은 신규 수집 항목이라 직전 기준에서는 공란일 수 있습니다.</div>`;
+  }
   // 시청 깊이 + 인게이지먼트 데이터 유무 확인
   const hasDepth = Object.values(branches).some(items => (items || []).some(it => it.v6s_rate !== null && it.v6s_rate !== undefined));
   const hasEng = Object.values(branches).some(items => (items || []).some(it => it.share_rate !== null && it.share_rate !== undefined));
   let heads = ['소재명', 'TIER', '근거', '권장 액션', '비용', '전환'];
   if (hasDepth) heads = heads.concat(['6s 시청률', '100% 완료', '평균 시청']);
   if (hasEng) heads = heads.concat(['좋아요율', '공유율']);
-  let html = '';
+  let html = dataSourceNotice;
   // 상단 TIER 설명 + 시청률·인게이지먼트 안내
   const extraNote = (hasDepth || hasEng) ? `<div style="font-size:10.5px;color:var(--tx2);margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd);line-height:1.5">
     ${hasDepth ? '<strong>시청률 지표:</strong> 6s 시청률 = 6초 이상 시청 / 노출수 (애드온 노출 시점 도달률 추정). 100% 완료 = 영상 끝까지 본 비율. 평균 시청 = 평균 재생 시간(초).<br>' : ''}

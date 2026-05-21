@@ -42,22 +42,109 @@ TIER_ACTION = {
 
 
 def _find_latest_creative_tier(parsed_path: str) -> Path | None:
+    """현재 dir 우선, 비어 있으면 비어있지 않은 가장 최신 dir로 fallback.
+
+    5월 부분월처럼 ON 광고가 적어 TIER 분류가 0행인 경우를 위한 안전장치.
+    """
+    candidates = []
     same_dir = Path(parsed_path).parent / 'creative_tier.parquet'
     if same_dir.exists():
-        return same_dir
+        candidates.append(same_dir)
     data_root = Path(parsed_path).parent.parent
-    if not data_root.exists():
-        return None
-    candidates = sorted(
-        [d for d in data_root.iterdir() if d.is_dir() and (d / 'creative_tier.parquet').exists()],
-        key=lambda d: d.name,
-        reverse=True,
-    )
-    return (candidates[0] / 'creative_tier.parquet') if candidates else None
+    if data_root.exists():
+        other = sorted(
+            [d for d in data_root.iterdir() if d.is_dir() and (d / 'creative_tier.parquet').exists()],
+            key=lambda d: d.name,
+            reverse=True,
+        )
+        for d in other:
+            p = d / 'creative_tier.parquet'
+            if p != same_dir:
+                candidates.append(p)
+    # 비어있지 않은 첫 후보 반환
+    for c in candidates:
+        try:
+            df = pd.read_parquet(c)
+            if not df.empty:
+                return c
+        except Exception:
+            continue
+    # 모두 비어 있으면 첫 후보(가장 최신) 반환 — caller가 empty 처리
+    return candidates[0] if candidates else None
+
+
+def _aggregate_branch_creative_kpi(parsed_for_kpi_path: Path) -> dict:
+    """parsed.parquet → (지점, 소재구분, 소재유형, 소재명) 단위 KPI 집계.
+
+    소재 단위 합산 효율이 아닌 지점별 효율을 별도 계산해 부록 C에 노출.
+    TIER 부여는 creative_tier (소재 단위) 기준 그대로 유지하고, KPI 수치만 분리.
+    """
+    if not parsed_for_kpi_path.exists():
+        return {}
+    try:
+        p = pd.read_parquet(parsed_for_kpi_path)
+    except Exception:
+        return {}
+    if p.empty or 'is_off' not in p.columns:
+        return {}
+
+    p_on = p[(p['is_off'] == False) & (p.get('parse_status', 'OK') == 'OK')].copy()
+    if p_on.empty:
+        return {}
+
+    # 집계 컬럼 — 시청 깊이/인게이지먼트는 있을 때만
+    agg_spec = {
+        '총비용': ('cost', 'sum'),
+        '총클릭': ('clicks', 'sum'),
+        '총노출': ('impressions', 'sum'),
+        '총전환': ('conversions', 'sum'),
+        '총랜딩': ('landing_views', 'sum'),
+        '집행일수': ('date', 'nunique'),
+    }
+    optional_cols = {
+        'video_watched_6s': '총6초시청',
+        'video_p100': '총p100',
+        'avg_video_play_sec': '평균재생초',
+        'likes': '총좋아요',
+        'shares': '총공유',
+        'engaged_view_15s': '총15초시청',
+    }
+    for src, dst in optional_cols.items():
+        if src in p_on.columns:
+            agg_spec[dst] = (src, 'mean' if src == 'avg_video_play_sec' else 'sum')
+
+    grouped = p_on.groupby(['지점', '소재구분', '소재유형', '소재명']).agg(**agg_spec).reset_index()
+    # 비율 재계산
+    grouped['CPA'] = grouped.apply(lambda r: round(r['총비용']/r['총전환']) if r['총전환'] else None, axis=1)
+    grouped['CTR'] = grouped.apply(lambda r: round(r['총클릭']/r['총노출']*100, 2) if r['총노출'] else None, axis=1)
+    grouped['CVR'] = grouped.apply(lambda r: round(r['총전환']/r['총클릭']*100, 2) if r['총클릭'] else None, axis=1)
+    if '총6초시청' in grouped.columns:
+        grouped['6s시청률'] = grouped.apply(lambda r: round(r['총6초시청']/r['총노출']*100, 2) if r['총노출'] else None, axis=1)
+    if '총p100' in grouped.columns:
+        grouped['p100완료율'] = grouped.apply(lambda r: round(r['총p100']/r['총노출']*100, 2) if r['총노출'] else None, axis=1)
+    if '총좋아요' in grouped.columns:
+        grouped['좋아요율'] = grouped.apply(lambda r: round(r['총좋아요']/r['총노출']*100, 3) if r['총노출'] else None, axis=1)
+    if '총공유' in grouped.columns:
+        grouped['공유율'] = grouped.apply(lambda r: round(r['총공유']/r['총노출']*100, 4) if r['총노출'] else None, axis=1)
+    if '총15초시청' in grouped.columns:
+        grouped['15s시청률'] = grouped.apply(lambda r: round(r['총15초시청']/r['총노출']*100, 2) if r['총노출'] else None, axis=1)
+    if '평균재생초' in grouped.columns:
+        grouped['평균재생초'] = grouped['평균재생초'].round(2)
+
+    # (branch, 소재구분, 소재유형, 소재명) → KPI dict
+    lookup = {}
+    for _, r in grouped.iterrows():
+        key = (r['지점'], r['소재구분'], r['소재유형'], r['소재명'])
+        lookup[key] = r.to_dict()
+    return lookup
 
 
 def build(parsed_path: str) -> dict:
-    """creative_tier.parquet에서 부록 표 데이터 생성. 같은 dir에 없으면 최신 dir 검색."""
+    """creative_tier.parquet (소재 단위 TIER) + parsed.parquet (지점×소재 KPI) 결합.
+
+    TIER은 creative_tier 기준 (지점 무관 합산), KPI는 parsed에서 지점별로 재집계.
+    fallback이 발생하면 fallback dir의 parsed.parquet으로 KPI 계산.
+    """
     tier_path = _find_latest_creative_tier(parsed_path)
     if tier_path is None:
         return {'branches': {}, 'tier_rationale': TIER_RATIONALE, 'note': 'creative_tier.parquet 없음 - 부록 생략'}
@@ -67,6 +154,10 @@ def build(parsed_path: str) -> dict:
         return {'branches': {}, 'tier_rationale': TIER_RATIONALE, 'note': f'creative_tier 로드 실패: {e}'}
     if df.empty:
         return {'branches': {}, 'tier_rationale': TIER_RATIONALE, 'note': '데이터 없음'}
+
+    # 지점×소재 단위 KPI 재집계 (tier_path와 같은 dir의 parsed.parquet 사용)
+    parsed_for_kpi = tier_path.parent / 'parsed.parquet'
+    branch_kpi_lookup = _aggregate_branch_creative_kpi(parsed_for_kpi)
 
     name_col = '매칭키' if '매칭키' in df.columns else ('creative_name' if 'creative_name' in df.columns else None)
     tier_col = 'TIER' if 'TIER' in df.columns else ('tier' if 'tier' in df.columns else None)
@@ -96,6 +187,23 @@ def build(parsed_path: str) -> dict:
     def _to_float(v):
         return None if v is None or pd.isna(v) else float(v)
 
+    # 소재 단위 누적 KPI (fallback용) — branch_kpi_lookup이 비어 있거나 미스 발생 시
+    def _fallback_kpi(r):
+        return {
+            'cpa': r.get(cpa_col) if cpa_col else None,
+            'cvr': r.get(cvr_col) if cvr_col else None,
+            'ctr': r.get(ctr_col) if ctr_col else None,
+            'cost': r.get(cost_col) if cost_col else None,
+            'conv': r.get(conv_col) if conv_col else None,
+            'days': r.get(days_col) if days_col else None,
+            'v6s': r.get(v6s_col) if v6s_col else None,
+            'p100': r.get(p100_col) if p100_col else None,
+            'avg_sec': r.get(avg_sec_col) if avg_sec_col else None,
+            'share': r.get(share_col) if share_col else None,
+            'like': r.get(like_col) if like_col else None,
+            'eng15s': r.get(eng15s_col) if eng15s_col else None,
+        }
+
     branches_out = {}
     for branch in VALID_BRANCHES:
         def has_branch(lst, b=branch):
@@ -109,18 +217,32 @@ def build(parsed_path: str) -> dict:
         items = []
         for _, r in bdf.iterrows():
             tier = str(r.get(tier_col, '')).upper()
-            cpa = r.get(cpa_col) if cpa_col else None
-            cvr = r.get(cvr_col) if cvr_col else None
-            ctr = r.get(ctr_col) if ctr_col else None
-            cost = r.get(cost_col) if cost_col else None
-            conv = r.get(conv_col) if conv_col else None
-            days = r.get(days_col) if days_col else None
-            v6s = r.get(v6s_col) if v6s_col else None
-            p100 = r.get(p100_col) if p100_col else None
-            avg_sec = r.get(avg_sec_col) if avg_sec_col else None
-            share = r.get(share_col) if share_col else None
-            like = r.get(like_col) if like_col else None
-            eng15s = r.get(eng15s_col) if eng15s_col else None
+            # 지점별 KPI lookup 시도 — (branch, 소재구분, 소재유형, 소재명) 키
+            key = (branch, r.get('소재구분'), r.get('소재유형'), r.get('소재명'))
+            bk = branch_kpi_lookup.get(key)
+            if bk is not None:
+                # 지점별 효율 사용
+                cpa = bk.get('CPA')
+                cvr = bk.get('CVR')
+                ctr = bk.get('CTR')
+                cost = bk.get('총비용')
+                conv = bk.get('총전환')
+                days = bk.get('집행일수')
+                v6s = bk.get('6s시청률')
+                p100 = bk.get('p100완료율')
+                avg_sec = bk.get('평균재생초')
+                share = bk.get('공유율')
+                like = bk.get('좋아요율')
+                eng15s = bk.get('15s시청률')
+                kpi_source = 'branch'
+            else:
+                # 지점별 데이터 부재 시 소재 단위 누적값 fallback
+                fb = _fallback_kpi(r)
+                cpa = fb['cpa']; cvr = fb['cvr']; ctr = fb['ctr']
+                cost = fb['cost']; conv = fb['conv']; days = fb['days']
+                v6s = fb['v6s']; p100 = fb['p100']; avg_sec = fb['avg_sec']
+                share = fb['share']; like = fb['like']; eng15s = fb['eng15s']
+                kpi_source = 'aggregate'
             evidence_parts = []
             if cpa is not None and not pd.isna(cpa):
                 evidence_parts.append(f"CPA {int(cpa):,}원")
@@ -147,14 +269,22 @@ def build(parsed_path: str) -> dict:
                 'eng15s_rate': _to_float(eng15s),
                 'evidence': ' / '.join(evidence_parts),
                 'recommended_action': TIER_ACTION.get(tier, ''),
+                'kpi_source': kpi_source,
             })
         items.sort(key=lambda x: (TIER_ORDER.get(x['tier'], 99), x['cpa'] if x['cpa'] is not None else 10**9))
         branches_out[branch] = items
+
+    # 데이터 출처 안내 — 현재 dir이 비어 다른 dir에서 가져왔을 경우 사용자에게 표시
+    same_dir = Path(parsed_path).parent / 'creative_tier.parquet'
+    data_source = None
+    if tier_path != same_dir:
+        data_source = tier_path.parent.name  # 예: '20260519'
 
     return {
         'branches': branches_out,
         'tier_rationale': TIER_RATIONALE,
         'tier_action_default': TIER_ACTION,
+        'data_source_dir': data_source,
         'note': '액션 카드 inline은 핵심 TIER1/TIER4 1~2개. 부록은 지점별 전체 소재 표.',
     }
 

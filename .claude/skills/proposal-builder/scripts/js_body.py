@@ -231,7 +231,7 @@ document.querySelectorAll('.tb').forEach(btn => {
       },
       scales: {
         x: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID } },
-        y: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID }, title: { display: true, text: '전환 수', color: CHART_TEXT } },
+        y: { ticks: { color: CHART_TEXT }, grid: { color: CHART_GRID }, title: { display: true, text: '전환수', color: CHART_TEXT } },
       },
     },
   });
@@ -587,7 +587,7 @@ document.querySelectorAll('.tb').forEach(btn => {
   let diagHtml = '';
   branches.forEach(b => {
     const bd = rc.by_branch[b];
-    if (!bd.is_diagnosable) { diagHtml += `<div class="appendix-card" style="margin-bottom:8px"><div class="card-title">${b} ${statusBadge('new','신규')}</div><div class="muted">전 기간 데이터 없음 - 6월 운영 후 다음 달 재진단 권장</div></div>`; return; }
+    if (!bd.is_diagnosable) { diagHtml += `<div class="appendix-card" style="margin-bottom:8px"><div class="card-title">${b} ${statusBadge('new','신규')}</div><div class="muted">전 기간 데이터 없음 - 6월 운영 후 다음 달 재진단 권고</div></div>`; return; }
     const weaknesses = bd.peer_weaknesses || [];
     const items = weaknesses.length > 0
       ? weaknesses.map(w => `<div style="background:var(--s2);border-radius:5px;padding:8px 12px;margin-bottom:6px;border-left:3px solid var(--warn)"><div style="font-size:12px;font-weight:700;color:var(--warn)">${w.label}</div><div style="font-size:11px;color:var(--tx2);font-family:'DM Mono',monospace;margin-top:3px">${w.evidence}</div><div style="font-size:10px;color:var(--tx2);margin-top:3px">→ ${w.action_hint}</div></div>`).join('')
@@ -936,7 +936,7 @@ document.querySelectorAll('.tb').forEach(btn => {
 
   // B.2 요일별
   const wd = DATA.weekday_performance || {};
-  const wdHeads = ['지점', '베스트 요일', '약한 요일', '권장 액션'];
+  const wdHeads = ['지점', '베스트 요일', '약한 요일', '추천 액션'];
   let wdTrs = '';
   const wdByBranch = wd.by_branch || {};
   branches.forEach(b => {
@@ -1263,8 +1263,8 @@ document.querySelectorAll('.tb').forEach(btn => {
     document.getElementById('lc-stage-stats').innerHTML = stagesHtml;
     const offC = lc.off_candidates || [];
     const wins = lc.long_winners || [];
-    let actHtml = `<div style="font-size:11px;font-weight:800;color:var(--red);margin:6px 0">▼ OFF 권장 (${offC.length}건)</div>`;
-    actHtml += offC.length > 0 ? offC.map(it => `<div style="background:var(--s2);border:1px solid var(--bd);border-left:3px solid var(--red);border-radius:5px;padding:8px 12px;margin-bottom:5px"><div style="font-size:11px;font-weight:700;color:var(--tx);line-height:1.45">${it.creative_name}</div><div style="font-size:10px;color:var(--tx2);font-family:'DM Mono',monospace;margin-top:3px">활성 ${it.span_days}일 · 전환 ${it.total.conversions}건 · CPA ${fmt(it.total.cpa)}원</div><div style="font-size:10px;color:var(--tx2);margin-top:3px">${it.reason}</div></div>`).join('') : '<div class="muted">즉시 OFF 권장 없음</div>';
+    let actHtml = `<div style="font-size:11px;font-weight:800;color:var(--red);margin:6px 0">▼ OFF 권고 (${offC.length}건)</div>`;
+    actHtml += offC.length > 0 ? offC.map(it => `<div style="background:var(--s2);border:1px solid var(--bd);border-left:3px solid var(--red);border-radius:5px;padding:8px 12px;margin-bottom:5px"><div style="font-size:11px;font-weight:700;color:var(--tx);line-height:1.45">${it.creative_name}</div><div style="font-size:10px;color:var(--tx2);font-family:'DM Mono',monospace;margin-top:3px">활성 ${it.span_days}일 · 전환 ${it.total.conversions}건 · CPA ${fmt(it.total.cpa)}원</div><div style="font-size:10px;color:var(--tx2);margin-top:3px">${it.reason}</div></div>`).join('') : '<div class="muted">즉시 OFF 권고 없음</div>';
     actHtml += `<div style="font-size:11px;font-weight:800;color:var(--t1);margin:10px 0 6px">▼ 장수 우수 (${wins.length}건)</div>`;
     actHtml += wins.length > 0 ? wins.map(it => `<div style="background:var(--s2);border:1px solid var(--bd);border-left:3px solid var(--t1);border-radius:5px;padding:8px 12px;margin-bottom:5px"><div style="font-size:11px;font-weight:700;color:var(--tx);line-height:1.45">${it.creative_name}</div><div style="font-size:10px;color:var(--tx2);font-family:'DM Mono',monospace;margin-top:3px">활성 ${it.span_days}일 · 전환 ${it.total.conversions}건 · CPA ${fmt(it.total.cpa)}원</div><div style="font-size:10px;color:var(--tx2);margin-top:3px">${it.reason}</div></div>`).join('') : '<div class="muted">장수 우수 없음</div>';
     document.getElementById('lc-action-cards').innerHTML = actHtml;
@@ -1278,14 +1278,14 @@ document.querySelectorAll('.tb').forEach(btn => {
     }
     const lcHeads = ['소재','단계','활성','전환','CPA','CTR Δ','CVR Δ','액션'];
     const allItems = [...(lc.by_stage.long || []), ...(lc.by_stage.mature || []), ...(lc.by_stage.fresh || [])];
-    const priority = (r) => r === 'OFF 권장' ? 0 : (r.includes('피로') ? 1 : (r.startsWith('장수 우수') ? 2 : (r.includes('조기 점검') ? 3 : 4)));
+    const priority = (r) => r === 'OFF 권고' ? 0 : (r.includes('피로') ? 1 : (r.startsWith('장수 우수') ? 2 : (r.includes('조기 점검') ? 3 : 4)));
     allItems.sort((a, b) => priority(a.recommendation) - priority(b.recommendation));
     let lcTrs = '';
     allItems.forEach(it => {
       const sc = it.stage === 'long' ? 'var(--warn)' : (it.stage === 'mature' ? 'var(--blue)' : 'var(--t1)');
       const ctrCls = it.ctr_change_pct !== null ? (it.ctr_change_pct < -15 ? 'delta-down' : (it.ctr_change_pct > 15 ? 'delta-up' : '')) : '';
       const cvrCls = it.cvr_change_pct !== null ? (it.cvr_change_pct < -15 ? 'delta-down' : (it.cvr_change_pct > 15 ? 'delta-up' : '')) : '';
-      const recCls = it.recommendation === 'OFF 권장' ? 'delta-down' : (it.recommendation.startsWith('장수 우수') ? 'delta-up' : '');
+      const recCls = it.recommendation === 'OFF 권고' ? 'delta-down' : (it.recommendation.startsWith('장수 우수') ? 'delta-up' : '');
       lcTrs += `<tr><td class="txt" style="max-width:280px">${it.creative_name}</td><td><span style="color:${sc};font-weight:700">${it.stage_label}</span></td><td>${it.span_days}일</td><td>${fmt(it.total.conversions)}건</td><td>${fmt(it.total.cpa)}원</td><td class="${ctrCls}">${it.ctr_change_pct !== null ? (it.ctr_change_pct > 0 ? '+' : '') + it.ctr_change_pct + '%' : '-'}</td><td class="${cvrCls}">${it.cvr_change_pct !== null ? (it.cvr_change_pct > 0 ? '+' : '') + it.cvr_change_pct + '%' : '-'}</td><td class="${recCls}" style="font-size:10px">${it.recommendation}</td></tr>`;
     });
     document.getElementById('lc-detail-tbl').innerHTML = `<thead><tr>${lcHeads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${lcTrs}</tbody>`;
@@ -1331,7 +1331,7 @@ document.querySelectorAll('.tb').forEach(btn => {
     const top = (cv.items || []).slice(0, 10);
     let topCardsHtml = top.length === 0 ? '<div class="muted">다지점 운영 소재 부족</div>' : top.map(it => `<div style="background:var(--s2);border:1px solid var(--bd);border-left:3px solid ${it.variance_grade === 'high' ? 'var(--red)' : (it.variance_grade === 'mid' ? 'var(--warn)' : 'var(--t1)')};border-radius:5px;padding:8px 12px;margin-bottom:5px"><div style="font-size:11px;font-weight:700;color:var(--tx);line-height:1.4;margin-bottom:6px">${it.creative_name}</div><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:'DM Mono',monospace;font-size:10px"><div><div style="font-size:9px;color:var(--tx2);font-weight:700">베스트</div><div style="color:var(--t1)">${it.best_branch} ${fmt(it.best_cpa)}원</div></div><div style="font-size:11px;font-weight:900;color:var(--red);background:rgba(248,113,113,.12);padding:3px 8px;border-radius:3px">+${it.gap_pct}%</div><div style="text-align:right"><div style="font-size:9px;color:var(--tx2);font-weight:700">워스트</div><div style="color:var(--red)">${it.worst_branch} ${fmt(it.worst_cpa)}원</div></div></div><div style="font-size:9px;color:var(--tx2);margin-top:5px">${it.n_branches}개 지점 · 누적 전환 ${it.total_conversions}건</div></div>`).join('');
     document.getElementById('cv-top-cards').innerHTML = topCardsHtml;
-    const heads = ['소재', '운영 지점', 'CPA 차이', '베스트', '워스트', '운영 권장'];
+    const heads = ['소재', '운영 지점', 'CPA 차이', '베스트', '워스트', '운영 권고'];
     let cvTrs = '';
     (cv.items || []).forEach(it => {
       const gc = it.variance_grade === 'high' ? 'var(--red)' : (it.variance_grade === 'mid' ? 'var(--warn)' : 'var(--t1)');
@@ -1688,7 +1688,7 @@ document.querySelectorAll('.tb').forEach(btn => {
   // 시청 깊이 + 인게이지먼트 데이터 유무 확인
   const hasDepth = Object.values(branches).some(items => (items || []).some(it => it.v6s_rate !== null && it.v6s_rate !== undefined));
   const hasEng = Object.values(branches).some(items => (items || []).some(it => it.share_rate !== null && it.share_rate !== undefined));
-  let heads = ['소재명', 'TIER', '근거', '권장 액션', '비용', '전환'];
+  let heads = ['소재명', 'TIER', '근거', '추천 액션', '비용', '전환'];
   if (hasDepth) heads = heads.concat(['6s 시청률', '100% 완료', '평균 시청']);
   if (hasEng) heads = heads.concat(['좋아요율', '공유율']);
   let html = dataSourceNotice;

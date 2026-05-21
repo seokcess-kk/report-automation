@@ -857,7 +857,7 @@ tr:hover td{background:var(--hover-bg)}
           <div id="lc-insights" style="margin-bottom:14px"></div>
           <div class="g2" style="margin-bottom:14px">
             <div class="evidence-card"><div class="card-title">단계별 분포 · 신선/성숙/장기</div><div id="lc-stage-stats"></div></div>
-            <div class="evidence-card"><div class="card-title">6월 운영 액션 후보</div><div class="card-sub">OFF 권장 + 장수 우수</div><div id="lc-action-cards"></div></div>
+            <div class="evidence-card"><div class="card-title">6월 운영 액션 후보</div><div class="card-sub">OFF 권고 + 장수 우수</div><div id="lc-action-cards"></div></div>
           </div>
           <div class="evidence-card" style="margin-bottom:14px"><div class="card-title">6월 신규 제작 변주 가이드</div><div class="card-sub">장수 우수 소재의 공통 패턴 추출.</div><div id="lc-variant-guide"></div></div>
           <details class="appx"><summary><span>소재별 라이프사이클 상세 표</span></summary><div class="appx-body"><div class="tw"><table id="lc-detail-tbl"></table></div></div></details>
@@ -1020,7 +1020,7 @@ tr:hover td{background:var(--hover-bg)}
   <div class="page-hd">
     <div class="page-hd-num">부록 C · 소재 TIER 전체 표</div>
     <h2 class="page-hd-title">지점별 소재 TIER 분류 전체 표</h2>
-    <div class="page-hd-msg">3.3 운영 처방 카드는 핵심 TIER1/TIER4 소재 1~2개만 노출됩니다. 본 부록은 지점별 전체 소재의 TIER 분류·근거·권장 액션을 표 한 장으로 통합하여, 운영 의사결정 시 손실 없이 참조할 수 있도록 정리한 자료입니다. 시청 깊이·인게이지먼트 컬럼이 함께 노출되어 동일 TIER 내 콘텐츠 적합성 비교에도 활용 가능합니다.</div>
+    <div class="page-hd-msg">3.3 운영 처방 카드는 핵심 TIER1/TIER4 소재 1~2개만 노출됩니다. 본 부록은 지점별 전체 소재의 TIER 분류·근거·추천 액션을 표 한 장으로 통합하여, 운영 의사결정 시 손실 없이 참조할 수 있도록 정리한 자료입니다. 시청 깊이·인게이지먼트 컬럼이 함께 노출되어 동일 TIER 내 콘텐츠 적합성 비교에도 활용 가능합니다.</div>
   </div>
   <div class="sec">
     <div id="appendix-creative-tbl"></div>

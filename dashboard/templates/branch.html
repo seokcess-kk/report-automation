@@ -2,6 +2,12 @@
 {% block title %}{{ detail.branch }} · 지점 상세{% endblock %}
 {% block content %}
 
+<script>
+window.__BRANCH_DAILY__ = {{ detail.last_n_days | tojson | safe }};
+window.__BRANCH_TARGET_CPA__ = {{ detail.target_cpa }};
+</script>
+
+
   <div class="breadcrumb">
     <a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> /
     <span>{{ detail.branch }}</span>
@@ -92,7 +98,11 @@
     <!-- 최근 14일 일별 KPI -->
     <div>
       <div class="card">
-        <h2>최근 14일 일별 KPI</h2>
+        <h2>{{ detail.branch }} 최근 14일 추세</h2>
+        <div style="position:relative;height:240px;margin-bottom:var(--sp-4)"><canvas id="chartBranchDaily"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>최근 14일 일별 KPI 상세</h2>
         <table class="tight">
           <thead><tr><th>날짜</th><th class="num">비용</th><th class="num">클릭</th><th class="num">전환</th><th class="num">CTR</th><th class="num">CVR</th><th class="num">CPA</th></tr></thead>
           <tbody>
@@ -140,6 +150,40 @@
       </tbody>
     </table>
   </div>
+
+  <script>
+  (function() {
+    const data = window.__BRANCH_DAILY__ || [];
+    const targetCpa = window.__BRANCH_TARGET_CPA__ || 27278;
+    const ctx = document.getElementById('chartBranchDaily');
+    if (!ctx || data.length === 0) {
+      if (ctx) ctx.parentNode.innerHTML = '<div class="empty-state" style="padding:32px"><div class="emoji">📊</div><div class="title">데이터 누적 중</div><div class="desc">이 지점의 일별 KPI 추세가 곧 표시됩니다</div></div>';
+      return;
+    }
+    const labels = data.map(d => d.date.slice(5));
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: '전환수', data: data.map(d => d.conversions), borderColor: '#d97706', backgroundColor: 'rgba(217,119,6,.1)', yAxisID: 'y1', tension: .3, borderWidth: 2 },
+          { label: 'CPA (원)', data: data.map(d => d.cpa), borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,.1)', yAxisID: 'y2', tension: .3, borderWidth: 2 },
+          { label: '가드레일', data: data.map(_ => targetCpa), borderColor: 'rgba(239,68,68,.5)', borderDash: [5,5], yAxisID: 'y2', pointRadius: 0, borderWidth: 1.5 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } },
+          y1: { type: 'linear', position: 'left', ticks: { color: '#d97706', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' }, title: { display: true, text: '전환수', color: '#d97706', font: { size: 10 } } },
+          y2: { type: 'linear', position: 'right', ticks: { color: '#60a5fa', font: { size: 10 }, callback: v => v.toLocaleString() + '원' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'CPA', color: '#60a5fa', font: { size: 10 } } },
+        },
+      },
+    });
+  })();
+  </script>
 
   <!-- 지점 액션 로그 -->
   <div class="card">

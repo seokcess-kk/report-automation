@@ -38,6 +38,8 @@ class KpiProgress:
     cpa_within_guardrail: bool
 
     branches: dict             # 지점별 상태
+    daily_series: list = None  # 최근 14일 일별 [{date, conversions, cpa, cvr, cost}]
+    branch_comparison: list = None  # 지점별 [{branch, conv, cpa, ...}] 차트용
 
 
 def _safe_date_filter(parsed: pd.DataFrame, start: date, end: date) -> pd.DataFrame:
@@ -116,6 +118,35 @@ def compute(bundle: DataBundle, today: Optional[date] = None) -> KpiProgress:
     for b in valid_branches:
         branches[b] = _branch_kpi(june_df, b, target_by_branch.get(b, 0), target_cpa)
 
+    # 최근 14일 시계열 (차트용) — 6월 데이터 없으면 전체 데이터 마지막 14일 fallback
+    series_source = june_df if not june_df.empty else bundle.parsed.copy()
+    daily_series = []
+    if not series_source.empty:
+        series_source['date'] = pd.to_datetime(series_source['date'])
+        agg = series_source.groupby(series_source['date'].dt.date).agg(
+            cost=('cost', 'sum'), clicks=('clicks', 'sum'),
+            conversions=('conversions', 'sum'), impressions=('impressions', 'sum'),
+        ).reset_index().sort_values('date').tail(14)
+        for _, r in agg.iterrows():
+            cost, clicks, conv, impr = int(r['cost']), int(r['clicks']), int(r['conversions']), int(r['impressions'])
+            daily_series.append({
+                'date': r['date'].strftime('%Y-%m-%d') if hasattr(r['date'], 'strftime') else str(r['date']),
+                'cost': cost, 'clicks': clicks, 'conversions': conv, 'impressions': impr,
+                'cpa': round(cost / conv) if conv else None,
+                'cvr': round(conv / clicks * 100, 2) if clicks else None,
+            })
+
+    # 지점 비교 (전 기간 누적 — 차트용)
+    branch_comparison = []
+    for b, info in branches.items():
+        branch_comparison.append({
+            'branch': b,
+            'conversions': info.get('conversions') or 0,
+            'cost': info.get('cost') or 0,
+            'cpa': info.get('cpa') or 0,
+            'target_conv': info.get('target_conversions') or 0,
+        })
+
     return KpiProgress(
         today=today.strftime('%Y-%m-%d'),
         days_elapsed=days_elapsed,
@@ -131,6 +162,8 @@ def compute(bundle: DataBundle, today: Optional[date] = None) -> KpiProgress:
         cpa_3day_avg=cpa_3day_avg,
         cpa_within_guardrail=cpa_within_guardrail,
         branches=branches,
+        daily_series=daily_series,
+        branch_comparison=branch_comparison,
     )
 
 

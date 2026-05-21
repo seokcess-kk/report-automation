@@ -523,7 +523,8 @@ tr:hover td{background:var(--hover-bg)}
   <div class="page-hd">
     <div class="page-hd-num">01 · Executive Summary</div>
     <h2 class="page-hd-title">6월 운영 방향 요약</h2>
-    <div class="page-hd-msg">6월 다이트한의원 TikTok 운영은 지점별 퍼널 병목에 따라 <strong style="color:var(--red)">A 효율 개선</strong> · <strong style="color:var(--t1)">B 예산 확대</strong> · <strong style="color:var(--pur)">C 신규 안정화</strong> 세 방향으로 분리 적용하며, 전환 목표는 <strong style="color:var(--primary)">762건(Stretch 822건)</strong>으로 설정하였습니다. CPA 변동의 원인을 <strong>소재 문제</strong>와 <strong>타겟 도달 문제</strong>로 분리하기 위해 성별·연령·지역 노출 품질을 함께 검증하였으며 — <strong style="color:var(--t1)">성별 타겟팅은 정상 작동</strong>, <strong>천안만 경기 노출 비중이 높아 세팅 확인 권고</strong>입니다 (상세는 부록 A·B).</div>
+    <div class="page-hd-msg">6월 운영은 <strong style="color:var(--red)">A 효율 개선</strong> · <strong style="color:var(--t1)">B 예산 확대</strong> · <strong style="color:var(--pur)">C 신규 안정화</strong> 세 방향으로 분리 적용하며, 전환 목표는 <strong style="color:var(--primary)">762건, Stretch 822건</strong>으로 설정하였습니다.</div>
+    <div class="page-hd-msg" style="margin-top:8px;font-size:12.5px;color:var(--tx2)">보강 진단 결과 <strong style="color:var(--t1)">성별 타겟팅은 정상</strong>이며, <strong>25-34는 확대 제외 유지 (수원 한정 테스트 중)</strong>, <strong>천안은 지역 세팅 확인 필요</strong>입니다 (상세는 부록 A·B).</div>
     <div class="page-hd-meta">
       <span>분석 기간 <strong id="meta-period"></strong></span>
       <span>대상 <strong id="meta-branches"></strong></span>
@@ -647,7 +648,7 @@ tr:hover td{background:var(--hover-bg)}
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">2.A</span><span class="sec-hd-title">Appendix A · 진단 근거 자료</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">2.A</span><span class="sec-hd-title">진단 근거 자료</span></div>
     <div class="appendix-stack">
       <details class="appx">
         <summary><span><span class="appx-num">A.1</span>지점별 누적 KPI 요약 (전환·비중·CPA·운영일수)</span></summary>
@@ -752,7 +753,7 @@ tr:hover td{background:var(--hover-bg)}
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">3.B</span><span class="sec-hd-title">Appendix B · 운영 보조 자료</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">3.B</span><span class="sec-hd-title">운영 보조 자료</span></div>
     <div class="lead" style="margin-bottom:14px">본문 의사결정의 근거가 되는 운영 자료입니다. 주차별 실행 일정, 요일별 운영 가이드, 클라이언트 측 점검 요청 항목을 포함합니다.</div>
     <div class="appendix-stack">
       <details class="appx">
@@ -822,7 +823,7 @@ tr:hover td{background:var(--hover-bg)}
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">4.C</span><span class="sec-hd-title">Appendix C · 소재 분석 보조 자료</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">4.C</span><span class="sec-hd-title">소재 분석 보조 자료</span></div>
     <div class="lead" style="margin-bottom:14px">본문 콘텐츠 추천의 근거가 되는 소재 분석 자료입니다. 필요한 항목을 펼쳐 확인하실 수 있습니다.</div>
     <div class="appendix-stack">
       <details class="appx">
@@ -914,7 +915,7 @@ tr:hover td{background:var(--hover-bg)}
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">5.A</span><span class="sec-hd-title">Appendix · 디테일 자료</span><span class="sec-hd-sub">접힘 — 클릭하여 펼치기</span></div>
+    <div class="sec-hd"><span class="sec-hd-num">5.A</span><span class="sec-hd-title">디테일 자료</span><span class="sec-hd-sub">접힘 — 클릭하여 펼치기</span></div>
     <div id="addon-appendix">
       <details class="appx">
         <summary><span><span class="appx-num">A.1</span>소재유형별 디자인 효과 (v1 → v2)</span></summary>
@@ -1014,7 +1015,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 부록 C · 소재 TIER 전체 표 (기존 5.D 강등) ========================= -->
 <div id="pg-creative-appx" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">부록 C · Creative Appendix</div>
+    <div class="page-hd-num">부록 C · 소재 TIER 전체 표</div>
     <h2 class="page-hd-title">지점별 소재 TIER 분류 전체 표</h2>
     <div class="page-hd-msg">3.3 운영 처방 카드는 핵심 TIER1/TIER4 소재 1~2개만 노출됩니다. 본 부록은 지점별 전체 소재의 TIER 분류·근거·권장 액션을 표 한 장으로 통합하여, 운영 의사결정 시 손실 없이 참조할 수 있도록 정리한 자료입니다. 시청 깊이·인게이지먼트 컬럼이 함께 노출되어 동일 TIER 내 콘텐츠 적합성 비교에도 활용 가능합니다.</div>
   </div>

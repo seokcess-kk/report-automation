@@ -17,6 +17,101 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from common import VALID_BRANCHES
 
 
+def _extract_age_history(df: pd.DataFrame, target_age: str, target_gender: str) -> dict:
+    """의도적 배제 / 한정 재운영 시점을 데이터에서 자동 추출.
+
+    target_age 노출이 0인 주가 연속이면 '배제 기간'으로 식별.
+    배제 이후 일부 지점에만 노출이 잡히면 '한정 재운영'으로 식별.
+    """
+    sub = df[(df['age_group'] == target_age) & (df['gender'] == target_gender)].copy()
+    if sub.empty or 'date' not in sub.columns:
+        return {'available': False}
+    sub['date'] = pd.to_datetime(sub['date'])
+    sub['week'] = sub['date'].dt.to_period('W').dt.start_time
+
+    weekly = sub.groupby('week').agg(impr=('impressions', 'sum')).reset_index()
+    weekly['exposed'] = weekly['impr'] >= 100
+
+    # 배제 기간 — 노출 < 100인 주가 연속 2주 이상
+    excluded_weeks = []
+    streak_start = None
+    for _, r in weekly.iterrows():
+        if not r['exposed']:
+            if streak_start is None:
+                streak_start = r['week']
+            last_zero = r['week']
+        else:
+            if streak_start is not None and (last_zero - streak_start).days >= 7:
+                excluded_weeks.append((streak_start, last_zero))
+            streak_start = None
+    if streak_start is not None and (last_zero - streak_start).days >= 7:
+        excluded_weeks.append((streak_start, last_zero))
+    excluded_ranges = [
+        {'start': s.strftime('%Y-%m-%d'), 'end': e.strftime('%Y-%m-%d')}
+        for s, e in excluded_weeks
+    ]
+
+    # 첫 배제 시점 이후 ('재운영 시기') 지점 분포 — 한정 재운영 감지
+    post_exclusion_branches = {}
+    if excluded_weeks:
+        first_exclusion_end = excluded_weeks[0][1]
+        post = sub[sub['date'] > first_exclusion_end]
+        if not post.empty:
+            for b in sorted(post['지점'].dropna().unique()):
+                bdf = post[post['지점'] == b]
+                impr = int(bdf['impressions'].sum())
+                clicks = int(bdf['clicks'].sum())
+                conv = int(bdf['conversions'].sum())
+                cost = int(bdf['cost'].sum())
+                if impr >= 100:
+                    post_exclusion_branches[b] = {
+                        'impressions': impr,
+                        'clicks': clicks,
+                        'conversions': conv,
+                        'cost': cost,
+                        'ctr': round(clicks / impr * 100, 2) if impr else None,
+                        'cvr': round(conv / clicks * 100, 2) if clicks else None,
+                        'cpa': round(cost / conv) if conv else None,
+                    }
+
+    # 배제 전 (정상 운영) 지점 분포
+    pre_branches = {}
+    if excluded_weeks:
+        first_exclusion_start = excluded_weeks[0][0]
+        pre = sub[sub['date'] < first_exclusion_start]
+        for b in sorted(pre['지점'].dropna().unique()):
+            bdf = pre[pre['지점'] == b]
+            impr = int(bdf['impressions'].sum())
+            if impr >= 100:
+                pre_branches[b] = {'impressions': impr}
+
+    # 한정 재운영 식별 — 재운영 지점 수가 배제 전 지점 수의 절반 미만
+    is_limited_restart = (
+        len(post_exclusion_branches) > 0
+        and len(pre_branches) > 0
+        and len(post_exclusion_branches) <= max(1, len(pre_branches) // 2)
+    )
+
+    return {
+        'available': True,
+        'target_age': target_age,
+        'target_gender': target_gender,
+        'excluded_ranges': excluded_ranges,
+        'pre_exclusion_branches': pre_branches,
+        'post_exclusion_branches': post_exclusion_branches,
+        'is_limited_restart': is_limited_restart,
+        'restart_branches': sorted(post_exclusion_branches.keys()) if is_limited_restart else [],
+        'context_note': (
+            (f'{excluded_ranges[0]["start"]} ~ {excluded_ranges[-1]["end"]} 사이 {target_age} 노출이 의도적으로 배제된 기간이 있음. '
+             if excluded_ranges else '')
+            + (f'배제 이후 {", ".join(post_exclusion_branches.keys())} 한정으로 재운영 중. ' if is_limited_restart else '')
+            + ('따라서 전 기간 합산 효율은 운영 의도(축소·한정 테스트)가 반영된 결과이며, '
+               '운영 권고는 "확대 제외 + 한정 테스트 추적" 방향이 자연스러움.'
+               if (excluded_ranges or is_limited_restart) else '')
+        ),
+    }
+
+
 def _kpis(g: pd.DataFrame) -> dict:
     impr = int(g['impressions'].sum())
     clicks = int(g['clicks'].sum())
@@ -133,6 +228,9 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
         k['impr_share'] = round(k['impressions'] / f_total_impr * 100, 2)
         by_age_female[ag] = k
 
+    # ---- 3-a. 25-34 운영 이력 (의도적 배제·재운영 추출) — age_signal 계산 전에 선행
+    age_history = _extract_age_history(df, target_age='25-34', target_gender='여성')
+
     # 25-34 신호 해석 — 노출 비중 + CVR 효율을 함께 판단
     age_signal = None
     if '25-34' in by_age_female:
@@ -160,6 +258,8 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
                     'cvr': target_cvr,
                     'other_avg_cvr': other_avg_cvr,
                     'cvr_ratio': cvr_ratio,
+                    'operation_context': age_history.get('context_note', ''),
+                    'restart_branches': age_history.get('restart_branches', []),
                 }
             elif cvr_ratio >= 1.0 and target_share < 15:
                 age_signal = {
@@ -210,11 +310,15 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
     if age_signal and age_signal['verdict'] != 'noop':
         bullets.append(age_signal['rationale'])
 
+    # 운영 이력에서 한정 재운영 지점 정보 추출 (헤드라인·노트에 반영)
+    restart_branches = age_history.get('restart_branches', []) if isinstance(age_history, dict) else []
+    restart_suffix = (f' ({", ".join(restart_branches)} 한정 테스트 중)' if restart_branches else '')
+
     # 권고 헤드라인 — 신호 종류에 따라 분기
     if gender_verdict['verdict'] != 'aligned':
         headline = '타겟팅 정합성 점검 필요'
     elif age_signal and age_signal['verdict'] == 'inefficient':
-        headline = '성별 타겟팅 정상 — 25-34는 확대 대상에서 제외, 별도 테스트로 검증'
+        headline = f'성별 타겟팅 정상 — 25-34는 확대 제외 유지, {", ".join(restart_branches) if restart_branches else "한정 테스트"} 결과 추적' if restart_branches else '성별 타겟팅 정상 — 25-34는 확대 대상에서 제외, 별도 테스트로 검증'
     elif age_signal and age_signal['verdict'] == 'undersupplied':
         headline = '성별 타겟팅 정상 — 25-34 확대 기회 신호'
     else:
@@ -222,7 +326,7 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
 
     age_note = ''
     if age_signal and age_signal['verdict'] == 'inefficient':
-        age_note = '25-34는 확대 제외, 소재/랜딩 별도 테스트'
+        age_note = f'25-34 확대 제외 유지{restart_suffix}'
     elif age_signal and age_signal['verdict'] == 'undersupplied':
         age_note = '25-34 확대 기회'
 
@@ -251,6 +355,7 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
         'by_age_female': by_age_female,
         'age_signal': age_signal,
         'age_undersupplied': age_undersupplied,
+        'age_history': age_history,
         'by_branch': by_branch,
         'recommendation': recommendation,
         'note': (

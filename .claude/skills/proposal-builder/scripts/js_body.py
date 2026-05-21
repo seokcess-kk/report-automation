@@ -1368,38 +1368,25 @@ document.querySelectorAll('.tb').forEach(btn => {
   const dtLow = dt.low_sample || [];
 
   document.getElementById('addon-judgement').innerHTML = `
-    <div class="gap-caveat" style="margin-bottom:12px;border-left-color:var(--warn);background:rgba(248,191,79,.06);font-size:12px;line-height:1.6">
-      <strong>분석 범위 안내 — 부산 제외.</strong> ${ms.exclusion_reason || ''}
-    </div>
-    <div style="background:linear-gradient(135deg, var(--s2) 0%, var(--s1) 100%);border-left:5px solid ${recColor};border-radius:8px;padding:16px 20px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:800;color:${recColor};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">6월 운영 권고</div>
-      <div style="font-size:16px;font-weight:900;color:var(--tx);margin-bottom:8px">${rec.label || '-'}</div>
-      <div style="font-size:12.5px;color:var(--tx);line-height:1.6;margin-bottom:8px">${rec.summary || ''}</div>
-      ${rec.bullets && rec.bullets.length > 0 ? `<ul style="margin:6px 0 0 0;padding-left:18px;font-size:12px;color:var(--tx);line-height:1.7">${rec.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
-    </div>
-    <div class="g2" style="gap:10px;margin-bottom:12px">
-      <div style="background:var(--s2);border-left:4px solid ${v1c};border-radius:6px;padding:12px 14px">
-        <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">평가축 1 — v1 vs 3~4월 비애드온</div>
-        <div style="font-size:12.5px;color:${v1c};font-weight:800;margin-bottom:4px">${v1Verdict.label || '-'}</div>
-        <div style="font-size:10.5px;color:var(--tx2);line-height:1.5">${v1Verdict.rationale || '-'}</div>
-      </div>
-      <div style="background:var(--s2);border-left:4px solid ${dcc};border-radius:6px;padding:12px 14px">
-        <div style="font-size:9.5px;font-weight:800;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px">평가축 2 — v2 vs v1 (디자인 변경)</div>
-        <div style="font-size:12.5px;color:${dcc};font-weight:800;margin-bottom:4px">${dcVerdict.label || '-'}</div>
-        <div style="font-size:10.5px;color:var(--tx2);line-height:1.5">${dcVerdict.rationale || '-'}</div>
+    <div style="background:linear-gradient(135deg, var(--s2) 0%, var(--s1) 100%);border-left:5px solid ${recColor};border-radius:8px;padding:18px 22px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:800;color:${recColor};letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">6월 결론 — 한 문단</div>
+      <div style="font-size:14.5px;color:var(--tx);line-height:1.65;font-weight:600">
+        구 디자인(v1) 애드온 효과는 검증되었으나, <strong style="color:var(--warn)">5월 신 디자인(v2)은 부산 제외 시 동기간 비애드온 비교가 불가능</strong>합니다. 6월에는 <strong style="color:var(--t1)">v2 유지 그룹</strong>과 <strong style="color:var(--red)">v1 복원·부분 변경 그룹</strong>으로 나눠 운영하고, 7월에 표준 디자인을 결정합니다.
       </div>
     </div>
-    <div class="g3" style="gap:8px;margin-bottom:10px">
+    <div class="gap-caveat" style="margin-bottom:14px;border-left-color:var(--tx3);background:rgba(148,163,184,.05);font-size:11px;line-height:1.55;color:var(--tx2)">
+      <strong>분석 범위 안내.</strong> ${ms.exclusion_reason || ''} 적용 광고 v1 ${ms.addon_ads_v1}개 / v2 ${ms.addon_ads_v2}개 (부산 제외 전체 ${ms.total_ads_in_data}개).
+    </div>
+    <div class="g3" style="gap:8px;margin-bottom:6px">
       ${[
-        { lbl: 'v2 디자인 우세', items: v2Better, color: 'var(--t1)', icon: '▲' },
-        { lbl: 'v1 디자인 우세', items: v1Better, color: 'var(--red)', icon: '▼' },
-        { lbl: '미미·표본부족', items: [...dtNoop, ...dtLow], color: 'var(--tx3)', icon: '◦' },
+        { lbl: 'v2 디자인 우세 → 확대', items: v2Better, color: 'var(--t1)', icon: '▲' },
+        { lbl: 'v1 디자인 우세 → 복원 검토', items: v1Better, color: 'var(--red)', icon: '▼' },
+        { lbl: '표본 부족·미미 → 보류', items: [...dtNoop, ...dtLow], color: 'var(--tx3)', icon: '◦' },
       ].map(c => `<div style="background:var(--s2);border-left:3px solid ${c.color};border-radius:5px;padding:8px 12px">
-        <div style="font-size:9px;font-weight:800;color:${c.color};letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">${c.icon} ${c.lbl} (소재유형)</div>
+        <div style="font-size:9px;font-weight:800;color:${c.color};letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px">${c.icon} ${c.lbl}</div>
         <div style="font-size:11.5px;color:var(--tx);font-weight:700;line-height:1.5">${c.items.length > 0 ? c.items.join(' · ') : '<span class="muted">해당 없음</span>'}</div>
       </div>`).join('')}
     </div>
-    <div style="margin-top:8px;font-size:10.5px;color:var(--tx2);line-height:1.6">${ms.design_note || ''} 적용 광고 v1 ${ms.addon_ads_v1}개 / v2 ${ms.addon_ads_v2}개 (부산 제외 전체 ${ms.total_ads_in_data}개).</div>
   `;
 
   // ============ 5.2 평가축 카드 ============
@@ -1744,7 +1731,8 @@ document.querySelectorAll('.tb').forEach(btn => {
     ${hasEng ? '<strong>인게이지먼트:</strong> 좋아요율·공유율 = 노출수 대비 좋아요·공유 비율. 공유율이 높은 소재는 바이럴형, 클릭→전환 CVR이 높은 소재는 전환형으로 구분 가능합니다.' : ''}
   </div>` : '';
   html += `<div class="evidence-card" style="margin-bottom:14px;padding:12px 14px"><div style="font-size:10px;font-weight:800;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">TIER 분류 기준</div>${Object.entries(tr).map(([k,v]) => `<div style="font-size:11px;color:var(--tx);margin-bottom:3px"><strong>${k}</strong> — ${v}</div>`).join('')}${extraNote}</div>`;
-  // 지점별 표
+  html += `<div class="gap-caveat" style="margin-bottom:14px;border-left-color:var(--tx3);background:rgba(148,163,184,.05);font-size:11.5px;line-height:1.6">본 부록은 발표·공유 시 가독성을 위해 지점별로 <strong>접힘 상태</strong>로 제공됩니다. 필요한 지점만 펼쳐서 참고하시면 됩니다. 본문에서 소재 의사결정은 3.3 운영 처방 카드와 4장 콘텐츠 큐레이션으로 충분하며, 본 부록은 손실 없는 운영 데이터 참조용입니다.</div>`;
+  // 지점별 표 (접힘)
   (DATA.meta.branches || []).forEach(b => {
     const items = branches[b];
     if (!items || items.length === 0) return;
@@ -1754,7 +1742,10 @@ document.querySelectorAll('.tb').forEach(btn => {
       const engCells = hasEng ? `<td>${it.like_rate !== null && it.like_rate !== undefined ? it.like_rate.toFixed(2) + '%' : '-'}</td><td>${it.share_rate !== null && it.share_rate !== undefined ? it.share_rate.toFixed(4) + '%' : '-'}</td>` : '';
       trs += `<tr><td class="lbl">${it.name}</td><td><strong>${it.tier}</strong></td><td class="muted">${it.evidence}</td><td>${it.recommended_action}</td><td>${it.cost !== null ? fmt(it.cost) + '원' : '-'}</td><td>${it.conversions !== null ? it.conversions + '건' : '-'}</td>${depthCells}${engCells}</tr>`;
     });
-    html += `<div class="appx-tbl-section"><div class="appx-tbl-hdr">${b} — ${items.length}개 소재</div><div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody></table></div></div></div>`;
+    // 지점별 TIER 분포 요약
+    const tierCount = items.reduce((a, it) => { a[it.tier] = (a[it.tier] || 0) + 1; return a; }, {});
+    const tierSummary = Object.entries(tierCount).map(([k,v]) => `${k} ${v}`).join(' · ');
+    html += `<details class="appx" style="margin-bottom:8px"><summary><span><span class="appx-num">${b}</span>${items.length}개 소재 (${tierSummary})</span></summary><div class="appx-body"><div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${trs}</tbody></table></div></div></div></details>`;
   });
   el.innerHTML = html;
 })();
@@ -1850,16 +1841,36 @@ document.querySelectorAll('.tb').forEach(btn => {
   });
   document.getElementById('targeting-age-tbl').innerHTML = `<thead><tr><th>연령</th><th>노출</th><th>노출 비중</th><th>클릭</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead><tbody>${ageRows}</tbody>`;
 
-  // 연령 신호 박스
+  // 연령 신호 박스 + 운영 이력
+  const ah = th.age_history || {};
+  let ageBoxes = '';
   if (ageSig && ageSig.verdict !== 'noop') {
-    document.getElementById('targeting-age-signal').innerHTML = `
-      <div class="gap-caveat" style="border-left-color:${ageColor};background:${ageSig.verdict === 'inefficient' ? 'rgba(248,113,113,.06)' : 'rgba(52,211,153,.06)'};font-size:11.5px;line-height:1.6">
+    ageBoxes += `
+      <div class="gap-caveat" style="border-left-color:${ageColor};background:${ageSig.verdict === 'inefficient' ? 'rgba(248,113,113,.06)' : 'rgba(52,211,153,.06)'};font-size:11.5px;line-height:1.6;margin-bottom:10px">
         <strong>${ageSig.label}.</strong> ${ageSig.rationale}
       </div>
     `;
-  } else {
-    document.getElementById('targeting-age-signal').innerHTML = '';
   }
+  // 운영 이력 박스 — 의도적 배제 + 한정 재운영
+  if (ah.available && (ah.excluded_ranges?.length > 0 || ah.is_limited_restart)) {
+    const exclStr = (ah.excluded_ranges || []).map(r => `${r.start} ~ ${r.end}`).join(', ');
+    const restartList = ah.restart_branches || [];
+    const postBr = ah.post_exclusion_branches || {};
+    let postRows = '';
+    Object.entries(postBr).forEach(([b, k]) => {
+      postRows += `<tr><td class="lbl">${b}</td><td>${k.impressions.toLocaleString()}</td><td>${k.clicks.toLocaleString()}</td><td>${k.conversions}</td><td>${k.cvr !== null ? k.cvr + '%' : '-'}</td><td>${k.cpa ? fmt(k.cpa) + '원' : '-'}</td></tr>`;
+    });
+    ageBoxes += `
+      <div class="evidence-card" style="padding:12px 14px;background:rgba(167,139,250,.05);border-left:4px solid #a78bfa;border-radius:6px;font-size:11.5px;line-height:1.65">
+        <div style="font-size:10px;font-weight:800;color:#a78bfa;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px">25-34 운영 이력 (의도적 배제 + 한정 재운영)</div>
+        ${exclStr ? `<div style="margin-bottom:6px"><strong>의도적 배제 기간:</strong> ${exclStr} — 데이터에서 자동 감지된 노출 0 구간</div>` : ''}
+        ${ah.is_limited_restart ? `<div style="margin-bottom:6px"><strong>배제 이후 한정 재운영:</strong> <strong style="color:#a78bfa">${restartList.join(', ')}</strong> 한정으로만 재운영 중 (다른 지점은 노출 0 유지)</div>` : ''}
+        ${postRows ? `<div style="margin-top:8px"><div style="font-size:10px;color:var(--tx2);margin-bottom:4px">한정 재운영 결과:</div><div class="tw"><table><thead><tr><th>지점</th><th>노출</th><th>클릭</th><th>전환</th><th>CVR</th><th>CPA</th></tr></thead><tbody>${postRows}</tbody></table></div></div>` : ''}
+        <div style="font-size:10.5px;color:var(--tx2);margin-top:8px">${ah.context_note || ''}</div>
+      </div>
+    `;
+  }
+  document.getElementById('targeting-age-signal').innerHTML = ageBoxes;
 
   // 6.4 지점별 노출 품질
   const branches = DATA.meta.branches || [];

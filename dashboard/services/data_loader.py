@@ -82,7 +82,7 @@ def _find_latest_creative_tier(latest_dir: Path) -> pd.DataFrame:
 def _load_yaml(path: Path) -> dict:
     if not path.exists():
         return {}
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8-sig') as f:
         return yaml.safe_load(f) or {}
 
 
@@ -90,9 +90,9 @@ def _load_jsonl(path: Path) -> list:
     if not path.exists():
         return []
     items = []
-    with open(path, 'r', encoding='utf-8') as f:
-        for line in f:
-            line = line.strip()
+    with open(path, 'r', encoding='utf-8-sig') as f:
+        for raw in f:
+            line = raw.strip().lstrip('﻿')   # 각 줄 잔여 BOM 제거
             if not line:
                 continue
             try:
@@ -107,7 +107,7 @@ def _load_proposal() -> dict:
     p = PROJECT_ROOT / 'output' / 'proposal' / '202606' / 'proposal_daeat_202606.json'
     if not p.exists():
         return {}
-    with open(p, 'r', encoding='utf-8') as f:
+    with open(p, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
 
 
@@ -134,7 +134,7 @@ def load_bundle(force_reload: bool = False) -> DataBundle:
     snapshot_path = PROJECT_ROOT / 'output' / 'daily' / 'daily_snapshot.json'
     daily_snapshot = {}
     if snapshot_path.exists():
-        with open(snapshot_path, 'r', encoding='utf-8') as f:
+        with open(snapshot_path, 'r', encoding='utf-8-sig') as f:
             daily_snapshot = json.load(f)
 
     config_root = PROJECT_ROOT / 'config'
@@ -149,7 +149,7 @@ def load_bundle(force_reload: bool = False) -> DataBundle:
     state_path = tracker_root / 'checklist_state.json'
     checklist_state = {}
     if state_path.exists():
-        with open(state_path, 'r', encoding='utf-8') as f:
+        with open(state_path, 'r', encoding='utf-8-sig') as f:
             checklist_state = json.load(f)
 
     bundle = DataBundle(

@@ -33,13 +33,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Fetch TikTok data (last 14 days, incl. age + hour breakdowns)
+      - name: Fetch TikTok data (last 14 days, all dimensions)
         env:
           TIKTOK_APP_ID: ${{ secrets.TIKTOK_APP_ID }}
           TIKTOK_APP_SECRET: ${{ secrets.TIKTOK_APP_SECRET }}
           TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
           TIKTOK_ADVERTISER_ID: ${{ secrets.TIKTOK_ADVERTISER_ID }}
-        run: python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --days 14 --include-age --include-hour
+        run: |
+          python .claude/skills/tiktok-api/scripts/fetch_tiktok_raw.py --days 14 --include-age --include-hour --include-audience --include-province
 
       - name: Run analysis pipeline (normalize + parse + TIER + age + segments + tracker + monthly)
         run: python run_analysis.py
@@ -57,11 +58,14 @@ jobs:
             echo "월요일 아님 (KST DOW=$KST_DOW) — 위클리 스킵"
           fi
 
+      - name: Measure action effects (D+1/D+3/D+7) — 운영 콘솔 Phase 1
+        run: python -m dashboard.workers.effect_tracker
+
       - name: Commit & push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add input/tiktok_raw.csv input/tiktok_raw_by_age.csv input/tiktok_raw_by_hour.csv output/
+          git add input/tiktok_raw.csv input/tiktok_raw_by_age.csv input/tiktok_raw_by_hour.csv input/tiktok_raw_by_audience.csv input/tiktok_raw_by_province.csv output/
           if git diff --staged --quiet; then
             echo "no changes"
           else

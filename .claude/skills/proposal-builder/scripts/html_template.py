@@ -287,7 +287,9 @@ table th,table td{vertical-align:middle}
 #exec-matrix th:nth-child(2),#exec-matrix td:nth-child(2){min-width:72px;text-align:center}     /* 우선 */
 #exec-matrix th:nth-child(3),#exec-matrix td:nth-child(3),
 #exec-matrix th:nth-child(4),#exec-matrix td:nth-child(4),
-#exec-matrix th:nth-child(5),#exec-matrix td:nth-child(5){min-width:200px;white-space:normal;line-height:1.55;text-align:center}  /* CPM/CTR/CVR — 헤더·셀 모두 가운데 정렬 */
+#exec-matrix th:nth-child(5),#exec-matrix td:nth-child(5){min-width:200px;white-space:normal;line-height:1.55}  /* CPM/CTR/CVR */
+/* 헤더만 가운데 정렬, 셀 내부 콘텐츠(상태 배지·액션·소재명)는 좌측 유지 */
+#exec-matrix th:nth-child(3),#exec-matrix th:nth-child(4),#exec-matrix th:nth-child(5){text-align:center}
 #exec-matrix th:nth-child(6),#exec-matrix td:nth-child(6){min-width:220px;white-space:normal;line-height:1.55}  /* 소재 역할 */
 #exec-matrix th:nth-child(7),#exec-matrix td:nth-child(7){min-width:280px;white-space:normal;line-height:1.6}   /* 6월 콘텐츠 */
 #exec-matrix .fcell{min-width:0}

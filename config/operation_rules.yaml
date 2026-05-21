@@ -1,0 +1,142 @@
+# 6월 TikTok 운영 콘솔 — 운영 룰 정의
+# 사람이 룰을 정의, 데이터는 룰에 따라 자동 평가
+# 매일 같은 판단을 가능하게 하는 단일 자산
+#
+# 참조 자산:
+#   - common/constants.py: VALID_BRANCHES, MONTHLY_BUDGET, MONTHLY_TARGET_CONV_BY_BRANCH
+#   - output/proposal/202606/proposal_daeat_202606.json: 6월 운영안
+# 단위 컨벤션:
+#   - 비율: 0~1 (예: 1.10 = 110%)
+#   - %포인트: pp (예: -2.44pp)
+#   - 일수: days
+#
+# 추후 임계값 조정 시 본 파일만 수정하면 alert_engine/action_recommender 자동 반영.
+
+meta:
+  proposal_target_cpa: 27278           # 6월 평균 CPA 가드레일 (제안서 1.1)
+  proposal_target_cvr_pct: 5.0         # TIER 분류 기준 CVR
+  proposal_target_lpv_rate_pct: 50.0   # 랜딩 도달률 기준
+  guardrail_cpa_multiplier: 1.10       # 가드레일 = target_cpa * 1.10
+  monthly_target_conv: 891             # 지점별 합산 (constants.MONTHLY_TARGET_CONV)
+  monthly_target_conv_base: 762        # 제안서 base
+  monthly_target_conv_stretch: 822     # 제안서 stretch
+  pace_floor_pct: 0.85                 # 페이스 < 85%면 액션 필요
+  min_clicks_for_judgement: 30         # 클릭 < 30이면 판단 보류
+  min_days_for_judgement: 7            # 집행 < 7일이면 학습 기간으로 보류
+
+
+# ==================== 4.1 예산 조정 ====================
+budget_increase:
+  - id: efficient_branch_expand
+    condition:
+      cpa_3day_avg_max_ratio: 0.85       # cpa_3day_avg <= target_cpa * 0.85
+      impression_share_max: 0.70         # 노출 페이스 < 70%면 여유 있음
+    action: "광고 그룹 예산 +10% 점진 증액"
+    stop_if:
+      cpa_today_ratio_exceeds: 1.10      # cpa_today > target_cpa * 1.10
+      cpm_jump_pct_exceeds: 15           # CPM 전일 +15% 상승
+
+budget_decrease:
+  - id: cpa_guardrail_breach
+    condition:
+      cpa_3day_avg_min_ratio: 1.20       # cpa_3day_avg > target_cpa * 1.20
+    action: "광고 그룹 예산 -10%"
+  - id: cvr_3day_drop
+    condition:
+      cvr_3day_avg_ratio_to_target_max: 0.70   # cvr_3day_avg < target_cvr * 0.70
+    action: "광고 그룹 예산 -10% + 광고 단위 OFF 후보 점검"
+  - id: pace_critical_late
+    condition:
+      target_pace_pct_max: 0.85
+      days_remaining_max: 7              # 6월 말 7일 미만
+    action: "광고 그룹 예산 -20% (가드레일 우선)"
+
+budget_freeze:
+  - id: cvr_recovery_pending
+    condition:
+      cvr_3day_avg_ratio_to_target_max: 0.70
+    action: "CVR 회복 전까지 광고 그룹 예산 증액 보류"
+
+
+# ==================== 4.2 광고 단위 ON/OFF ====================
+ad_off_candidate:
+  - id: tier4_long_run
+    condition:
+      tier: TIER4
+      days_active_min: 7
+      cpa_ratio_min: 1.5                  # cpa > target_cpa * 1.5
+    priority: high
+    action: "광고 단위 OFF (우선)"
+  - id: low_cvr_with_volume
+    condition:
+      cvr_3day_avg_max_pct: 1.0
+      clicks_min: 100
+      cost_min: 100000
+    priority: high
+    action: "광고 단위 OFF 후보 — CVR 매우 낮음"
+  - id: below_adgroup_avg
+    condition:
+      cvr_ratio_to_adgroup_avg_max: 0.50  # 광고 그룹 평균 CVR 대비 50% 미만
+      clicks_min: 100
+    priority: medium
+    action: "광고 그룹 평균 대비 부진 — 교체 검토"
+
+ad_on_candidate:
+  - id: tier1_expand_room
+    condition:
+      tier: TIER1
+      impression_share_max: 0.10
+    action: "동일 지점 다른 광고 그룹에 복제"
+  - id: new_creative_promising
+    condition:
+      tier: UNCLASSIFIED
+      days_active_min: 4
+      clicks_min: 50
+      cvr_min_pct: 5.0
+    action: "표본 누적 추적 — D+7 도달 시 TIER 재평가"
+
+
+# ==================== 4.3 세팅 확인 ====================
+setting_alert:
+  - id: cheonan_geo_leakage
+    condition:
+      branch: 천안
+      province_leakage_pct_min: 15        # 부록 B 누수 15% 이상
+    action: "광고 그룹 지역 타겟팅 광역 설정 점검 — 충청권 외 노출 차단"
+  - id: age_inefficient_zone
+    condition:
+      targeting_age_signal: inefficient    # 부록 A에서 inefficient로 분류된 연령대
+    action: "해당 연령대 타겟팅 제외 또는 별도 광고 그룹으로 분리"
+  - id: gender_leak
+    condition:
+      gender_male_impr_pct_min: 0.5       # 남성 노출 0.5% 이상
+    action: "성별 타겟팅 여성 고정 설정 확인"
+
+
+# ==================== 4.4 보류·관찰 ====================
+hold_observation:
+  - id: low_sample
+    condition:
+      clicks_max: 30
+    reason: "표본 부족 — 판단 보류"
+  - id: learning_period
+    condition:
+      days_active_max: 7
+    reason: "학습 기간 — 7일 도달 시 재평가"
+  - id: low_volume
+    condition:
+      tier: [LOW_VOLUME, UNCLASSIFIED]
+    reason: "운영 데이터 누적 중 — 다음 라운드 재판단"
+
+
+# ==================== 4.5 클라이언트 확인 요청 ====================
+client_escalation:
+  - id: guardrail_persistent_breach
+    condition:
+      cpa_above_guardrail_days_min: 3
+      recovery_actions_attempted_min: 1
+    action: "클라이언트 보고 — 소재 메시지 변경 등 운영 외 결정 요청"
+  - id: landing_form_drop
+    condition:
+      lpv_rate_pct_max: 50.0
+    action: "클라이언트에 랜딩 폼 점검 요청 (5단계 이탈률 추정 50% 초과)"

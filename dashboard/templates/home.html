@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>6월 TikTok 운영 콘솔</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0f172a; --panel:#111827; --card:#1f2937; --bd:#374151;
+    --tx:#f4f4f5; --tx2:#9ca3af; --tx3:#6b7280;
+    --t1:#10b981; --warn:#f59e0b; --red:#ef4444; --blue:#60a5fa; --pur:#a78bfa;
+    --primary:#d97706;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;
+       background:var(--bg);color:var(--tx);font-size:14px;line-height:1.55}
+  .topbar{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--bd);padding:12px 24px;
+          display:flex;align-items:center;justify-content:space-between;z-index:10}
+  .topbar h1{margin:0;font-size:18px;font-weight:800;letter-spacing:-.02em}
+  .topbar h1 .ver{font-size:11px;color:var(--tx3);margin-left:8px;font-weight:500}
+  .topbar .meta{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--tx2)}
+  .topbar form{display:inline}
+  .topbar button{background:var(--bd);color:var(--tx);border:none;padding:6px 12px;border-radius:5px;cursor:pointer;font-size:12px}
+  .topbar button:hover{background:var(--card)}
+  .wrap{padding:20px 24px;max-width:1280px;margin:0 auto}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+  /* 3.1 헤드라인 */
+  .headline{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;margin-bottom:16px}
+  .headline-row{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}
+  .h-stat{display:flex;flex-direction:column;gap:2px}
+  .h-stat .lbl{font-size:11px;color:var(--tx2);font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  .h-stat .val{font-size:24px;font-weight:900;font-family:'DM Mono',monospace}
+  .h-stat .sub{font-size:11px;color:var(--tx2)}
+  .h-stat.critical .val{color:var(--red)}
+  .h-stat.warn .val{color:var(--warn)}
+  .h-stat.normal .val{color:var(--t1)}
+  .h-stat.primary .val{color:var(--primary)}
+
+  /* 카드 */
+  .card{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:16px 20px;margin-bottom:16px}
+  .card h2{margin:0 0 10px 0;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--tx2);text-transform:uppercase}
+  .card-row{padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
+  .card-row:last-child{border-bottom:none}
+  .badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:3px;margin-right:6px}
+  .badge.high{background:rgba(239,68,68,.18);color:var(--red)}
+  .badge.medium{background:rgba(245,158,11,.18);color:var(--warn)}
+  .badge.low{background:rgba(96,165,250,.18);color:var(--blue)}
+  .badge.critical{background:rgba(239,68,68,.18);color:var(--red)}
+  .badge.warning{background:rgba(245,158,11,.18);color:var(--warn)}
+  .badge.recovery{background:rgba(16,185,129,.18);color:var(--t1)}
+
+  /* 액션 카테고리 */
+  .action-cat{margin-bottom:14px}
+  .action-cat-hd{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--tx);margin-bottom:6px}
+  .action-cat-hd .icon{font-size:14px}
+  .action-cat-hd .count{font-size:10px;color:var(--tx2);font-weight:600}
+
+  /* 체크리스트 */
+  .ck-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}
+  .ck-item:last-child{border-bottom:none}
+  .ck-status{font-size:14px;min-width:18px;text-align:center}
+  .ck-status.completed{color:var(--t1)}
+  .ck-status.in_progress{color:var(--blue)}
+  .ck-status.partial{color:var(--warn)}
+  .ck-status.not_started{color:var(--tx3)}
+  .ck-body{flex:1}
+  .ck-title{font-size:12.5px;font-weight:700;color:var(--tx)}
+  .ck-meta{font-size:10px;color:var(--tx2);margin-top:2px}
+  .ck-note{font-size:11px;color:var(--tx2);margin-top:3px;font-style:italic}
+  .ck-week{display:inline-block;font-size:9px;font-weight:800;background:var(--bd);color:var(--tx);padding:1px 6px;border-radius:3px;margin-right:6px}
+
+  .muted{color:var(--tx2);font-style:italic}
+  .alert-suppressed{opacity:.5}
+
+  /* 액션 기록 */
+  .action-log{background:var(--card);border-radius:6px;padding:8px 12px;margin-bottom:6px;font-size:11.5px}
+  .action-log .ts{color:var(--tx3);font-size:10px;font-family:'DM Mono',monospace}
+  .action-log .effect{margin-top:4px;color:var(--tx2);font-size:10.5px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <h1>6월 TikTok 운영 콘솔 <span class="ver">v1.0 MVP</span></h1>
+  <div class="meta">
+    <span>오늘: <strong>{{ today }}</strong></span>
+    <span>데이터: <strong>{{ data_dir }}</strong></span>
+    <form action="/refresh" method="post"><button type="submit">새로고침</button></form>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ===== 3.1 오늘의 결론 ===== -->
+  <div class="headline">
+    <div class="headline-row">
+      <div class="h-stat normal">
+        <div class="lbl">정상 지점</div>
+        <div class="val">{{ kpi_status.normal }}</div>
+      </div>
+      <div class="h-stat warn">
+        <div class="lbl">주의 지점</div>
+        <div class="val">{{ kpi_status.warn }}</div>
+      </div>
+      <div class="h-stat critical">
+        <div class="lbl">긴급 지점</div>
+        <div class="val">{{ kpi_status.critical }}</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">오늘 실행 액션</div>
+        <div class="val">{{ action_count }}</div>
+        <div class="sub">건</div>
+      </div>
+      <div class="h-stat primary">
+        <div class="lbl">6월 페이스</div>
+        <div class="val">{{ kpi.pace_pct }}%</div>
+        <div class="sub">{{ kpi.conversions_actual }} / {{ kpi.target_base }}건 (D-{{ kpi.days_remaining }})</div>
+      </div>
+      <div class="h-stat">
+        <div class="lbl">CPA 3일 MA</div>
+        <div class="val">{{ kpi.cpa_3day_avg | won }}</div>
+        <div class="sub">가드레일 {{ kpi.target_cpa | won }} · {{ '✓ 통과' if kpi.cpa_within_guardrail else '⚠ 초과' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <!-- ===== 3.2 오늘 해야 할 일 ===== -->
+    <div>
+      <div class="card">
+        <h2>오늘 해야 할 일 ({{ action_count }}건)</h2>
+
+        {% if recs.budget_increase %}
+        <div class="action-cat">
+          <div class="action-cat-hd"><span class="icon">💰</span>예산 증액 <span class="count">{{ recs.budget_increase|length }}</span></div>
+          {% for r in recs.budget_increase %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if recs.budget_decrease %}
+        <div class="action-cat">
+          <div class="action-cat-hd"><span class="icon">💰</span>예산 감액 <span class="count">{{ recs.budget_decrease|length }}</span></div>
+          {% for r in recs.budget_decrease %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if recs.ad_off %}
+        <div class="action-cat">
+          <div class="action-cat-hd"><span class="icon">🎬</span>광고 OFF 후보 <span class="count">{{ recs.ad_off|length }}</span></div>
+          {% for r in recs.ad_off %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if recs.ad_on %}
+        <div class="action-cat">
+          <div class="action-cat-hd"><span class="icon">🎬</span>광고 ON·확대 후보 <span class="count">{{ recs.ad_on|length }}</span></div>
+          {% for r in recs.ad_on %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if recs.setting %}
+        <div class="action-cat">
+          <div class="action-cat-hd"><span class="icon">⚙️</span>세팅 확인 <span class="count">{{ recs.setting|length }}</span></div>
+          {% for r in recs.setting %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if recs.hold %}
+        <div class="action-cat">
+          <div class="action-cat-hd"><span class="icon">⏸</span>보류·관찰 <span class="count">{{ recs.hold|length }}</span></div>
+          {% for r in recs.hold %}
+          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if action_count == 0 %}
+        <div class="muted">오늘 실행할 액션 없음 — 운영 안정 상태</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ===== 3.3 이상 신호 + 3.4 효과 추적 ===== -->
+    <div>
+      <div class="card">
+        <h2>이상 신호 ({{ alert_count }}건)</h2>
+        {% for a in alerts %}
+        <div class="card-row {{ 'alert-suppressed' if a.suppressed else '' }}">
+          <span class="badge {{ a.level }}">{{ a.icon }} {{ a.level }}</span>
+          <strong>{{ a.target_name }}</strong>: {{ a.message }}
+          {% if a.suppressed %}<div class="muted" style="font-size:10.5px">↳ 보류: {{ a.suppressed_reason }}</div>{% endif %}
+          {% if a.linked_action %}<div class="muted" style="font-size:10.5px">→ {{ a.linked_action }}</div>{% endif %}
+        </div>
+        {% else %}
+        <div class="muted">감지된 이상 신호 없음</div>
+        {% endfor %}
+      </div>
+
+      <div class="card">
+        <h2>액션 후 효과 추적 (최근 10건)</h2>
+        {% for a in recent_actions %}
+        <div class="action-log">
+          <div class="ts">{{ a.timestamp }}</div>
+          <strong>{{ a.action_type }}</strong>
+          {% if a.branch %} · {{ a.branch }}{% endif %}
+          {% if a.creative_name %} · {{ a.creative_name }}{% endif %}
+          {% if a.before and a.after %}<div class="muted">{{ a.before }} → {{ a.after }}</div>{% endif %}
+          <div class="muted">사유: {{ a.reason }}</div>
+          {% if a.effects %}
+          <div class="effect">
+            {% if a.effects.d1 %}D+1: CPA {{ a.effects.d1.cpa | won }} / CVR {{ a.effects.d1.cvr | pct(2) }}{% endif %}
+            {% if a.effects.d3 %} · D+3: CPA {{ a.effects.d3.cpa | won }}{% endif %}
+            {% if a.effects.d7 %} · D+7: CPA {{ a.effects.d7.cpa | won }}{% endif %}
+            {% if not a.effects.d1 and not a.effects.d3 and not a.effects.d7 %}<span class="muted">측정 대기</span>{% endif %}
+          </div>
+          {% endif %}
+        </div>
+        {% else %}
+        <div class="muted">기록된 액션 없음 — POST /tracker/log 로 액션 기록</div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 체크리스트 ===== -->
+  <div class="card">
+    <h2>6월 운영 체크리스트
+      ({{ checklist_stats.completed }}✓ · {{ checklist_stats.in_progress }}🔄 · {{ checklist_stats.partial }}⚠ · {{ checklist_stats.not_started }}☐)
+    </h2>
+    {% for c in checklist %}
+    <div class="ck-item">
+      <div class="ck-status {{ c.status }}">{{ c.status_icon }}</div>
+      <div class="ck-body">
+        <div>
+          <span class="ck-week">{{ c.week }}</span>
+          <span class="ck-title">{{ c.title }}</span>
+        </div>
+        <div class="ck-meta">{{ c.related_section }} · {{ c.owner }}{% if c.manual_override %} · 수동 토글 가능{% endif %}</div>
+        {% if c.note %}<div class="ck-note">↳ {{ c.note }}</div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+</body>
+</html>

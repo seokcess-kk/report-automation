@@ -53,6 +53,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   ├── build_proposal.py           ← 통합 빌드
 │   └── html_template.py / js_body.py ← 렌더링
 └── insight-writer/           ← 인사이트 자동 생성
+
+dashboard/                    ← v3.11 — 6월 TikTok 운영 콘솔 (Flask)
+├── app.py                    ← Flask 부트 (포트 5050) + 라우트
+├── services/                 ← API/계산 로직 (web/ 이전 시 그대로 재사용)
+│   ├── data_loader.py         ← 최신 dir 자동 감지 + parquet/JSON 캐시 (TTL 1시간)
+│   ├── kpi_progress.py        ← 762건 KPI 진행률 + 페이스 + 예상 도달
+│   ├── alert_engine.py        ← 전일비 + 3일 MA + 페이스 3가지 병행
+│   ├── checklist_engine.py    ← june_checklist.yaml + 데이터 자동 상태 평가
+│   ├── action_recommender.py  ← operation_rules.yaml 기반 액션 큐 (4 카테고리)
+│   └── action_tracker.py      ← actions.jsonl append + 조회
+├── workers/
+│   └── effect_tracker.py      ← D+1/D+3/D+7 효과 자동 측정 (매일 1회 실행)
+└── templates/home.html        ← 4영역 (오늘의 결론 / 해야 할 일 / 이상 신호 / 효과 추적)
+
+config/                       ← v3.11 — 운영 룰 (사람이 정의)
+├── operation_rules.yaml      ← 예산/ON·OFF/세팅/보류/escalation 룰
+├── june_checklist.yaml       ← W1~W4 체크리스트 (status_rule로 데이터 평가)
+└── alert_rules.yaml          ← 3가지 기준 임계값 + 노이즈 필터
 ```
 
 ---
@@ -148,6 +166,10 @@ python .claude/skills/report-generator/scripts/build_monthly.py output/data/YYYY
 python .claude/skills/report-generator/scripts/build_weekly.py input/tiktok_raw.csv output
 python .claude/skills/report-generator/scripts/build_daily.py input/tiktok_raw.csv output
 python .claude/skills/proposal-builder/scripts/build_proposal.py output/data/YYYYMMDD/parsed.parquet input/tiktok_ad_meta.csv output/proposal/YYYYMM
+
+# 6월 운영 콘솔 (Phase 1 MVP)
+python -m dashboard.app                                  # http://localhost:5050
+python -m dashboard.workers.effect_tracker               # D+1/D+3/D+7 효과 자동 측정 (매일 1회)
 ```
 
 ---
@@ -234,6 +256,7 @@ from common import (
 
 | 버전 | 날짜 | 변경 |
 |------|------|------|
+| v3.11 | 2026-05-21 | 6월 TikTok 운영 콘솔 Phase 1 MVP (`dashboard/` Flask) — KPI 진행률·이상 신호(3가지 기준 병행)·체크리스트(YAML+자동평가)·추천 액션 큐·액션 트래커(D+1/D+3/D+7) |
 | v3.10 | 2026-05-21 | API 디멘션 확장 (성별·지역·시청 깊이·인게이지먼트) + 6월 운영 제안서 재구성 (5장 본문 + 부록 A·B·C) + 부록 C 지점×소재 재집계 |
 | v3.9 | 2026-04-21 | Phase 0 자동화 (`--collect`), 랜딩/도달/나이 컬럼 API 수집 추가 |
 | v3.8 | 2026-03-09 | 위클리 KPI OFF 소재 포함, 데일리 전일비 fallback 로직 추가 |

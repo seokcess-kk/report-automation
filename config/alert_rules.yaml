@@ -1,0 +1,139 @@
+# 6월 TikTok 운영 콘솔 — 이상 신호 감지 룰
+# 3가지 기준 병행 (전일비 + 3일 MA + 목표 페이스)
+# 노이즈 필터 후 등급 부여 (Critical / Warning / Recovery)
+
+meta:
+  noise_filter:
+    min_clicks_for_signal: 30           # 클릭 < 30 → 신호 무시 (표본 부족)
+    min_days_active: 7                  # 집행 < 7일 → 학습 기간, 신호 무시
+
+
+# ==================== 7.1 전일비 기반 신호 ====================
+day_over_day:
+  - id: cpa_spike
+    level: warning                       # 단독으로는 warning (노이즈 가능성)
+    metric: cpa
+    direction: increase                  # CPA는 낮을수록 좋음
+    threshold_pct: 30                    # 전일 대비 +30% 이상
+    message: "CPA 전일 대비 {delta_pct}% 상승"
+
+  - id: cvr_drop
+    level: warning
+    metric: cvr
+    direction: decrease
+    threshold_pct: 30                    # 전일 대비 -30%
+    message: "CVR 전일 대비 {delta_pct}% 하락"
+
+  - id: impression_collapse
+    level: warning
+    metric: impressions
+    direction: decrease
+    threshold_pct: 50
+    message: "노출 전일 대비 -{abs_delta_pct}% 급감 — 광고 그룹 활성 상태 확인"
+
+
+# ==================== 7.2 3일 이동평균 기반 신호 (추세 감지) ====================
+three_day_moving_average:
+  - id: cpa_guardrail_breach
+    level: critical                       # 3일 MA는 단독으로 critical
+    metric: cpa
+    rule: "cpa_3day_avg > target_cpa * 1.20"
+    message: "CPA 3일 평균이 가드레일(+20%)을 초과"
+    linked_action: "광고 그룹 예산 -10% 또는 광고 단위 OFF 후보 점검"
+
+  - id: cvr_persistent_low
+    level: critical
+    metric: cvr
+    rule: "cvr_3day_avg < target_cvr * 0.70"
+    message: "CVR 3일 평균이 목표 대비 70% 미달"
+    linked_action: "광고 단위 OFF 후보 점검 + 랜딩 hero 정합성 확인"
+
+  - id: ctr_decline_trend
+    level: warning
+    metric: ctr
+    rule: "ctr_3day_avg < ctr_7day_avg * 0.85"
+    message: "CTR 3일 평균이 7일 평균 대비 -15% 추세"
+    linked_action: "후킹 강화 또는 신규 소재 도입 검토"
+
+
+# ==================== 7.3 6월 목표 페이스 기반 신호 ====================
+target_pace:
+  - id: conversion_pace_low
+    level: critical
+    metric: conversions
+    rule: "pace_pct < 0.85"               # 누적 / 목표 페이스
+    message: "전환 페이스 목표 대비 {pace_pct}% — 액션 필요"
+    linked_action: "효율 우수 지점 예산 증액 + 부진 지점 광고 단위 OFF"
+
+  - id: conversion_pace_warning
+    level: warning
+    metric: conversions
+    rule: "pace_pct >= 0.85 AND pace_pct < 0.95"
+    message: "전환 페이스 {pace_pct}% — 주의"
+
+  - id: budget_overrun
+    level: warning
+    metric: cost
+    rule: "spend_pace_pct > 1.10"         # 예산 페이스 110% 초과
+    message: "예산 페이스 {spend_pace_pct}% — 가드레일 우선 권장"
+
+
+# ==================== 7.4 복원 신호 (Recovery) ====================
+recovery:
+  - id: cpa_recovery
+    level: recovery
+    rule: "previous_alert == cpa_guardrail_breach AND cpa_3day_avg <= target_cpa * 1.10"
+    message: "CPA 가드레일 복원 — 직전 critical 신호 해소"
+
+  - id: cvr_recovery
+    level: recovery
+    rule: "previous_alert == cvr_persistent_low AND cvr_3day_avg >= target_cvr * 0.90"
+    message: "CVR 회복 — 목표 대비 90% 회복"
+
+
+# ==================== 7.5 지점·소재 단위 운영 신호 (제안서 연계) ====================
+operation_specific:
+  - id: cheonan_geo_leakage_active
+    level: warning
+    rule: "branch == 천안 AND province_leakage_pct > 15"
+    message: "천안 지역 누수 {leakage_pct}% — 광고 그룹 지역 설정 확인"
+    linked_checklist: w1_cheonan_geo_setting_check
+
+  - id: age_25_34_male_leak
+    level: critical
+    rule: "gender_male_impr_pct > 0.5"
+    message: "남성 노출 감지 — 성별 타겟팅 점검 필요"
+    linked_checklist: w1_25_34_exclude_check
+
+  - id: age_25_34_suwon_regress
+    level: warning
+    rule: "branch == 수원 AND age_group == 25-34 AND cvr_3day_avg < 1.5"
+    message: "수원 25-34 한정 테스트 CVR 회복 미달 — 테스트 결과 평가 필요"
+    linked_checklist: w2_25_34_suwon_tracking
+
+
+# ==================== 7.6 신호 등급 정의 ====================
+levels:
+  critical:
+    color: "#ef4444"                      # var(--red)
+    icon: "🔴"
+    requires_action: true
+  warning:
+    color: "#f59e0b"                      # var(--warn)
+    icon: "🟡"
+    requires_action: false                # 관찰 권장
+  recovery:
+    color: "#10b981"                      # var(--t1)
+    icon: "✓"
+    requires_action: false
+
+
+# ==================== 7.7 신호 우선순위 ====================
+# 동일 단위(예: 광고 그룹)에 여러 신호 발생 시 critical > warning > recovery
+# 페이스 신호는 전역 단위로 1회만 표시 (지점·광고그룹 단위 X)
+priority:
+  - target_pace_neg_pace_critical
+  - three_day_moving_average
+  - operation_specific
+  - day_over_day
+  - recovery

@@ -1,0 +1,115 @@
+# 6월 TikTok 운영 체크리스트
+# 제안서의 액션을 운영 실행 단위로 분해.
+# 사람이 항목을 정의, 데이터가 status 자동 평가.
+#
+# status 자동 평가 규칙:
+#   - completed:    success_metric의 target 도달 (status_rule 평가 결과)
+#   - in_progress:  운영 시작 흔적 감지, target 미도달
+#   - partial:      운영 시작했으나 일부 기준만 충족
+#   - not_started:  운영 흔적 없음
+#
+# manual_override: true → 운영자가 수동 토글 가능. 데이터 자동 평가는 참조 정보로만.
+
+checklist:
+  # ============== W1 (6/1~6/7) — 즉시 적용 ==============
+  - id: w1_addon_split_v2_v1
+    title: "v2 유지 그룹 vs v1 복원·부분 변경 그룹 분리 운영 시작"
+    owner: operator
+    week: W1
+    related_section: "5.1 (애드온 결론 박스)"
+    success_metric: split_groups_active
+    target: "v2 광고 그룹과 v1 복원 광고 그룹이 동시 운영"
+    status_rule: addon_v2_v1_groups_active
+    manual_override: true
+
+  - id: w1_jinryo_v1_restore_review
+    title: "진료셀프캠 v2 → v1 일부 복원 또는 디자인 콘셉트 재검토"
+    owner: operator
+    week: W1
+    related_section: "5.3 (소재유형 디자인 효과)"
+    success_metric: jinryo_v1_share_change
+    target: "진료셀프캠 v1 노출 비중 회복 또는 v2 콘셉트 부분 변경 시도"
+    status_rule: jinryo_v1_restore_action
+    manual_override: true
+
+  - id: w1_cheonan_geo_setting_check
+    title: "천안 광고 그룹 지역 타겟팅 광역 설정 점검 (경기 누수 23.8%)"
+    owner: operator
+    week: W1
+    related_section: "부록 B (지역 도달)"
+    success_metric: cheonan_leakage_pct
+    target: "경기 노출 비중 < 15% (현재 23.81%)"
+    status_rule: geo_leakage_resolved
+    manual_override: true
+
+  - id: w1_25_34_exclude_check
+    title: "25-34 연령대 광고 그룹 제외 설정 확인 (수원 제외)"
+    owner: operator
+    week: W1
+    related_section: "부록 A (타겟팅 정합성)"
+    success_metric: age_25_34_setting
+    target: "수원 외 8개 지점에서 25-34 노출 0 유지"
+    status_rule: age_25_34_excluded
+    manual_override: true
+
+  # ============== W2~W3 (6/8~6/21) — 검증 ==============
+  - id: w2_addon_design_remeasure
+    title: "디자인 변경(v1→v2) 효과 재측정"
+    owner: operator
+    week: W2-W3
+    related_section: "5.1"
+    success_metric: design_effect_clarified
+    target: "6월 누적 데이터로 v2 디자인 효과 명확화 (시즌 confound 제거)"
+    status_rule: addon_design_test_concluded
+    manual_override: true
+
+  - id: w2_25_34_suwon_tracking
+    title: "25-34 수원 한정 테스트 결과 추적"
+    owner: operator
+    week: W2-W3
+    related_section: "부록 A"
+    success_metric: age_25_34_suwon_cvr
+    target: "수원 25-34 CVR 다른 연령대 평균(약 6%)의 50% 이상 회복"
+    status_rule: age_test_recovery
+    manual_override: false
+
+  - id: w2_3day_avg_monitoring
+    title: "지점별 CPA 3일 이동평균 가드레일 추적"
+    owner: operator
+    week: W2-W3
+    related_section: "3장 (월 KPI)"
+    success_metric: cpa_3day_avg_within_guardrail
+    target: "9개 지점 모두 가드레일 +10% 이내"
+    status_rule: cpa_within_guardrail
+    manual_override: false
+
+  # ============== W4 (6/22~6/30) — 7월 방향 ==============
+  - id: w4_july_design_decision
+    title: "7월 표준 디자인 결정 (v2 표준화 / v1 부분 복원 / v2 부분 변경)"
+    owner: consultant
+    week: W4
+    related_section: "5.1"
+    success_metric: july_decision_recorded
+    target: "7월 운영 시작 전 표준 디자인 결정 + 클라이언트 합의"
+    status_rule: july_decision_logged
+    manual_override: true
+
+  - id: w4_kpi_target_review
+    title: "6월 KPI 762건 달성 검토 + 7월 목표 조정"
+    owner: consultant
+    week: W4
+    related_section: "1장"
+    success_metric: june_conversion_total
+    target: "기본 762건, 상향 822건"
+    status_rule: kpi_achieved
+    manual_override: false
+
+  - id: w4_busan_learning_evaluation
+    title: "부산 학습 룰 평가 — 7월 정상 산식 편입 여부"
+    owner: consultant
+    week: W4
+    related_section: "3.4 (부산 학습 박스)"
+    success_metric: busan_learning_stabilized
+    target: "부산 CPA가 전 지점 평균 ±15% 이내로 안정화"
+    status_rule: busan_stabilized
+    manual_override: true

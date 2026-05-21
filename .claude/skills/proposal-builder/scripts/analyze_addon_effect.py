@@ -4,7 +4,7 @@
   · 3~4월 노출 애드온 = v1 (구 디자인) / 5월 노출 애드온 = v2 (신 디자인)
   · 5월에는 원래 모든 캠페인·소재에 애드온 적용 예정이었으나
     부산점만 운영 사유로 일부 미적용 → 5월 비애드온의 ~94%가 부산
-  · 부산은 R10 학습 룰 적용 신규 지점으로 비교 대상에서 분리 필요
+  · 부산은 5월 일부 미적용으로 비교 대상에서 분리 필요
   · 결과: 부산 제외 시 5월 비애드온은 사실상 0 → 동기간 비교 불가
   · 따라서 본문 평가축을 v2 vs v1 직접 비교 + 소재유형별 디자인 효과로 전환
   · v1 vs 3~4월 비애드온 비교는 그대로 유지 (충분한 양쪽 표본)
@@ -21,7 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from common import VALID_BRANCHES
 
 DESIGN_V2_FROM = pd.Timestamp('2026-05-01')
-EXCLUDE_BRANCHES = ['부산']  # 5월 일부 미적용 + R10 학습 룰 대상
+EXCLUDE_BRANCHES = ['부산']  # 5월 일부 미적용
 
 SAMPLE_MIN_CLICKS = 100
 PAIR_MIN_CLICKS = 100
@@ -184,7 +184,7 @@ def analyze(parsed_path: str, meta_path: str = 'input/tiktok_ad_meta.csv') -> di
     merged_all['is_addon'] = merged_all['is_addon'].fillna(False).astype(bool)
     merged_all['version'] = _assign_version(merged_all['date'], merged_all['is_addon'])
 
-    # 부산 제외 — 5월 일부 미적용 + R10 학습 룰 대상
+    # 부산 제외 — 5월 일부 미적용
     busan_clicks_5_non = int(merged_all[(merged_all['지점'] == '부산') &
                                           (~merged_all['is_addon']) &
                                           (merged_all['date'] >= DESIGN_V2_FROM)]['clicks'].sum())
@@ -330,8 +330,8 @@ def analyze(parsed_path: str, meta_path: str = 'input/tiktok_ad_meta.csv') -> di
             'exclusion_reason': (
                 f'5월 애드온은 원래 전 캠페인·소재 적용 예정이었으나 부산점만 운영 사유로 일부 미적용. '
                 f'부산 제외 시 5월 비애드온 클릭은 사실상 0 ({v2_period_non_clicks:,}). '
-                f'부산은 R10 학습 룰 대상이며 본 5장 분석에서는 분리. 부산 5월 비애드온 '
-                f'(클릭 {busan_clicks_5_non:,}, 애드온 클릭 {busan_clicks_5_addon:,})은 별도 학습 룰로 평가.'
+                f'부산 5월 비애드온 '
+                f'(클릭 {busan_clicks_5_non:,}, 애드온 클릭 {busan_clicks_5_addon:,})은 본 비교에서 제외.'
             ),
             'design_note': (
                 '3~4월 노출분 = v1 (구 디자인) · 5월 노출분 = v2 (신 디자인). '

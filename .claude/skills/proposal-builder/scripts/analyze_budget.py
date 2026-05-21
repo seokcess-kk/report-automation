@@ -38,7 +38,7 @@ EFF_WEIGHT = {
     'new': 1.00,     # 신규 → 계획 유지
 }
 
-# 신규 지점 학습 예산 룰 (codex R10 합의)
+# 신규 지점 학습 예산 룰
 NEW_BRANCH_RULE = {
     'min_budget': 1_000_000,
     'observation_weeks': 3,
@@ -48,16 +48,6 @@ NEW_BRANCH_RULE = {
     'pass_action_range': (1_900_000, 2_000_000),
     'fail_action': '학습 예산 1.0M 유지 + 소재/타겟 점검',
 }
-
-# 18M 가이드라인 (soft) 적용 시 감액 우선순위 (codex R9 권장)
-GUIDELINE_CAP = 18_000_000
-CAP_DEDUCTION_RULE = [
-    {'priority': 1, 'target': '신규 학습 지점', 'rationale': '학습 단계 - 성과 검증 전이라 감액 영향 최소'},
-    {'priority': 2, 'target': '효율 부진(grade=bad) 지점', 'rationale': 'CVR 회복 전 증액 보류 원칙과 정합'},
-    {'priority': 3, 'target': '효율 평균(grade=average) 지점 일률 감축', 'rationale': '전체 균형 조정'},
-    {'priority': 4, 'target': '효율 우수(grade=good) 지점', 'rationale': '마지막 순위 - ROI 보호'},
-]
-
 
 def analyze(parsed_path: str) -> dict:
     df = pd.read_parquet(parsed_path)
@@ -213,7 +203,7 @@ def analyze(parsed_path: str) -> dict:
     )
 
     # 권장 = 정상월 평균 집행 × 지점별 효율 가중 (codex 권장)
-    # 신규 지점은 학습 예산 룰(codex R10) 적용
+    # 신규 지점은 학습 예산 룰 적용
     cpa_pass_threshold = int(avg_cpa * NEW_BRANCH_RULE['cpa_threshold_multiplier']) if avg_cpa else None
     # CVR 평균은 정상월 누적에서 직접 계산
     normal_total_clicks = int(df_normal['clicks'].sum())
@@ -228,7 +218,7 @@ def analyze(parsed_path: str) -> dict:
         base = bd['avg_monthly_cost']
         learning_rule = None
         if bd['is_new_branch']:
-            # 신규 지점: codex R10 학습 예산 룰
+            # 신규 지점: 학습 예산 룰
             rec = NEW_BRANCH_RULE['min_budget']
             reason = '신규 학습 - 최소 집행액 + 3주 관찰 후 통과 시 정상 산식 편입'
             learning_rule = {
@@ -268,19 +258,6 @@ def analyze(parsed_path: str) -> dict:
     # 부산 통과 시 조건부 추가 예산 (제안서 표기용)
     pass_addition = NEW_BRANCH_RULE['pass_action_range'][1] - NEW_BRANCH_RULE['min_budget']
     recommended_total_if_new_pass = recommended_total + pass_addition
-
-    # 18M cap normalize 시나리오 (codex R9 우려 #2)
-    cap_overage = recommended_total - GUIDELINE_CAP
-    cap_overage_pct = round(cap_overage / GUIDELINE_CAP * 100, 1) if GUIDELINE_CAP else None
-    normalize_table = {
-        'guideline_cap': GUIDELINE_CAP,
-        'guideline_type': 'soft',
-        'recommended_total': recommended_total,
-        'overage_amount': cap_overage,
-        'overage_pct': cap_overage_pct,
-        'deduction_priority': CAP_DEDUCTION_RULE,
-        'note': '18M cap 적용 시 위 우선순위로 감액. 지점별 세부 숫자 대신 감액 원칙 제시 — cap 적용 시 KPI 달성률 하락 가능.',
-    }
 
     # 시나리오 표시값
     scenarios = {
@@ -325,7 +302,6 @@ def analyze(parsed_path: str) -> dict:
         'june_recommended_total': recommended_total,
         'june_recommended_total_if_new_pass': recommended_total_if_new_pass,
         'new_branch_rule': NEW_BRANCH_RULE,
-        'normalize_18m_table': normalize_table,
         'efficiency_thresholds': {'good': EFF_GOOD, 'bad': EFF_BAD},
         'note': (
             '평균 월간 집행 = 정상월 2~4월 합계 ÷ 3. 5월은 부분 데이터로 평균 산정에서 제외. '

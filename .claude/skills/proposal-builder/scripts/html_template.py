@@ -288,10 +288,12 @@ table th,table td{vertical-align:middle}
 #exec-matrix th:nth-child(3),#exec-matrix td:nth-child(3),
 #exec-matrix th:nth-child(4),#exec-matrix td:nth-child(4),
 #exec-matrix th:nth-child(5),#exec-matrix td:nth-child(5){min-width:200px;white-space:normal;line-height:1.55}  /* CPM/CTR/CVR */
+#exec-matrix th:nth-child(3),#exec-matrix th:nth-child(4),#exec-matrix th:nth-child(5){text-align:center}
 #exec-matrix th:nth-child(6),#exec-matrix td:nth-child(6){min-width:220px;white-space:normal;line-height:1.55}  /* 소재 역할 */
 #exec-matrix th:nth-child(7),#exec-matrix td:nth-child(7){min-width:280px;white-space:normal;line-height:1.6}   /* 6월 콘텐츠 */
 #exec-matrix .fcell{min-width:0}
 #exec-matrix .fcell-kpi{white-space:normal;word-break:break-word;font-size:11px;line-height:1.45;margin-top:3px}
+#exec-matrix .creative-name{white-space:nowrap;word-break:normal}
 /* 가로 스크롤 시 좌측 지점 컬럼 고정 (sticky) — 비교 편의 */
 #exec-matrix th:nth-child(1),#exec-matrix td:nth-child(1){position:sticky;left:0;background:var(--s1);z-index:2}
 #exec-matrix thead th:nth-child(1){background:var(--s2);z-index:3}
@@ -339,10 +341,11 @@ tr:hover td{background:var(--hover-bg)}
 /* ==================== Funnel Cell (P3 매트릭스) ==================== */
 .fcell{padding:10px 12px;border-radius:5px;background:transparent;border:1px solid transparent;
   font-family:'Pretendard Variable',Pretendard,sans-serif;font-size:12px;line-height:1.55;min-width:150px;white-space:normal;vertical-align:middle}
-.fcell.good{background:transparent;border-color:transparent;opacity:.65}
+.fcell.good{background:transparent;border-color:transparent;opacity:.65;text-align:center}
 .fcell.warn{background:rgba(251,191,36,.05);border-color:rgba(251,191,36,.18)}
 .fcell.bad{background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.22)}
 .fcell-row{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.fcell.good .fcell-row{justify-content:center}
 .fcell-action{color:var(--tx);font-weight:600;font-size:12px;line-height:1.5;margin:4px 0}
 .fcell.good .fcell-action{color:var(--tx2);font-weight:500}
 .fcell-role{color:var(--tx2);font-size:11px;line-height:1.4;margin-bottom:3px}
@@ -417,7 +420,7 @@ tr:hover td{background:var(--hover-bg)}
 .appx-num{font-size:10px;font-weight:800;color:var(--acc);font-family:"DM Mono",monospace;margin-right:6px}
 .appx-body{padding:16px 20px;border-top:1px solid var(--bd)}
 
-/* ==================== R9·R10 추가 박스 ==================== */
+/* ==================== 추가 안내 박스 ==================== */
 .gap-caveat{padding:10px 14px;border:1px solid var(--bd);border-left:4px solid var(--warn);border-radius:6px;background:rgba(245,158,11,.05);font-size:11.5px;color:var(--tx);line-height:1.6}
 .gap-caveat strong{color:var(--warn)}
 .busan-box{padding:14px 16px;border:2px dashed var(--pur);border-radius:8px;background:rgba(167,139,250,.06)}
@@ -610,8 +613,8 @@ tr:hover td{background:var(--hover-bg)}
     <div class="subsec" style="margin-top:24px">
       <div class="sec-hd" style="margin-bottom:10px">
         <span class="sec-hd-num">2.3.1</span>
-        <span class="sec-hd-title">히트맵 변동 주원인 — 구성비 · 단위성과 효과 분해</span>
-        <span class="sec-hd-sub">creative_type 기준 Shapley 분해</span>
+        <span class="sec-hd-title">히트맵 변동 해석 — 평소 대비 변화</span>
+        <span class="sec-hd-sub">소재 그룹 기준 보조 진단</span>
       </div>
       <div class="lead" id="fv-trend"></div>
       <div id="fv-cards"></div>
@@ -620,11 +623,11 @@ tr:hover td{background:var(--hover-bg)}
         <div class="appx-body"><div id="fv-weak"></div></div>
       </details>
       <div class="appendix-card" style="margin-top:10px;font-size:11px;color:var(--tx2);line-height:1.6">
-        <strong style="color:var(--tx)">분해 방법 안내.</strong>
-        월별 KPI 변동을 (1) <strong>구성비 효과</strong>(소재유형 비중 변화) (2) <strong>단위성과 효과</strong>(같은 유형 내 단가·반응률 변화)로 산술 분해합니다.
-        구성비 효과가 우세하면 소재 비중 조정으로 즉시 회복 가능하고,
-        단위성과 효과가 우세하면 입찰 경쟁·랜딩·상담 응대 등 광고 외부 요인 점검이 필요합니다.
-        분해 합은 정의상 변화량과 정확히 일치합니다.
+        <strong style="color:var(--tx)">읽는 방법.</strong>
+        각 카드는 특정 월의 KPI가 평소보다 좋아졌거나 나빠진 이유를 나눠 보여줍니다.
+        <strong>소재 집행 비중 영향</strong>은 어떤 소재 그룹이 더 많이 노출·클릭됐는지의 영향이고,
+        <strong>소재 자체 성과 변화</strong>는 같은 소재 그룹 안에서 클릭률·전환율·단가가 실제로 좋아졌거나 나빠진 영향입니다.
+        전월 대비 수치는 보조로 함께 표기하며, 같은 지점·같은 지표는 가장 최근 주요 변동만 표시합니다.
       </div>
     </div>
   </div>
@@ -708,8 +711,6 @@ tr:hover td{background:var(--hover-bg)}
     <div class="lead" id="budget-lead-34"></div>
     <div class="g3 aligned-6" style="margin-bottom:16px" id="budget-scenarios"></div>
     <div class="evidence-card" style="padding:0;overflow:hidden"><div class="tw"><table id="budget-rec-tbl"></table></div></div>
-    <div id="busan-learning-box" style="margin-top:16px"></div>
-    <div id="normalize-18m-box" style="margin-top:16px"></div>
   </div>
 
   <div class="sec">
@@ -760,9 +761,9 @@ tr:hover td{background:var(--hover-bg)}
         <summary><span><span class="appx-num">B.1</span>6월 주차별 실행 로드맵</span></summary>
         <div class="appx-body">
           <div class="rm-row"><div class="rm-week">1주차<br>06/01-07</div><div class="rm-body"><strong>효율 부진 지점 진단 착수.</strong> 수원 · 창원 · 천안의 CVR 원인을 점검하겠습니다 (소재 ↔ 랜딩 hero "9만원" 정합성, 5단계 폼 이탈률 확인). CPA가 평균 대비 높은 지점은 광고 그룹 예산 증액을 보류하고, CVR 회복 이후 단계적으로 증액합니다. 부산은 학습 기간 안정화 모니터링을 진행합니다.</div></div>
-          <div class="rm-row"><div class="rm-week">2주차<br>06/08-14</div><div class="rm-body"><strong>효율 양호 지점 확대 및 CPM 가드라인 적용.</strong> 서울 · 일산 · 대구 · 대전 광고 그룹 예산을 +5~10% 점진 증액합니다. CPM이 지속 상승 중인 부평 · 대구 · 창원은 신규 광고 그룹 복제(OR 분리)로 노출 효율을 함께 확보합니다. 1주차 부진 지점의 회복 추이도 함께 평가하겠습니다.</div></div>
+          <div class="rm-row"><div class="rm-week">2주차<br>06/08-14</div><div class="rm-body"><strong>효율 양호 지점 확대 및 CPM 가드라인 적용.</strong> 서울 · 일산 · 대구 · 대전 광고 그룹 예산을 +5~10% 점진 증액합니다. CPM이 지속 상승 중인 부평 · 대구 · 창원은 생활권 지역 확장, 시간대 분산, 입찰 전략 점검으로 노출 효율을 함께 확보합니다. 1주차 부진 지점의 회복 추이도 함께 평가하겠습니다.</div></div>
           <div class="rm-row"><div class="rm-week">3주차<br>06/15-21</div><div class="rm-body"><strong>콘텐츠 다양화 및 신규 소재 투입.</strong> P3에서 정의한 신규 도입 소재를 지점별로 광고 단위 ON 처리합니다. 전환수 · CPA 우수 소재는 동일 지점에서 확대 운영하고, OFF된 우수 소재 중 재활용 후보를 검토하겠습니다.</div></div>
-          <div class="rm-row"><div class="rm-week">4주차<br>06/22-30</div><div class="rm-body"><strong>중간 점검 및 7월 방향 정리.</strong> 검증 KPI를 기준으로 지점별 회복 여부를 확인합니다. 6월 운영 결과를 토대로 7월 운영 방향을 조정하겠습니다. 5월 신 디자인(v2)은 부산 일부 미적용으로 동기간 비애드온 비교가 불가능했던 만큼, 6월 누적 데이터로 디자인 효과를 재측정하고 ① v2 표준화 ② v1 일부 복원 ③ 디자인 부분 변경 중 한 가지로 7월 표준 디자인을 결정합니다. 부산은 R10 학습 룰 결과를 별도 평가.</div></div>
+          <div class="rm-row"><div class="rm-week">4주차<br>06/22-30</div><div class="rm-body"><strong>중간 점검 및 7월 방향 정리.</strong> 검증 KPI를 기준으로 지점별 회복 여부를 확인합니다. 6월 운영 결과를 토대로 7월 운영 방향을 조정하겠습니다. 5월 신 디자인(v2)은 부산 일부 미적용으로 동기간 비애드온 비교가 불가능했던 만큼, 6월 누적 데이터로 디자인 효과를 재측정하고 ① v2 표준화 ② v1 일부 복원 ③ 디자인 부분 변경 중 한 가지로 7월 표준 디자인을 결정합니다.</div></div>
         </div>
       </details>
       <details class="appx">

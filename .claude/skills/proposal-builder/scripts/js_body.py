@@ -385,12 +385,18 @@ document.querySelectorAll('.tb').forEach(btn => {
     const t = fv.overall_trend || {};
     const trendParts = ['cpm','ctr','cvr'].map(m => {
       const tt = t[m]; if (!tt) return null;
-      return `<strong style="color:var(--tx)">${m.toUpperCase()}</strong> ${tt.first_month.slice(5)}월 ${fmtMetric(m, tt.first_value)} → ${tt.last_month.slice(5)}월 ${fmtMetric(m, tt.last_value)} (<span class="${tt.delta_pct > 0 ? 'delta-up' : 'delta-down'}">${fmtSign(tt.delta_pct)}</span>)${tt.partial_flag_last ? ' <span style="color:var(--warn);font-size:10px">⚠️ 5월 부분월</span>' : ''}`;
+      return `<strong style="color:var(--tx)">${m.toUpperCase()}</strong> ${tt.first_month.slice(5)}월 ${fmtMetric(m, tt.first_value)} → ${tt.last_month.slice(5)}월 ${fmtMetric(m, tt.last_value)} (<span class="${tt.delta_pct > 0 ? 'delta-up' : 'delta-down'}">${fmtSign(tt.delta_pct)}</span>)${tt.partial_flag_last ? ' <span style="color:var(--warn);font-size:10px">5월 부분월</span>' : ''}`;
     }).filter(Boolean);
     document.getElementById('fv-trend').innerHTML = `전 지점 평균 추이 · ${trendParts.join(' · ')}`;
 
     // 카드 렌더
-    const cards = fv.cards || [];
+    const seenBranchMetric = new Set();
+    const cards = (fv.cards || []).filter(c => {
+      const key = `${c.branch}|${c.metric}`;
+      if (seenBranchMetric.has(key)) return false;
+      seenBranchMetric.add(key);
+      return true;
+    });
     const grid = document.createElement('div');
     grid.className = 'fv-grid';
     cards.forEach(c => {
@@ -406,15 +412,15 @@ document.querySelectorAll('.tb').forEach(btn => {
       // 헤더
       const hdr = `<div class="fv-hdr">
         <div class="fv-hdr-branch">${c.branch}</div>
-        <div class="fv-hdr-metric">${metricLabel} ${arrow}</div>
+        <div class="fv-hdr-metric">${metricLabel} 평소 대비 ${arrow}</div>
         ${c.partial_month_flag ? '<div class="fv-hdr-partial">⚠️ 부분월</div>' : ''}
-        <div class="fv-hdr-delta">${fmtSign(c.delta_pct)}</div>
+        <div class="fv-hdr-delta">평소 대비 ${fmtSign(c.delta_pct)}</div>
       </div>`;
 
       // 메타 (월 수치 + vs prev)
       const vsPrev = c.vs_prev_month_pct !== null && c.vs_prev_month_pct !== undefined ? ` <span class="fv-meta-trend">(vs 전월 ${fmtSign(c.vs_prev_month_pct)})</span>` : '';
       const meta = `<div class="fv-meta">
-        ${monthStr} ${fmtMetric(c.metric, c.month_value)} · ${baseStr} 평균 ${fmtMetric(c.metric, c.baseline.value)}${vsPrev}
+        ${monthStr} ${fmtMetric(c.metric, c.month_value)} · 평소(${baseStr}) 평균 ${fmtMetric(c.metric, c.baseline.value)}${vsPrev}
       </div>`;
 
       // 분해
@@ -432,7 +438,7 @@ document.querySelectorAll('.tb').forEach(btn => {
         }
       }
       decompRows += `<div class="fv-decomp-row">
-        <div class="fv-decomp-lbl">구성비 효과</div>
+        <div class="fv-decomp-lbl">소재 집행 비중 영향</div>
         <div class="fv-decomp-val">${d.mix_contribution_pct.toFixed(0)}%</div>
         <div class="fv-decomp-detail">${mixDetail || '소재유형 비중 변화 미미'}</div>
       </div>`;
@@ -446,7 +452,7 @@ document.querySelectorAll('.tb').forEach(btn => {
         withinDetail = `${withinTop.type} 자체 ${absStr} ${dir} (${fmtSign(withinTop.metric_delta_pct)})`;
       }
       decompRows += `<div class="fv-decomp-row">
-        <div class="fv-decomp-lbl">단위성과 효과</div>
+        <div class="fv-decomp-lbl">소재 자체 성과 변화</div>
         <div class="fv-decomp-val">${d.within_contribution_pct.toFixed(0)}%</div>
         <div class="fv-decomp-detail">${withinDetail || '동일 유형 내 변화 미미'}</div>
       </div>`;
@@ -821,8 +827,8 @@ document.querySelectorAll('.tb').forEach(btn => {
         const issues = branches.filter(b => cs[b] && cs[b].funnel_status && ['bad','warn'].includes(cs[b].funnel_status.cpm && cs[b].funnel_status.cpm.status));
         return `<strong>${issues.length}개 지점</strong>이 전 지점 평균(${fmt(peer.cpm)}원) 대비 +10% 이상 비쌈 · ${issues.join('·') || '없음'}`;
       },
-      cause: '지점별 지역 타겟팅 구조 특성상 모수가 제한됨. 단일 광고 그룹에 좁은 지역+추가 조건이 결합되면 학습 부족으로 단가 상승. 피크 시간 경쟁 과열 가능성.',
-      action: '<strong>오디언스 폭 확장은 광고 그룹 복제 OR 분리 방식</strong>으로 진행 (지역만 그룹 + 지역+관심사 그룹 별개 운영). 노출 위치 확장 (Pangle·Spark 추가), 시간대·요일 분산, 입찰 전략 점검(최대 전환 vs 비용 한도), 지점 인근 시·군까지 지역 범위 확장 검토. 단일 광고 그룹 내 관심사 AND 추가는 풀을 더 좁히므로 금지.',
+      cause: '지점별 지역 타겟팅 구조 특성상 모수가 제한됨. 특정 지역 풀 안에서 경쟁이 높아지거나 피크 시간 입찰이 몰리면 CPM이 상승할 수 있음.',
+      action: '<strong>지역 풀 과밀 완화</strong> 중심으로 진행. 지점 인근 생활권 시·군 확장, 시간대·요일 분산, 입찰 전략 점검(최대 전환 vs 비용 한도), 저CPM·전환 유지 소재 비중 확대를 우선 적용.',
       kpi: '7일 내 CPM 목표 회귀 (-10% 이상), CTR/CVR 급락 없음. 단 지역 캠페인 구조상 CPM 개선 폭은 제한적 — CTR/CVR로 보완 가능',
     },
     {
@@ -1027,7 +1033,7 @@ document.querySelectorAll('.tb').forEach(btn => {
 
   // 소재 역할 추천 룰 (병목 기반, 랜딩 hero "9만원 할인" 정합성 고려)
   const roleForFunnel = {
-    cpm: { role: '할인혜택형', action: '광고 그룹 복제 OR 분리 · 노출 위치·시간대 분산 (지역+관심사 AND 추가 금지)' },
+    cpm: { role: '할인혜택형', action: '생활권 확장 · 시간대 분산 · 입찰 점검' },
     ctr: { role: '후기형', action: '후기·결과수치 신규 ON · 저성과 광고 OFF (광고 그룹 내 교체)' },
     cvr: { role: '상담전환형', action: '소재 ↔ 랜딩 hero 정합성 · 5단계 폼 이탈 점검 · 광고 그룹 예산 증액 보류' },
   };
@@ -1065,7 +1071,7 @@ document.querySelectorAll('.tb').forEach(btn => {
       <div class="fcell-row">${statusBadge(status)}</div>
       <div class="fcell-action">${action}</div>
       ${role ? `<div class="fcell-role"><strong>${role}</strong></div>` : ''}
-      ${pick ? `<div class="fcell-kpi">${pick.name}</div>` : ''}
+      ${pick ? `<div class="fcell-kpi creative-name">${pick.name}</div>` : ''}
     </td>`;
   };
   branches.forEach(b => {
@@ -1076,9 +1082,9 @@ document.querySelectorAll('.tb').forEach(btn => {
     const rec = recBy[b] || {};
     const contentBrief = [];
     // 가로 스크롤 + 넓은 컬럼이라 잘림 해제 — 줄바꿈으로 자연스럽게 펼침
-    if (rec.keep && rec.keep[0]) contentBrief.push(`<span style="color:var(--t1);font-weight:700">유지</span> ${rec.keep[0].creative_name}`);
-    if (rec.expand && rec.expand[0]) contentBrief.push(`<span style="color:var(--warn);font-weight:700">확대</span> ${rec.expand[0].creative_name}`);
-    if (rec.new_intro && rec.new_intro[0]) contentBrief.push(`<span style="color:var(--acc);font-weight:700">신규</span> ${rec.new_intro[0].creative_name}`);
+    if (rec.keep && rec.keep[0]) contentBrief.push(`<span style="color:var(--t1);font-weight:700">유지</span> <span class="creative-name">${rec.keep[0].creative_name}</span>`);
+    if (rec.expand && rec.expand[0]) contentBrief.push(`<span style="color:var(--warn);font-weight:700">확대</span> <span class="creative-name">${rec.expand[0].creative_name}</span>`);
+    if (rec.new_intro && rec.new_intro[0]) contentBrief.push(`<span style="color:var(--acc);font-weight:700">신규</span> <span class="creative-name">${rec.new_intro[0].creative_name}</span>`);
     trs += `<tr class="r-${grp}">
       <td class="lbl">${b} <span class="bd bd-${grp}" style="font-size:10px;margin-left:4px">${grp}</span></td>
       <td>${priorityBadge(bs.priority_level || 'Mid')}</td>
@@ -1593,12 +1599,6 @@ document.querySelectorAll('.tb').forEach(btn => {
         </div>
       </div>
       <div class="action-card">
-        <div class="card-title">W1 (6/1~6/7) — 부산 단독 학습 룰</div>
-        <div class="card-sub" style="margin-bottom:0">
-          부산은 5월 일부 미적용 + R10 학습 룰 대상이므로 본 5장 분석에서 분리. 부산 학습 안정화는 3.4 부산 학습 박스 기준으로 별도 모니터링하며, 6월 안정화 이후 표준 디자인 통합 검토.
-        </div>
-      </div>
-      <div class="action-card">
         <div class="card-title">W2~W3 (6/8~6/21) — 디자인 효과 재측정</div>
         <div class="card-sub" style="margin-bottom:0">
           ${designV === 'v1_better'
@@ -1667,45 +1667,6 @@ document.querySelectorAll('.tb').forEach(btn => {
   el.innerHTML = `<div class="gap-caveat">
     <strong>KPI 갭 — 권장 ${gap.recommended_conv}건 vs KPI 목표 ${gap.kpi_target}건 (${gap.gap_amount > 0 ? '-' : '+'}${Math.abs(gap.gap_amount)}건, ${gap.gap_pct}%).</strong>
     ${gap.caveat}
-  </div>`;
-})();
-
-// ==================== R10 — 3.4 부산 학습 박스 ====================
-(function renderBusanLearningBox() {
-  const el = document.getElementById('busan-learning-box');
-  if (!el) return;
-  const rec = (DATA.budget && DATA.budget.june_recommended_by_branch) || {};
-  const busan = rec['부산'];
-  if (!busan || !busan.learning_rule) { el.style.display = 'none'; return; }
-  const lr = busan.learning_rule;
-  const range = lr.pass_budget_range || [];
-  el.innerHTML = `<div class="busan-box">
-    <div class="busan-hdr">
-      <span class="busan-tag">신규 학습 — 정상 산식 미적용</span>
-      <span class="busan-title">부산 (codex R10 학습 룰)</span>
-    </div>
-    <div class="busan-row">기본 <strong>${fmt(lr.min_budget)}원</strong> · ${lr.observation_weeks}주 관찰 (6/1~6/21)</div>
-    <div class="busan-grid">
-      <div class="busan-row">통과 기준 <strong>CPA ≤ ${lr.cpa_pass_threshold ? fmt(lr.cpa_pass_threshold) + '원' : '-'}</strong> ${lr.pass_combine} <strong>CVR ≥ ${lr.cvr_pass_threshold !== null ? lr.cvr_pass_threshold + '%' : '-'}</strong></div>
-      <div class="busan-row">통과 시 <strong>${range.length === 2 ? fmt(range[0]) + '~' + fmt(range[1]) + '원' : '-'}</strong> 정상 산식 편입</div>
-      <div class="busan-row">미통과 시 ${lr.fail_action || '-'}</div>
-      <div class="busan-row" style="color:var(--tx2)">※ ${lr.measurement_note || ''}</div>
-    </div>
-  </div>`;
-})();
-
-// ==================== R9 Q1 — 3.4 normalize 18M 보조 표 ====================
-(function renderNormalize18mBox() {
-  const el = document.getElementById('normalize-18m-box');
-  if (!el) return;
-  const nm = (DATA.budget && DATA.budget.normalize_18m_table) || null;
-  if (!nm) { el.style.display = 'none'; return; }
-  const dp = nm.deduction_priority || [];
-  el.innerHTML = `<div class="norm-box">
-    <div class="norm-hdr">18M cap 적용 시 (${nm.guideline_type} guideline) — 감액 우선순위</div>
-    <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">권장 ${fmt(nm.recommended_total)}원 vs cap ${fmt(nm.guideline_cap)}원 → 초과 ${fmt(nm.overage_amount)}원 (${nm.overage_pct > 0 ? '+' : ''}${nm.overage_pct}%). 18M 적용 시 아래 순위로 감액합니다.</div>
-    <ol class="norm-list">${dp.map(d => `<li><strong>${d.priority}. ${d.target}</strong> — <span class="muted">${d.rationale}</span></li>`).join('')}</ol>
-    <div style="font-size:10.5px;color:var(--tx2);margin-top:8px;padding-top:8px;border-top:1px dashed var(--bd)">${nm.note || ''}</div>
   </div>`;
 })();
 

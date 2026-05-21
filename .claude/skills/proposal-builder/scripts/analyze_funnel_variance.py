@@ -676,7 +676,7 @@ def _build_card(branch: str, metric: str, current_month: str,
 # ============================ 카드 정렬·trim ============================
 
 def _sort_and_trim(cards: list) -> list:
-    """R7 정렬 룰: 트렌드 일치도 → 운영 가능성 → 변화 크기 → 지점당 max 2장 → cap 9장."""
+    """R7 정렬 룰: 트렌드 일치도 → 운영 가능성 → 변화 크기 → 중복 축약 → cap 9장."""
     def trend_match(c):
         return (c['metric'], c['direction']) in [(m, d) for m, d in USER_TREND_FOCUS]
 
@@ -711,12 +711,17 @@ def _sort_and_trim(cards: list) -> list:
 
     # 지점당 max 2장 trim
     branch_count = {}
+    branch_metric_seen = set()
     final = []
     for c in selected:
         b = c['branch']
+        branch_metric_key = (b, c['metric'])
+        if branch_metric_key in branch_metric_seen:
+            continue
         if branch_count.get(b, 0) >= CARD_PER_BRANCH_MAX:
             continue
         final.append(c)
+        branch_metric_seen.add(branch_metric_key)
         branch_count[b] = branch_count.get(b, 0) + 1
     # cap 다시
     return final[:CARD_TOTAL_CAP]

@@ -165,7 +165,7 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
     prov_path = Path(parsed_path).parent / 'normalized_by_province.parquet'
     geo_leakage = analyze_geo(str(prov_path), parsed_path) if prov_path.exists() else {'available': False, 'note': 'province parquet 없음'}
 
-    # 캐비엇 (codex R9·R10)
+    # 캐비엇
     meta_caveats = _build_meta_caveats(targets, budget)
 
     # 컨설팅 보조 지표 (codex Round 2 권장)

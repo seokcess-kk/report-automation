@@ -499,7 +499,7 @@ tr:hover td{background:var(--hover-bg)}
 
 <nav><div class="nav-bar">
   <div class="nav-inner">
-    <button class="tb on" data-tab="exec"><span class="tb-num">01</span>Executive Summary</button>
+    <button class="tb on" data-tab="exec"><span class="tb-num">01</span>운영 요약</button>
     <button class="tb" data-tab="diag"><span class="tb-num">02</span>성과 진단</button>
     <button class="tb" data-tab="plan"><span class="tb-num">03</span>6월 목표·액션</button>
     <button class="tb" data-tab="exec_plan"><span class="tb-num">04</span>타겟팅·콘텐츠 실행안</button>
@@ -521,9 +521,9 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 01 Executive Summary ========================= -->
 <div id="pg-exec" class="pg on"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">01 · Executive Summary</div>
+    <div class="page-hd-num">01 · 운영 요약</div>
     <h2 class="page-hd-title">6월 운영 방향 요약</h2>
-    <div class="page-hd-msg">6월 운영은 <strong style="color:var(--red)">A 효율 개선</strong> · <strong style="color:var(--t1)">B 예산 확대</strong> · <strong style="color:var(--pur)">C 신규 안정화</strong> 세 방향으로 분리 적용하며, 전환 목표는 <strong style="color:var(--primary)">762건, Stretch 822건</strong>으로 설정하였습니다.</div>
+    <div class="page-hd-msg">6월 운영은 <strong style="color:var(--red)">A 효율 개선</strong> · <strong style="color:var(--t1)">B 예산 확대</strong> · <strong style="color:var(--pur)">C 신규 안정화</strong> 세 방향으로 분리 적용하며, 전환 목표는 <strong style="color:var(--primary)">기본 762건, 상향 822건</strong>으로 설정하였습니다.</div>
     <div class="page-hd-msg" style="margin-top:8px;font-size:12.5px;color:var(--tx2)">보강 진단 결과 <strong style="color:var(--t1)">성별 타겟팅은 정상</strong>이며, <strong>25-34는 확대 제외 유지 (수원 한정 테스트 중)</strong>, <strong>천안은 지역 세팅 확인 필요</strong>입니다 (상세는 부록 A·B).</div>
     <div class="page-hd-meta">
       <span>분석 기간 <strong id="meta-period"></strong></span>
@@ -533,10 +533,10 @@ tr:hover td{background:var(--hover-bg)}
   </div>
 
   <div class="sec">
-    <div class="sec-hd"><span class="sec-hd-num">1.1</span><span class="sec-hd-title">6월 운영 목표</span><span class="sec-hd-sub">Primary KPI · 비즈니스 결과</span></div>
-    <div class="lead">전환수 <strong>762건</strong>을 base target, <strong>822건</strong>을 stretch target으로 설정하였습니다. 평균 CPA는 <strong>27,278원</strong>을 가드레일로 운영하겠습니다. 모든 수치는 지점별 베스트월(2~4월) 재달성을 기준으로 산정된 값입니다.</div>
+    <div class="sec-hd"><span class="sec-hd-num">1.1</span><span class="sec-hd-title">6월 운영 목표</span><span class="sec-hd-sub">핵심 KPI · 비즈니스 결과</span></div>
+    <div class="lead">전환수 <strong>762건</strong>을 기본 목표, <strong>822건</strong>을 상향 목표로 설정하였습니다. 평균 CPA는 <strong>27,278원</strong>을 가드레일로 운영하겠습니다. 모든 수치는 지점별 베스트월(2~4월) 재달성을 기준으로 산정된 값입니다.</div>
     <div class="kpi-primary-row" id="kpi-primary"></div>
-    <div class="sec-hd" style="margin-top:18px"><span class="sec-hd-num">1.2</span><span class="sec-hd-title">목표 달성 조건</span><span class="sec-hd-sub">Funnel KPI · 조정 레버</span></div>
+    <div class="sec-hd" style="margin-top:18px"><span class="sec-hd-num">1.2</span><span class="sec-hd-title">목표 달성 조건</span><span class="sec-hd-sub">퍼널 KPI · 조정 레버</span></div>
     <div class="kpi-funnel-row" id="kpi-funnel"></div>
     <div id="kpi-gap-caveat" style="margin-top:12px"></div>
   </div>
@@ -557,7 +557,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 02 성과 진단 ========================= -->
 <div id="pg-diag" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">02 · Performance Diagnosis</div>
+    <div class="page-hd-num">02 · 성과 진단</div>
     <h2 class="page-hd-title">지점별 퍼널 병목 진단</h2>
     <div class="page-hd-msg">전 기간 운영 데이터를 진단한 결과, 9개 지점은 운영 패턴상 세 그룹으로 분류됩니다. 효율 부진 지점은 CVR 병목 해소가 우선이며, 확대 후보 지점은 CPM 가드라인 유지가 필요한 것으로 판단됩니다.</div>
     <div class="page-hd-meta">
@@ -676,7 +676,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 03 6월 목표·액션 ========================= -->
 <div id="pg-plan" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">03 · June Targets & Action Plan</div>
+    <div class="page-hd-num">03 · 6월 목표·액션 플랜</div>
     <h2 class="page-hd-title">6월 목표 · 액션 플랜</h2>
     <div class="page-hd-msg">퍼널 병목 원인이 지점마다 다르므로 처방 또한 분리하여 적용을 권고드립니다. 단순 예산 증액으로는 6월 목표 달성이 어려우며, CPM · CTR · CVR 각각의 원인에 맞는 실행 액션이 동반되어야 합니다.</div>
     <div class="page-hd-meta">
@@ -791,7 +791,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 04 타겟팅·콘텐츠 실행안 ========================= -->
 <div id="pg-exec_plan" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">04 · Targeting & Content Execution Plan</div>
+    <div class="page-hd-num">04 · 타겟팅·콘텐츠 실행안</div>
     <h2 class="page-hd-title">타겟팅 · 콘텐츠 실행안</h2>
     <div class="page-hd-msg">지점별 약점 퍼널을 보완할 수 있도록 타겟팅 방향과 소재 역할을 매트릭스로 정리하였습니다. 단순한 "추천 소재 1개"가 아니라, 퍼널 병목에 기반한 소재 역할과 검증된 소재 후보를 함께 제시드립니다.</div>
     <div class="page-hd-meta">
@@ -886,7 +886,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 05 애드온 판단 (R11 보수적 압축) ========================= -->
 <div id="pg-addon" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">05 · Add-on Judgement</div>
+    <div class="page-hd-num">05 · 애드온 판단</div>
     <h2 class="page-hd-title">애드온 운영 판단 — 디자인 변경 반영</h2>
     <div class="page-hd-msg">3~4월의 <strong>구 디자인(v1)</strong>과 5월의 <strong style="color:var(--t1)">신 디자인(v2)</strong>은 별개 소재로 보아 분리 분석합니다. 단, 5월에는 원래 전 캠페인·소재에 애드온을 적용할 예정이었으나 <strong style="color:var(--warn)">부산점만 운영 사유로 일부 미적용</strong>되어 5월 비애드온이 사실상 부산 단일 지점 데이터에 해당합니다. 따라서 본 5장은 <strong>부산을 제외</strong>한 8개 지점만을 대상으로, 평가축을 <strong>(1) v1 vs 3~4월 비애드온</strong>과 <strong>(2) v2 vs v1 직접 비교</strong>로 이원화하였습니다.</div>
     <div class="page-hd-meta">
@@ -954,7 +954,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 부록 A · 성별·연령 타겟팅 검증 (기존 6장 강등) ========================= -->
 <div id="pg-targeting" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">부록 A · Targeting Health</div>
+    <div class="page-hd-num">부록 A · 타겟팅 정합성</div>
     <h2 class="page-hd-title">성별·연령 타겟팅 검증</h2>
     <div class="page-hd-msg">캠페인 타겟팅(성별=여성 고정)이 실제 노출에서 정상 작동하는지 검증한 부록입니다. <strong style="color:var(--t1)">결론: 성별 타겟팅 정상 / 25-34는 확대 제외</strong>로 본문 1장에서 요약되며, 본 부록은 상세 표와 caveat를 제공합니다.</div>
   </div>
@@ -986,7 +986,7 @@ tr:hover td{background:var(--hover-bg)}
 <!-- ========================= 부록 B · 지역 도달 정합성 (기존 7장 강등) ========================= -->
 <div id="pg-geo" class="pg"><div class="wrap">
   <div class="page-hd">
-    <div class="page-hd-num">부록 B · Geo Reach</div>
+    <div class="page-hd-num">부록 B · 지역 도달</div>
     <h2 class="page-hd-title">지역 도달 정합성</h2>
     <div class="page-hd-msg">9개 지점 광고가 의도한 생활권에 도달하는지 검증한 부록입니다. <strong style="color:var(--t1)">결론: 전체 지역 도달은 대체로 정합(누수 2.59%), 천안만 경기 노출 비중이 높아 세팅 확인 필요</strong>. TikTok province 메트릭은 추정·샘플링 성격이 있어 단정형이 아닌 누수 진단형으로 활용합니다.</div>
   </div>

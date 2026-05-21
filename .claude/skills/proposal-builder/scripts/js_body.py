@@ -123,19 +123,19 @@ document.querySelectorAll('.tb').forEach(btn => {
   const recTotal = budget.june_recommended_total || 0;
   const recDelta = bb.avg_monthly_cost ? ((recTotal - bb.avg_monthly_cost) / bb.avg_monthly_cost * 100) : 0;
 
-  // 1.1 Primary KPI
+  // 1.1 핵심 KPI
   const conv = t.conversions || {};
   const cpa = t.cpa || {};
   const stretch = t.conversions_ambitious || {};
   const primaryHtml = `
     <div class="kpi-primary">
-      <div class="kpi-stretch">Stretch ${(stretch.value || 0).toLocaleString()}건</div>
-      <div class="kpi-primary-lbl">전환수 도전 목표 · Base</div>
+      <div class="kpi-stretch">상향 ${(stretch.value || 0).toLocaleString()}건</div>
+      <div class="kpi-primary-lbl">전환수 · 기본 목표</div>
       <div class="kpi-primary-val">${(conv.value || 0).toLocaleString()}<span class="kpi-primary-unit">건</span></div>
       <div class="kpi-primary-sub">베스트월 <strong>${conv.source_month || '-'}</strong> · 전 기간 비교 <strong>${cp.overall ? cp.overall.conversions.toLocaleString() + '건' : '-'}</strong></div>
     </div>
     <div class="kpi-primary">
-      <div class="kpi-primary-lbl">CPA Guardrail · 평균</div>
+      <div class="kpi-primary-lbl">CPA 가드레일 · 평균</div>
       <div class="kpi-primary-val">${(cpa.value || 0).toLocaleString()}<span class="kpi-primary-unit">원</span></div>
       <div class="kpi-primary-sub">베스트월 <strong>${cpa.source_month || '-'}</strong> · 전 기간 평균 <strong>${cp.overall ? cp.overall.cpa.toLocaleString() + '원' : '-'}</strong></div>
     </div>
@@ -148,7 +148,7 @@ document.querySelectorAll('.tb').forEach(btn => {
   `;
   document.getElementById('kpi-primary').innerHTML = primaryHtml;
 
-  // 1.2 Funnel KPI
+  // 1.2 퍼널 KPI
   const funnelHtml = ['cpm','ctr','cvr'].map(m => {
     const tg = t[m] || {};
     const peer = (DATA.root_cause && DATA.root_cause.peer_avg) || {};

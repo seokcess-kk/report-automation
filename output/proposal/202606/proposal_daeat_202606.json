@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated_at": "2026-05-21 16:41",
+    "generated_at": "2026-05-21 18:08",
     "data_period": "2026-02 ~ 2026-05 (마지막: 2026-05-19)",
     "branches": [
       "서울",
@@ -17869,7 +17869,7 @@
       "2026-04": false,
       "2026-05": true
     },
-    "computed_at": "2026-05-21T16:41:15"
+    "computed_at": "2026-05-21T18:08:34"
   },
   "consulting_signals": {
     "by_branch": {

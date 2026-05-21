@@ -177,11 +177,17 @@ def analyze(province_path: str, parsed_path: str) -> dict:
         })
 
     # ---- 4. 권고 ----
+    overall_leak_pct = labels_overall['누수']['impr_pct'] or 0
     if leak_branches:
-        headline = f"누수 신호 — {' · '.join(leak_branches)} 지점은 매칭권 밖 노출 15% 이상"
+        # 전체 누수가 낮으면 "대체로 정합 + 특정 지점만" 톤
+        if overall_leak_pct < 5:
+            branch_list = ' · '.join(leak_branches)
+            headline = f"전체 지역 도달은 대체로 정합 — {branch_list}만 세팅 확인 필요"
+        else:
+            headline = f"지역 도달 점검 필요 — {' · '.join(leak_branches)} 지점 누수 15% 이상"
         verdict_overall = 'major_leak'
     elif minor_branches:
-        headline = f"경미한 누수 — {' · '.join(minor_branches)} 지점 5~15% 매칭권 밖 노출"
+        headline = f"지역 도달 대체로 정합 — {' · '.join(minor_branches)} 경미한 누수"
         verdict_overall = 'minor_leak'
     else:
         headline = "지역 정합성 정상 — 모든 지점 누수 5% 미만"
@@ -195,9 +201,9 @@ def analyze(province_path: str, parsed_path: str) -> dict:
             'TikTok reach·province 메트릭은 추정·샘플링 성격이 있어 본 진단은 단정형이 아닌 누수 진단형으로 활용해 주시기 바랍니다.'
         ),
         'bullets': [
-            f"전체 노출의 {labels_overall['정합']['impr_pct']}%가 핵심 광역에 도달, {labels_overall['생활권']['impr_pct']}%가 생활권 내, {labels_overall['누수']['impr_pct']}%가 매칭권 밖" if labels_overall['정합']['impr_pct'] is not None else '',
-            f"누수 노출이 가장 많은 지역: {out_of_scope[0]['province']} ({out_of_scope[0]['impr_pct']}%)" if out_of_scope else '',
-            f"누수 신호 지점 {len(leak_branches)}개, 경미한 누수 {len(minor_branches)}개" if (leak_branches or minor_branches) else '모든 지점 정합 범위',
+            f"전체 노출 중 핵심 광역 도달 {labels_overall['정합']['impr_pct']}% · 생활권 {labels_overall['생활권']['impr_pct']}% · 매칭권 밖 {labels_overall['누수']['impr_pct']}%" if labels_overall['정합']['impr_pct'] is not None else '',
+            (f"천안 지점은 충남(43.68%) + 충북(32.48%) 외에 경기 노출이 {by_branch.get('천안',{}).get('labels',{}).get('누수',{}).get('impr_pct','-')}%로 잡혀 세팅 확인 필요" if '천안' in leak_branches and by_branch.get('천안') else (f"누수 노출이 가장 많은 지역: {out_of_scope[0]['province']} ({out_of_scope[0]['impr_pct']}%)" if out_of_scope else '')),
+            (f"점검 대상 지점: {' · '.join(leak_branches)}" if leak_branches else (f"경미한 누수 지점: {' · '.join(minor_branches)}" if minor_branches else '모든 지점 정합 범위')),
         ],
     }
 
@@ -225,7 +231,7 @@ def analyze(province_path: str, parsed_path: str) -> dict:
             },
         },
         'note': (
-            'TikTok province_id는 추정·샘플링 기반 메트릭으로 단정형 결론은 위험합니다. 본 5장은 '
+            'TikTok province_id는 추정·샘플링 기반 메트릭으로 단정형 결론은 위험합니다. 본 부록은 '
             '"지점 광고가 의도한 생활권에 닿고 있는가"를 누수 진단형으로 점검하기 위한 자료입니다.'
         ),
     }

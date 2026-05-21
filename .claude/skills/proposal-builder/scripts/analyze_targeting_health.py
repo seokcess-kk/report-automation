@@ -149,10 +149,11 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
             if cvr_ratio < 0.5 and target_share < 15:
                 age_signal = {
                     'verdict': 'inefficient',
-                    'label': '25-34 비효율 구간 — 노출 축소 검토',
+                    'label': '25-34 확대 제외 — 별도 소재/랜딩 테스트 후 재판단',
                     'rationale': (
-                        f'여성 25-34 노출 비중 {target_share}% (낮음) · CVR {target_cvr}% — 다른 연령대 평균 CVR {other_avg_cvr}% 대비 '
-                        f'{cvr_ratio*100:.0f}% 수준 (≈1/{round(1/cvr_ratio, 1)}). 입찰 확대보다 노출 비중 축소 또는 광고 그룹 제외 검토'
+                        f'여성 25-34 노출 비중 {target_share}% (이미 낮음) · CVR {target_cvr}% — 다른 연령대 평균 CVR {other_avg_cvr}% 대비 '
+                        f'{cvr_ratio*100:.0f}% 수준. 노출 비중이 작아 큰 개선 레버는 아니므로, 확대 대상에서 제외하고 '
+                        '별도 소재·랜딩 메시지 테스트 후 다시 판단'
                     ),
                     'age_group': '25-34',
                     'impr_share': target_share,
@@ -213,7 +214,7 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
     if gender_verdict['verdict'] != 'aligned':
         headline = '타겟팅 정합성 점검 필요'
     elif age_signal and age_signal['verdict'] == 'inefficient':
-        headline = '성별 타겟팅 정상 — 단, 25-34 비효율 구간 진단 (노출 축소 검토)'
+        headline = '성별 타겟팅 정상 — 25-34는 확대 대상에서 제외, 별도 테스트로 검증'
     elif age_signal and age_signal['verdict'] == 'undersupplied':
         headline = '성별 타겟팅 정상 — 25-34 확대 기회 신호'
     else:
@@ -221,7 +222,7 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
 
     age_note = ''
     if age_signal and age_signal['verdict'] == 'inefficient':
-        age_note = '25-34 비효율 구간 노출 축소 검토'
+        age_note = '25-34는 확대 제외, 소재/랜딩 별도 테스트'
     elif age_signal and age_signal['verdict'] == 'undersupplied':
         age_note = '25-34 확대 기회'
 

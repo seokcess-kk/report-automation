@@ -133,8 +133,12 @@ def _partial_flags(df: pd.DataFrame) -> dict:
     정상월: 부분월 자체 판정 전이라 첫 패스에서는 5월을 제외한 월을 정상으로 가정.
     """
     months = sorted(df['month'].unique())
-    by_month = df.groupby('month').agg(
-        active_days=('date', 'nunique'),
+    tmp = df.copy()
+    tmp['_active_date'] = tmp['date'].where(
+        tmp[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+    )
+    by_month = tmp.groupby('month').agg(
+        active_days=('_active_date', 'nunique'),
         cost=('cost', 'sum'),
     )
     # 정상월 후보 = 5월 제외한 월 (실제 마지막 월이 보통 부분)
@@ -302,8 +306,12 @@ def _aux_signals(df_branch_all: pd.DataFrame, df_current: pd.DataFrame, df_basel
                 })
 
     # 3. 일평균 cost 변화
-    days_cur = df_current['date'].nunique()
-    days_base = sum(df_branch_all[df_branch_all['month'] == m]['date'].nunique() for m in baseline_months)
+    def _active_days(part: pd.DataFrame) -> int:
+        active = part[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+        return int(part.loc[active, 'date'].nunique())
+
+    days_cur = _active_days(df_current)
+    days_base = sum(_active_days(df_branch_all[df_branch_all['month'] == m]) for m in baseline_months)
     daily_cur = float(df_current['cost'].sum() / days_cur) if days_cur > 0 else 0.0
     daily_base = float(df_branch_all[df_branch_all['month'].isin(baseline_months)]['cost'].sum() / days_base) if days_base > 0 else 0.0
     if daily_base > 0:

@@ -65,6 +65,13 @@ def _build_meta_caveats(targets: dict, budget: dict) -> dict:
     }
 
 
+def _format_data_period(funnel: dict) -> str:
+    """Display the effective reporting period used for the proposal."""
+    base = f"{funnel['months'][0]}-01"
+    effective = funnel.get('last_date')
+    return f"{base} ~ {effective}" if effective else f"{funnel['months'][0]} ~ {funnel['months'][-1]}"
+
+
 
 
 def analyze_weekday_performance(parsed_path: str) -> dict:
@@ -176,10 +183,13 @@ def build(parsed_path: str, meta_path: str, out_dir: str):
     payload = {
         'meta': {
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M'),
-            'data_period': f"{funnel['months'][0]} ~ {funnel['months'][-1]} (마지막: {funnel['last_date']})",
+            'data_period': _format_data_period(funnel),
             'branches': VALID_BRANCHES,
             'campaign_objective': '전환 수 증대 (주요 목적)',
-            'partial_month_note': '2026-05는 운영 도중 중단된 부분 데이터 (15일까지). 월 환산 무의미하므로 6월 계획 베이스라인은 4월을 사용.',
+            'partial_month_note': (
+                f"2026-05는 운영 도중 중단된 부분 데이터 ({funnel.get('last_date')}까지). "
+                '월 환산 무의미하므로 6월 계획 베이스라인은 4월을 사용.'
+            ),
         },
         'funnel_by_month': funnel,
         'top_creatives': top,

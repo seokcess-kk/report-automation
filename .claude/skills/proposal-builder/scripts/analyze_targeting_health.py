@@ -340,9 +340,13 @@ def analyze(audience_path: str, parsed_path: str) -> dict:
         ),
     }
 
+    active_aud = aud[aud[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0]
+    effective_end = active_aud['date'].max() if not active_aud.empty else aud['date'].max()
+    period = f"{aud['date'].min().strftime('%Y-%m-%d')} ~ {effective_end.strftime('%Y-%m-%d')}"
+
     return {
         'available': True,
-        'data_period': f"{aud['date'].min().strftime('%Y-%m-%d')} ~ {aud['date'].max().strftime('%Y-%m-%d')}",
+        'data_period': period,
         'total': {
             'impressions': total_impr,
             'conversions': total_conv,

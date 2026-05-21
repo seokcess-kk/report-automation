@@ -207,9 +207,13 @@ def analyze(province_path: str, parsed_path: str) -> dict:
         ],
     }
 
+    active_df = df[df[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0]
+    effective_end = active_df['date'].max() if not active_df.empty else df['date'].max()
+    period = f"{df['date'].min().strftime('%Y-%m-%d')} ~ {effective_end.strftime('%Y-%m-%d')}"
+
     return {
         'available': True,
-        'data_period': f"{df['date'].min().strftime('%Y-%m-%d')} ~ {df['date'].max().strftime('%Y-%m-%d')}",
+        'data_period': period,
         'total': {
             'impressions': total_impr,
             'clicks': total_clicks,

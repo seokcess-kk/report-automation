@@ -75,7 +75,8 @@ def analyze(parsed_path: str) -> dict:
         sub = df[df['month'] == m]
         cost = int(sub['cost'].sum())
         conv = int(sub['conversions'].sum())
-        days = int(sub['date'].dt.date.nunique())
+        active = sub[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+        days = int(sub.loc[active, 'date'].dt.date.nunique())
         monthly_total[m] = {
             'cost': cost,
             'conversions': conv,

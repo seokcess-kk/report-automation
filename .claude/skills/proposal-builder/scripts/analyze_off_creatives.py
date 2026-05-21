@@ -124,6 +124,10 @@ def analyze(parsed_path: str, off_csv_path: str = OFF_CSV_DEFAULT) -> dict:
         sub = df[df['ad_name'] == name]
         if len(sub) == 0:
             continue
+        active = sub[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+        sub = sub[active]
+        if len(sub) == 0:
+            continue
         first = sub['date'].min()
         last = sub['date'].max()
         span_days = (last - first).days + 1

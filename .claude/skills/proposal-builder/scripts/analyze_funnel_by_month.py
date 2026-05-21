@@ -14,6 +14,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from common import VALID_BRANCHES
 
 
+def _active_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Rows with any measurable delivery. Zero-only API rows should not extend the effective period."""
+    metric_cols = [c for c in ['cost', 'impressions', 'clicks', 'conversions'] if c in df.columns]
+    if not metric_cols:
+        return df
+    return df[df[metric_cols].fillna(0).sum(axis=1) > 0]
+
+
 def analyze(parsed_path: str) -> dict:
     df = pd.read_parquet(parsed_path)
     df['date'] = pd.to_datetime(df['date'])
@@ -84,8 +92,12 @@ def analyze(parsed_path: str) -> dict:
             'cpa': int(cost / conv) if conv > 0 else None,
         }
 
-    # 5월 데이터 완전성 표시 (마지막 일자)
-    last_date = df['date'].max().strftime('%Y-%m-%d')
+    # 5월 데이터 완전성 표시.
+    # API 수집상 광고 행은 남아 있지만 비용/노출/클릭/전환이 모두 0인 날짜가 생길 수 있다.
+    # 제안서의 "마지막"은 유효 성과가 발생한 마지막 일자를 사용한다.
+    active_df = _active_rows(df)
+    last_date = active_df['date'].max().strftime('%Y-%m-%d') if not active_df.empty else df['date'].max().strftime('%Y-%m-%d')
+    raw_last_date = df['date'].max().strftime('%Y-%m-%d')
 
     return {
         'months': months,
@@ -93,6 +105,7 @@ def analyze(parsed_path: str) -> dict:
         'by_month_branch': by_month_branch,
         'by_month_total': by_month_total,
         'last_date': last_date,
+        'raw_last_date': raw_last_date,
     }
 
 

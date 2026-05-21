@@ -38,7 +38,11 @@ def _kpi(df: pd.DataFrame, month: str = None, branch: str = None) -> dict | None
     impr = float(sub['impressions'].sum())
     clk = float(sub['clicks'].sum())
     conv = float(sub['conversions'].sum())
-    days = int(sub['date'].dt.date.nunique()) if 'date' in sub.columns else 0
+    if 'date' in sub.columns:
+        active = sub[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+        days = int(sub.loc[active, 'date'].dt.date.nunique())
+    else:
+        days = 0
     return {
         'cost': int(cost),
         'impressions': int(impr),

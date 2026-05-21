@@ -91,6 +91,9 @@ def _aggregate_branch_creative_kpi(parsed_for_kpi_path: Path) -> dict:
     p_on = p[(p['is_off'] == False) & (p.get('parse_status', 'OK') == 'OK')].copy()
     if p_on.empty:
         return {}
+    p_on['_active_date'] = p_on['date'].where(
+        p_on[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+    )
 
     # 집계 컬럼 — 시청 깊이/인게이지먼트는 있을 때만
     agg_spec = {
@@ -99,7 +102,7 @@ def _aggregate_branch_creative_kpi(parsed_for_kpi_path: Path) -> dict:
         '총노출': ('impressions', 'sum'),
         '총전환': ('conversions', 'sum'),
         '총랜딩': ('landing_views', 'sum'),
-        '집행일수': ('date', 'nunique'),
+        '집행일수': ('_active_date', 'nunique'),
     }
     optional_cols = {
         'video_watched_6s': '총6초시청',

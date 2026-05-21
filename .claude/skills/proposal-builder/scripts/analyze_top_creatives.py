@@ -23,13 +23,16 @@ TOP_N = 3
 
 def _aggregate_creatives(df: pd.DataFrame) -> pd.DataFrame:
     """지점 × 매칭키 기준 집계 → 퍼널 지표 계산."""
+    active_mask = df[['cost', 'impressions', 'clicks', 'conversions']].fillna(0).sum(axis=1) > 0
+    df = df.copy()
+    df['_active_date'] = df['date'].where(active_mask)
     grp = df.groupby(['지점', '매칭키'], dropna=False).agg(
         cost=('cost', 'sum'),
         impressions=('impressions', 'sum'),
         clicks=('clicks', 'sum'),
         conversions=('conversions', 'sum'),
         landing_views=('landing_views', 'sum'),
-        days_active=('date', lambda x: x.dt.date.nunique()),
+        days_active=('_active_date', lambda x: x.dropna().dt.date.nunique()),
         is_off_any=('is_off', 'any'),
         is_off_all=('is_off', 'all'),
         ad_count=('ad_id', 'nunique'),

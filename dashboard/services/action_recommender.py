@@ -14,6 +14,7 @@ from typing import Optional
 import pandas as pd
 
 from dashboard.services.data_loader import DataBundle
+from dashboard.services.ads_manager_link import url_for_recommendation
 
 
 @dataclass
@@ -29,14 +30,18 @@ class Recommendation:
     expected_metric: Optional[str] = None
     linked_rule: Optional[str] = None
     linked_checklist: Optional[str] = None
+    # Phase 5-B — Ads Manager deep link (반자동 광고 제어)
+    ads_manager_url: Optional[str] = None
+    ads_manager_scope: Optional[str] = None
+    ads_manager_hint: Optional[str] = None
 
 
 def generate(bundle: DataBundle) -> dict:
-    """카테고리별 추천 액션 묶음."""
+    """카테고리별 추천 액션 묶음 + Ads Manager URL 자동 부여."""
     rules = bundle.operation_rules or {}
     meta = rules.get('meta', {})
 
-    return {
+    result = {
         'budget_increase': _budget_increase(bundle, rules, meta),
         'budget_decrease': _budget_decrease(bundle, rules, meta),
         'ad_off': _ad_off_candidates(bundle, rules, meta),
@@ -44,6 +49,15 @@ def generate(bundle: DataBundle) -> dict:
         'setting': _setting_alerts(bundle, rules, meta),
         'hold': _hold_observations(bundle, rules, meta),
     }
+    # Phase 5-B — Ads Manager URL 자동 부여 (hold는 제외 — 관찰만)
+    for cat in ('budget_increase', 'budget_decrease', 'ad_off', 'ad_on', 'setting'):
+        for r in result[cat]:
+            link = url_for_recommendation(r.target_type, r.target_name)
+            if link:
+                r.ads_manager_url = link.get('url')
+                r.ads_manager_scope = link.get('scope_label')
+                r.ads_manager_hint = link.get('hint')
+    return result
 
 
 def _branch_3day_kpi(bundle: DataBundle, branch: str) -> dict:

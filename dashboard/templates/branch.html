@@ -62,13 +62,26 @@
         {% if total == 0 %}
         <div class="muted">추천 액션 없음</div>
         {% endif %}
-        {% for cat_key, label in [('budget_increase','💰 예산 증액'),('budget_decrease','💰 예산 감액'),('ad_off','🎬 OFF 후보'),('ad_on','🎬 ON·확대 후보'),('setting','⚙️ 세팅 확인')] %}
+        {% for cat_key, label, atype in [('budget_increase','💰 예산 증액','budget_increase'),('budget_decrease','💰 예산 감액','budget_decrease'),('ad_off','🎬 OFF 후보','ad_off'),('ad_on','🎬 ON·확대 후보','ad_on'),('setting','⚙️ 세팅 확인','setting_change')] %}
         {% set items = detail.recommendations[cat_key] %}
         {% if items %}
         <div class="action-cat">
           <div class="action-cat-hd">{{ label }} <span class="count">{{ items|length }}</span></div>
           {% for r in items %}
-          <div class="card-row"><span class="badge {{ r.priority }}">{{ r.priority }}</span><strong>{{ r.title }}</strong><div class="muted" style="font-size:11px">{{ r.rationale }}</div></div>
+          <div class="rec-row">
+            <div class="rec-body">
+              <span class="badge {{ r.priority }}">{{ '🔴' if r.priority == 'high' else ('🟡' if r.priority == 'medium' else '🔵') }} {{ r.priority }}</span>
+              <strong>{{ r.title }}</strong>
+              <div class="muted" style="font-size:11px">{{ r.rationale }}</div>
+              {% if r.ads_manager_hint %}<div class="muted" style="font-size:10.5px;margin-top:2px">↳ {{ r.ads_manager_scope }}: {{ r.ads_manager_hint }}</div>{% endif %}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+              {% if r.ads_manager_url %}
+              <a href="{{ r.ads_manager_url }}" target="_blank" rel="noopener" class="rec-log-btn" style="text-align:center;background:var(--pur);color:white">↗ Ads Manager</a>
+              {% endif %}
+              <button type="button" class="rec-log-btn" onclick='openActionModal({{ {"title": r.title, "action_type": atype, "branch": r.target_name if r.target_type == "branch" else "", "creative_name": r.target_name if r.target_type == "ad" else "", "suggested_reason": r.rationale, "linked_checklist_id": r.linked_checklist} | tojson | safe }})'>기록</button>
+            </div>
+          </div>
           {% endfor %}
         </div>
         {% endif %}

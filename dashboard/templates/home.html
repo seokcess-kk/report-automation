@@ -43,10 +43,16 @@
                 {% else %}{{ r.title }}{% endif %}
               </strong>
               <div class="muted" style="font-size:11px">{{ r.rationale }}</div>
+              {% if r.ads_manager_hint %}<div class="muted" style="font-size:10.5px;margin-top:2px">↳ {{ r.ads_manager_scope }}: {{ r.ads_manager_hint }}</div>{% endif %}
             </div>
-            {% if action_type %}
-            <button type="button" class="rec-log-btn" onclick='openActionModal({{ {"title": r.title, "action_type": action_type, "branch": r.target_name if r.target_type == "branch" else "", "creative_name": r.target_name if r.target_type == "ad" else "", "suggested_reason": r.rationale, "linked_checklist_id": r.linked_checklist} | tojson | safe }})'>기록</button>
-            {% endif %}
+            <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+              {% if r.ads_manager_url %}
+              <a href="{{ r.ads_manager_url }}" target="_blank" rel="noopener" class="rec-log-btn" style="text-align:center;background:var(--pur);color:white">↗ Ads Manager</a>
+              {% endif %}
+              {% if action_type %}
+              <button type="button" class="rec-log-btn" onclick='openActionModal({{ {"title": r.title, "action_type": action_type, "branch": r.target_name if r.target_type == "branch" else "", "creative_name": r.target_name if r.target_type == "ad" else "", "suggested_reason": r.rationale, "linked_checklist_id": r.linked_checklist} | tojson | safe }})'>기록</button>
+              {% endif %}
+            </div>
           </div>
           {% endfor %}
         </div>

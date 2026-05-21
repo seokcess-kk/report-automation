@@ -89,7 +89,7 @@ def branch_detail(branch_name: str):
     if valid and branch_name not in valid:
         abort(404)
     detail = build_branch(bundle, branch_name, today=today)
-    return render_template('branch.html', active='home', detail=detail, **ctx)
+    return render_template('branch.html', active='branch', active_branch=branch_name, detail=detail, **ctx)
 
 
 @app.route('/creative/<creative_name>')
@@ -97,7 +97,57 @@ def creative_detail(creative_name: str):
     ctx = _common_ctx()
     bundle, today = ctx.pop('_bundle'), ctx.pop('_today')
     detail = build_creative(bundle, creative_name, today=today)
-    return render_template('creative.html', active='home', detail=detail, **ctx)
+    return render_template('creative.html', active='creatives', detail=detail, **ctx)
+
+
+@app.route('/creatives')
+def creatives_list():
+    import pandas as pd
+    ctx = _common_ctx()
+    bundle = ctx.pop('_bundle'); ctx.pop('_today')
+    ct = bundle.creative_tier
+    filters = {
+        'tier': request.args.get('tier', ''),
+        'creative_type': request.args.get('creative_type', ''),
+    }
+    creatives_data = []
+    tier_counts = {}
+    def _safe_int(v):
+        return int(v) if v is not None and not pd.isna(v) else None
+    def _safe_float(v):
+        return float(v) if v is not None and not pd.isna(v) else None
+    if not ct.empty:
+        for _, r in ct.iterrows():
+            tier = str(r.get('TIER', '')).upper()
+            tier_counts[tier] = tier_counts.get(tier, 0) + 1
+            creatives_data.append({
+                'name': r.get('소재명') or r.get('매칭키'),
+                'creative_type': r.get('소재유형'),
+                'tier': tier,
+                'branches': list(r.get('집행지점목록')) if r.get('집행지점목록') is not None else [],
+                'days_active': _safe_int(r.get('집행일수')),
+                'cost': _safe_int(r.get('총비용')),
+                'conversions': _safe_int(r.get('총전환')),
+                'ctr': _safe_float(r.get('CTR')),
+                'cvr': _safe_float(r.get('CVR')),
+                'cpa': _safe_int(r.get('CPA')),
+            })
+    # 필터 적용
+    if filters['tier']:
+        creatives_data = [c for c in creatives_data if c['tier'] == filters['tier']]
+    if filters['creative_type']:
+        creatives_data = [c for c in creatives_data if c['creative_type'] == filters['creative_type']]
+    # 정렬 — TIER 우선, CPA 오름차순
+    TIER_ORDER = {'TIER1': 0, 'TIER2': 1, 'TIER3': 2, 'TIER4': 3, 'LOW_VOLUME': 4, 'UNCLASSIFIED': 5}
+    creatives_data.sort(key=lambda x: (TIER_ORDER.get(x['tier'], 99), x['cpa'] if x['cpa'] else 10**9))
+    filter_options = {
+        'creative_types': sorted({c['creative_type'] for c in creatives_data if c.get('creative_type')}),
+    }
+    return render_template(
+        'creatives_list.html', active='creatives',
+        **ctx, creatives=creatives_data, tier_counts=tier_counts,
+        filters=filters, filter_options=filter_options,
+    )
 
 
 @app.route('/checklist')

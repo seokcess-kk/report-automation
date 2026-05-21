@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}소재 전체 · 운영 콘솔{% endblock %}
+{% block content %}
+
+  <div class="breadcrumb"><a href="/{% if today_param %}?today={{ today_param }}{% endif %}">홈</a> / <span>소재 전체</span></div>
+
+  <div class="headline">
+    <div class="headline-row">
+      <div class="h-stat normal"><div class="lbl">TIER1</div><div class="val">{{ tier_counts.TIER1 or 0 }}</div></div>
+      <div class="h-stat"><div class="lbl">TIER2</div><div class="val">{{ tier_counts.TIER2 or 0 }}</div></div>
+      <div class="h-stat warn"><div class="lbl">TIER3</div><div class="val">{{ tier_counts.TIER3 or 0 }}</div></div>
+      <div class="h-stat critical"><div class="lbl">TIER4</div><div class="val">{{ tier_counts.TIER4 or 0 }}</div></div>
+      <div class="h-stat"><div class="lbl">LOW_VOLUME</div><div class="val">{{ tier_counts.LOW_VOLUME or 0 }}</div></div>
+      <div class="h-stat"><div class="lbl">UNCLASSIFIED</div><div class="val">{{ tier_counts.UNCLASSIFIED or 0 }}</div></div>
+    </div>
+  </div>
+
+  <!-- 필터 -->
+  <div class="card">
+    <h2>필터</h2>
+    <form method="get" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:4px">TIER</label>
+        <select name="tier" style="background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;border-radius:4px">
+          <option value="">전체</option>
+          {% for t in ['TIER1','TIER2','TIER3','TIER4','LOW_VOLUME','UNCLASSIFIED'] %}
+          <option value="{{ t }}" {% if t == filters.tier %}selected{% endif %}>{{ t }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:var(--tx2);display:block;margin-bottom:4px">소재유형</label>
+        <select name="creative_type" style="background:var(--card);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;border-radius:4px">
+          <option value="">전체</option>
+          {% for ct in filter_options.creative_types %}
+          <option value="{{ ct }}" {% if ct == filters.creative_type %}selected{% endif %}>{{ ct }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" style="background:var(--bd);color:var(--tx);border:none;padding:6px 14px;border-radius:5px;cursor:pointer">적용</button>
+      <a href="/creatives" style="font-size:11px">초기화</a>
+    </form>
+  </div>
+
+  <!-- 소재 목록 -->
+  <div class="card">
+    <h2>소재 목록 ({{ creatives | length }}개)</h2>
+    <table>
+      <thead><tr><th>소재명</th><th>TIER</th><th>유형</th><th>운영 지점</th><th>집행일수</th><th>비용</th><th>전환</th><th>CTR</th><th>CVR</th><th>CPA</th></tr></thead>
+      <tbody>
+        {% for c in creatives %}
+        <tr>
+          <td><a href="/creative/{{ c.name }}{% if today_param %}?today={{ today_param }}{% endif %}">{{ c.name }}</a></td>
+          <td><strong>{{ c.tier }}</strong></td>
+          <td>{{ c.creative_type }}</td>
+          <td class="muted" style="font-size:11px">{{ c.branches | join(' · ') }}</td>
+          <td class="num">{{ c.days_active }}일</td>
+          <td class="num">{{ c.cost | won }}</td>
+          <td class="num">{{ c.conversions | count }}</td>
+          <td class="num">{{ c.ctr | pct(2) }}</td>
+          <td class="num">{{ c.cvr | pct(2) }}</td>
+          <td class="num">{{ c.cpa | won }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="muted">필터 조건에 맞는 소재 없음</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+{% endblock %}

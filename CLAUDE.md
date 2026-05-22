@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # TikTok 광고 분석 파이프라인
 
-> 클라이언트: 다이트한의원 | 목표: 상담 전환 (소재 중심 분석) | v3.10
+> 클라이언트: 다이트한의원 | 목표: 상담 전환 (소재 중심 분석) | v3.13
 
 ---
 
@@ -136,11 +136,34 @@ output/daily/daily_snapshot.json
 ## 최초 로컬 세팅 (1회)
 
 ```bash
+# Python 3.11 (GitHub Actions와 동일 버전) — 의존성 설치
+pip install -r requirements.txt
+
+# 환경변수 — .env.example 복사 후 값 채우기
+#   TIKTOK_APP_ID / TIKTOK_APP_SECRET / TIKTOK_ACCESS_TOKEN / TIKTOK_ADVERTISER_ID  (Phase 0 수집용)
+#   TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID                                          (텔레그램 알림용)
+cp .env.example .env
+
 # 자동 생성 산출물 merge 충돌 방지 (GitHub Actions가 매일 커밋하므로 필수)
 git config merge.ours.driver true
 ```
 
-이후 `git pull` 시 output/ 파일 충돌은 로컬 버전으로 자동 유지됨.
+이후 `git pull` 시 `.gitattributes`의 `merge=ours` 규칙에 따라 `output/data/**`, `output/{daily,weekly,monthly}/**`, `input/tiktok_raw*.csv` 충돌은 로컬 버전으로 자동 유지됨.
+
+---
+
+## GitHub Actions 자동화
+
+`.github/workflows/daily-report.yml` — 매일 **09:00 KST (00:00 UTC)** 자동 실행:
+
+1. `fetch_tiktok_raw.py --days 14 --include-age --include-hour --include-audience --include-province` (전 디멘션 수집)
+2. `run_analysis.py` (Phase 0~5 풀파이프라인)
+3. `build_daily.py` (매일 실행)
+4. `build_weekly.py` (**KST 월요일만** — 워크플로 내 `date +%u` 분기)
+5. `dashboard.workers.effect_tracker` (D+1/D+3/D+7 효과 측정)
+6. `input/tiktok_raw*.csv` + `output/` 커밋 & 푸시 (`[skip ci]`)
+
+TikTok API 시크릿은 GitHub Repository Secrets에 `TIKTOK_APP_ID` / `TIKTOK_APP_SECRET` / `TIKTOK_ACCESS_TOKEN` / `TIKTOK_ADVERTISER_ID`로 등록되어 있음. `workflow_dispatch`로 수동 트리거 가능.
 
 ---
 
@@ -173,6 +196,23 @@ python -m dashboard.workers.effect_tracker               # D+1/D+3/D+7 효과 �
 python -m dashboard.workers.telegram_notifier --dry-run  # 텔레그램 메시지 미리보기
 python -m dashboard.workers.telegram_notifier            # 텔레그램 발송 (TELEGRAM_BOT_TOKEN/CHAT_ID 필요)
 ```
+
+---
+
+## 클라이언트 보고용 웹 (`web/` — Next.js 14)
+
+`dashboard/` (Flask, 내부 운영용)와는 별개의 **클라이언트 보고용 정적 사이트**. Vercel에 배포되며 빌드 타임에 `../output/**/*.json`을 `fs`로 읽어 정적 페이지 생성. 따라서 파이프라인이 commit하면 Vercel이 자동 재배포 → 최신 리포트가 반영됨.
+
+```bash
+cd web
+npm install
+ACCESS_PASSWORD=dev npm run dev   # http://localhost:3000
+npm run build                     # 프로덕션 빌드
+npm run lint                      # next lint (ESLint)
+```
+
+**Vercel 배포 설정**: Root Directory = `web`, Env = `ACCESS_PASSWORD`.
+**페이지**: 위클리 목록/상세 (Phase 1), `app/june/page.tsx` (6월 운영 현황 — 클라이언트 보고용 하이브리드).
 
 ---
 

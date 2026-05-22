@@ -84,7 +84,7 @@ export default async function JuneStatusPage() {
             <div className="text-xs text-subtle mb-2">유형별 분포</div>
             <div className="flex flex-wrap gap-2">
               {data.action_stats.by_type.map((t) => (
-                <Badge key={t.type} tone="default">
+                <Badge key={t.type} tone="neutral">
                   {t.type}: {t.count}건
                 </Badge>
               ))}
